@@ -12,9 +12,9 @@ describe('Artist', () => {
   describe('#songs', () => {
   // Make this a synchronous function by passing in 'done'.
     it('should return an empty list when there are no songs', (done) => {
-      Artist.create().then(artist => {
+      Artist.create({ name: 'Bob' }).done(artist => {
         r.add(artist)
-        artist.getSongs().then(songs => {
+        artist.getSongs().done(songs => {
           expect(songs).to.eql([])
           done()
         })
@@ -22,18 +22,24 @@ describe('Artist', () => {
     })
 
     it('should return an array of songs when the artist has songs', (done) => {
-      Artist.create().then(artist => {
+      Artist.create({ name: 'Brian' })
+      .done(artist => {
         r.add(artist)
-        Song.create()
-          .then(song => song.setArtist(artist))
-          .then(song => {
+        Song.create({
+          title: 'A good song',
+          text: 'This is a song'
+        })
+        .done(song => {
+          song.setArtist(artist)
+          .done(song => {
             r.add(song)
-            artist.getSongs()
-              .then(songs => {
-                expect(songs.length).to.eql(1)
-                done()
-              })
+            artist.countSongs()
+            .done(count => {
+              expect(count).to.eql(1)
+              done()
+            })
           })
+        })
       })
     })
 
