@@ -22,6 +22,7 @@
     "should": "^13.2.3"
   },
   "scripts": {
+    "start:dev": "nodemon app.js",
     "test": "export NODE_ENV=test && sequelize db:migrate && mocha --exit --recursive"
   }
 }

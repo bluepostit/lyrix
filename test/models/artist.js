@@ -9,7 +9,7 @@ const RecordManager = require('../record-manager')
 describe('Artist', () => {
   const r = new RecordManager(db)
 
-  describe('#songs', () => {
+  describe('#getSongs()', () => {
   // Make this a synchronous function by passing in 'done'.
     it('should return an empty list when there are no songs', (done) => {
       Artist.create({ name: 'Bob' }).done(artist => {
