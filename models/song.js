@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     text: DataTypes.TEXT
   }, {});
   Song.associate = function(models) {
-    Song.hasOne(models.Artist);
+    Song.belongsTo(models.Artist);
   };
   return Song;
 };
