@@ -1,0 +1,10 @@
+{
+  "name": "lyrix",
+  "version": "1.0.0",
+  "description": "Lyrics Manager",
+  "main": "index.js",
+  "repository": "https://github.com/bluepostit/lyrix",
+  "author": "bluepostit",
+  "license": "MIT",
+  "private": true
+}
