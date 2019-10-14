@@ -6,13 +6,13 @@ const db = require('../../models/index')
 
 chai.use(chaiHttp)
 
-describe('Songs', () => {
+describe('songs', () => {
   beforeEach((done) => {
     db.Song.destroy({ truncate: true }).done(res => done())
   })
 
   describe('GET /songs', () => {
-    it('should get a list of all songs in the database', done => {
+    it('should return a list of all songs in the database', done => {
       db.Song.bulkCreate([
         {
           title: 'Song 1',
@@ -44,6 +44,35 @@ describe('Songs', () => {
           expect(res.body.data.length).to.eql(0)
           done()
         })
+    })
+  })
+
+  describe('GET /songs/:id', () => {
+    it('should return an error when no matching song can be found', done => {
+      chai.request(app)
+        .get('/songs/23')
+        .end((err, res) => {
+          expect(res.body).to.have.status(404)
+          expect(res.body).to.be.an('object')
+          expect(res.body).to.haveOwnProperty('error')
+          done()
+        })
+    })
+
+    it('should return the song with the given id when found', done => {
+      db.Song.create({
+        title: 'A song',
+        text: 'Song text'
+      }).then(song => {
+      chai.request(app)
+        .get(`/songs/${song.id}`)
+        .end((err, res) => {
+          expect(res.body).to.have.status(200)
+          expect(res.body.data).to.be.an('object')
+          expect(res.body.data.title).to.eql('A song')
+          done()
+        })
+      })
     })
   })
 })

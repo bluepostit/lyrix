@@ -6,7 +6,6 @@ module.exports = {
     "database": process.env.DB_NAME,
     "host": "127.0.0.1",
     "dialect": "postgres",
-    "operatorsAliases": false
   },
   "test": {
     "username": process.env.DB_TEST_USERNAME,
@@ -14,7 +13,7 @@ module.exports = {
     "database": process.env.DB_TEST_NAME,
     "host": "127.0.0.1",
     "dialect": "postgres",
-    "operatorsAliases": false
+    "logging": false,
   },
   "production": {
     "username": process.env.DB_USERNAME,
@@ -22,6 +21,5 @@ module.exports = {
     "database": process.env.DB_NAME,
     "host": process.env.DB_HOST,
     "dialect": "postgres",
-    "operatorsAliases": false
   }
 };
