@@ -4,52 +4,52 @@ const expect = require('chai').expect
 const db = require('../../models/index')
 const Artist = db.Artist
 const Song = db.Song
-const RecordManager = require('../record-manager')
 
 describe('Artist', () => {
-  const r = new RecordManager(db)
+
+  const clearData = (done) => {
+    return db.Song.destroy({ where: {}, force: true })
+    .then(() => {
+      db.Artist.destroy({ where: {}, force: true })
+    })
+  }
 
   describe('#getSongs()', () => {
-  // Make this a synchronous function by passing in 'done'.
+    // Make this a synchronous function by passing in 'done'.
     it('should return an empty list when there are no songs', (done) => {
-      Artist.create({ name: 'Bob' }).done(artist => {
-        r.add(artist)
-        artist.getSongs().done(songs => {
+      Artist.create({ name: 'Bob' })
+      .then(artist => artist.getSongs())
+      .then(songs => {
           expect(songs).to.eql([])
           done()
-        })
       })
     })
 
     it('should return an array of songs when the artist has songs', (done) => {
+      let songArtist = null;
       Artist.create({ name: 'Brian' })
-      .done(artist => {
-        r.add(artist)
-        Song.create({
+      .then(artist => {
+        songArtist = artist
+        return Song.create({
           title: 'A good song',
-          text: 'This is a song'
+          text: 'This is a song',
+          ArtistId: artist.id
+        }, {
+          include: [{ model: db.Artist }]
         })
-        .done(song => {
-          song.setArtist(artist)
-          .done(song => {
-            r.add(song)
-            artist.countSongs()
-            .done(count => {
-              expect(count).to.eql(1)
-              done()
-            })
-          })
-        })
+      }).then(song => songArtist.countSongs())
+      .then(count => {
+        expect(count).to.eql(1)
+        done()
       })
     })
 
-    after('clear created records', (done) => {
-      r.destroy('Song')
-        .then(() => r.destroy('Artist')
-          .then(() => {
-            done()
-          })
-        )
+    beforeEach('clear all records', (done) => {
+      clearData().then(() => done())
+    })
+
+    after('clear all records', (done) => {
+      clearData().then(() => done())
     })
   })
 })

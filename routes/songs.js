@@ -2,10 +2,17 @@ const express = require('express')
 const db = require('../models/index')
 const router = express.Router()
 
-const SONG_ATTRIBUTES = { attributes: ['id', 'title', 'text'] }
+const SONG_ATTRIBUTES = [
+  'id', 'title', 'text'
+]
+
+const ARTIST_ATTRIBUTES = ['id', 'name']
 
 router.get('/', (req, res, next) => {
-  db.Song.findAll(SONG_ATTRIBUTES)
+  db.Song.findAll({
+    attributes: SONG_ATTRIBUTES,
+    include: [{model: db.Artist, attributes: ARTIST_ATTRIBUTES}]
+  })
     .then(songs => res.json({
       error: false,
       data: songs
@@ -18,7 +25,10 @@ router.get('/', (req, res, next) => {
 
 router.get('/:id', (req, res, next) => {
   res.type('json')
-  db.Song.findByPk(req.params.id, SONG_ATTRIBUTES)
+  db.Song.findByPk(req.params.id, {
+    attributes: SONG_ATTRIBUTES,
+    include: [{model: db.Artist, attributes: ARTIST_ATTRIBUTES}]
+  })
     .then((song) => {
       let status = 200
       let error = false

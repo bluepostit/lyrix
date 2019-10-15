@@ -8,7 +8,9 @@ chai.use(chaiHttp)
 
 describe('songs', () => {
   beforeEach((done) => {
-    db.Song.destroy({ truncate: true }).done(res => done())
+    db.Song.destroy({ where: {}, force: true })
+    .then(() => db.Artist.destroy({ where: {}, force: true }))
+    .then(() => done())
   })
 
   describe('GET /songs', () => {
@@ -16,20 +18,30 @@ describe('songs', () => {
       db.Song.bulkCreate([
         {
           title: 'Song 1',
-          text: 'This is Song 1'
+          text: 'This is Song 1',
+          Artist: { name: 'Bobby' }
         }, {
           title: 'Song 2',
-          text: 'This is Song 2'
+          text: 'This is Song 2',
+          Artist: { name: 'Sue' }
         }
-      ]).done(() => {
+      ], {
+        include: [{
+          model: db.Artist
+        }]
+      }).done(() => {
         chai.request(app)
           .get('/songs')
           .end((err, res) => {
             expect(res).to.have.status(200)
             expect(res.body).to.be.an('object')
-            expect(res.body.data.length).to.eql(2)
-            expect(res.body.data[0].title).to.eql('Song 1')
-            expect(res.body.data[1].text).to.eql('This is Song 2')
+            let data = res.body.data
+            let data0 = data[0]
+            expect(data.length).to.eql(2)
+            expect(data0.title).to.eql('Song 1')
+            expect(data0.Artist).to.be.an('object')
+            expect(data0.Artist.name).to.be.eql('Bobby')
+            expect(data[1].text).to.eql('This is Song 2')
             done()
           })
         })
@@ -60,16 +72,23 @@ describe('songs', () => {
     })
 
     it('should return the song with the given id when found', done => {
-      db.Song.create({
-        title: 'A song',
-        text: 'Song text'
-      }).then(song => {
-      chai.request(app)
+      db.Artist.create({ name: 'Brian' })
+      .then(artist => {
+        return db.Song.create({
+          title: 'A good song',
+          text: 'This is a song',
+          ArtistId: artist.id
+        }, {
+          include: [{ model: db.Artist }]
+        });
+      })
+      .then(song => {
+        chai.request(app)
         .get(`/songs/${song.id}`)
         .end((err, res) => {
           expect(res.body).to.have.status(200)
           expect(res.body.data).to.be.an('object')
-          expect(res.body.data.title).to.eql('A song')
+          expect(res.body.data.title).to.eql('A good song')
           done()
         })
       })

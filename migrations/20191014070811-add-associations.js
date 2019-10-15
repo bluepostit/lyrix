@@ -18,6 +18,7 @@ module.exports = {
           model: 'Artists',
           key: 'id'
         },
+        allowNull: false,
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       }
