@@ -15,12 +15,27 @@
     "sequelize-cli": "^5.5.1"
   },
   "devDependencies": {
-    "babel-register": "^6.26.0",
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/register": "^7.6.2",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "mocha": "^6.2.1",
     "nodemon": "^1.19.3",
     "should": "^13.2.3"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": true
+          }
+        }
+      ]
+    ]
   },
   "scripts": {
     "start:dev": "nodemon app.js",

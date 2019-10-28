@@ -4,6 +4,9 @@ const express = require('express')
 const app = express()
 const port = process.env.APP_PORT || 4000
 
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 // Routes
 const artists = require('./routes/artists')
 const songs = require('./routes/songs')
