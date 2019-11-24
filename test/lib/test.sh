@@ -10,5 +10,5 @@ if [ $# -eq 1 ]
     target="$target"$1
 fi
 
-sequelize db:migrate
+knex migrate:latest
 mocha --exit --recursive $target
