@@ -29,6 +29,7 @@
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-standard": "^4.0.1",
     "mocha": "^6.2.1",
+    "mocha-cli": "^1.0.1",
     "nodemon": "^1.19.3",
     "should": "^13.2.3"
   },
