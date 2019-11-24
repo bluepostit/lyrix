@@ -21,7 +21,22 @@ describe('Artist', () => {
       expect(songs).to.eql([])
     })
 
-    // it('should return an array of songs when the artist has songs', async () => {
+    it('should return an array of songs when the artist has songs', async () => {
+      const brian = await Artist
+        .query()
+        .insert({ name: 'Brian' })
+      console.log(brian)
+
+      const song = await brian
+        .$relatedQuery('songs')
+        .insert({
+            title: 'A good song',
+            text: 'This is a good song',
+            artist: brian
+        })
+
+        console.log(song)
+
     //   let songArtist = null;
     //   Artist.create({ name: 'Brian' })
     //     .then(artist => {
@@ -38,7 +53,7 @@ describe('Artist', () => {
     //       expect(count).to.eql(1)
     //       done()
     //     })
-    // })
+    })
 
     beforeEach('clear all records', async () => {
       await clearData()
