@@ -25,34 +25,17 @@ describe('Artist', () => {
       const brian = await Artist
         .query()
         .insert({ name: 'Brian' })
-      console.log(brian)
 
-      const song = await brian
+      await brian
         .$relatedQuery('songs')
         .insert({
-            title: 'A good song',
-            text: 'This is a good song',
-            artist: brian
+          title: 'A good song',
+          text: 'This is a good song',
         })
+      const songs = await brian
+        .$relatedQuery('songs')
 
-        console.log(song)
-
-    //   let songArtist = null;
-    //   Artist.create({ name: 'Brian' })
-    //     .then(artist => {
-    //       songArtist = artist
-    //       return Song.create({
-    //         title: 'A good song',
-    //         text: 'This is a song',
-    //         ArtistId: artist.id
-    //       }, {
-    //         include: [{ model: db.Artist }]
-    //       })
-    //     }).then(song => songArtist.countSongs())
-    //     .then(count => {
-    //       expect(count).to.eql(1)
-    //       done()
-    //     })
+      expect(songs.length).to.eql(1)
     })
 
     beforeEach('clear all records', async () => {
