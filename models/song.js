@@ -12,13 +12,15 @@ module.exports = class Song extends Model {
     return 'songs'
   }
 
-  static relationMappings = {
-    artist: {
-      relation: Model.BelongsToOneRelation,
-      modelClass: Artist,
-      join: {
-        from: 'songs.artistId',
-        to: 'artists.id'
+  static get relationMappings () {
+    return {
+      artist: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Artist,
+        join: {
+          from: 'songs.artist_id',
+          to: 'artists.id'
+        }
       }
     }
   }

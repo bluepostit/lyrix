@@ -19,7 +19,7 @@ module.exports = class Artist extends Model {
         modelClass: Song,
         join: {
           from: 'artists.id',
-          to: 'songs.artist'
+          to: 'songs.artist_id'
         }
       }
     }
