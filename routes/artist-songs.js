@@ -1,10 +1,10 @@
 const express = require('express')
-const db = require('../models/index')
+const Artist = require('../models/artist')
 
 /** Nested routing: artist's songs */
-const router = express.Router({mergeParams: true})
+const router = express.Router({ mergeParams: true })
 /** CREATE a new song: POST /artist/:id/songs/ **/
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
   const {
     title,
     text
@@ -13,20 +13,21 @@ router.post('/', (req, res, next) => {
   // if (!title || !text) {
   //   throw 'You need to specify title and text'
   // }
-  db.Artist.findByPk(req.params.id)
-  .then(artist => {
-    return db.Song.create({
-      title: title,
-      text: text,
-      ArtistId: artist.id
+  const artist = await Artist
+    .query()
+    .findById(req.params.id)
+
+  await artist
+    .$relatedQuery('songs')
+    .insert({
+      title,
+      text
     })
-  })
-  .then(() => {
-    res.json({
-      error: false,
-      status: 200,
-      data: {}
-    })
+
+  res.json({
+    error: false,
+    status: 200,
+    data: {}
   })
 })
 

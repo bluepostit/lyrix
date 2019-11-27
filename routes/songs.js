@@ -1,5 +1,5 @@
 const express = require('express')
-const db = require('../models/index')
+const Song = require('../models/song')
 const router = express.Router()
 
 const SONG_ATTRIBUTES = [
@@ -8,41 +8,36 @@ const SONG_ATTRIBUTES = [
 
 const ARTIST_ATTRIBUTES = ['id', 'name']
 
-router.get('/', (req, res, next) => {
-  db.Song.findAll({
-    attributes: SONG_ATTRIBUTES,
-    include: [{model: db.Artist, attributes: ARTIST_ATTRIBUTES}]
+router.get('/', async (req, res, next) => {
+  const songs = await Song
+    .query()
+    .select(...SONG_ATTRIBUTES)
+    .eager('artist')
+
+  res.json({
+    error: false,
+    data: songs
   })
-    .then(songs => res.json({
-      error: false,
-      data: songs
-    }))
-    .catch(error => res.json({
-      data: [],
-      error: error
-    }))
 })
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
   res.type('json')
-  db.Song.findByPk(req.params.id, {
-    attributes: SONG_ATTRIBUTES,
-    include: [{model: db.Artist, attributes: ARTIST_ATTRIBUTES}]
-  })
-    .then((song) => {
-      let status = 200
-      let error = false
-      if (song === null) {
-        error = 'Song not found'
-        status = 404
-      }
-      res.json({
-        error: error,
-        status: status,
-        data: song
-      })
-    })
-})
+  const song = await Song
+    .query()
+    .findById(req.params.id)
+    .eager('artist')
 
+  let status = 200
+  let error = false
+  if (song === null) {
+    error = 'Song not found'
+    status = 404
+  }
+  res.json({
+    error: error,
+    status: status,
+    data: song
+  })
+})
 
 module.exports = router
