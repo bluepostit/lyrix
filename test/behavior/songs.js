@@ -17,9 +17,11 @@ describe('songs', () => {
     await Artist
       .query()
       .delete()
+
+    done()
   })
 
-  describe('GET /songs', () => {
+  // describe('GET /songs', () => {
     // it('should return a list of all songs in the database', done => {
     //   db.Song.bulkCreate([
     //     {
@@ -53,29 +55,29 @@ describe('songs', () => {
     //     })
     // })
 
-    it('should return empty when there are no songs', done => {
-      chai.request(app)
-        .get('/songs')
-        .end((err, res) => {
-          expect(res).to.have.status(200)
-          expect(res.body).to.be.an('object')
-          expect(res.body.data.length).to.eql(0)
-          done()
-        })
-    })
-  })
+  //   it('should return empty when there are no songs', done => {
+  //     chai.request(app)
+  //       .get('/songs')
+  //       .end((err, res) => {
+  //         expect(res).to.have.status(200)
+  //         expect(res.body).to.be.an('object')
+  //         expect(res.body.data.length).to.eql(0)
+  //         done()
+  //       })
+  //   })
+  // })
 
-  describe('GET /songs/:id', () => {
-    it('should return an error when no matching song can be found', done => {
-      chai.request(app)
-        .get('/songs/23')
-        .end((err, res) => {
-          expect(res.body).to.have.status(404)
-          expect(res.body).to.be.an('object')
-          expect(res.body).to.haveOwnProperty('error')
-          done()
-        })
-    })
+  // describe('GET /songs/:id', () => {
+  //   it('should return an error when no matching song can be found', done => {
+  //     chai.request(app)
+  //       .get('/songs/23')
+  //       .end((err, res) => {
+  //         expect(res.body).to.have.status(404)
+  //         expect(res.body).to.be.an('object')
+  //         expect(res.body).to.haveOwnProperty('error')
+  //         done()
+  //       })
+  //   })
 
     // it('should return the song with the given id when found', done => {
     //   db.Artist.create({ name: 'Brian' })
@@ -99,5 +101,5 @@ describe('songs', () => {
     //     })
     //   })
     // })
-  })
+  // })
 })

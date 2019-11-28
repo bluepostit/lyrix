@@ -1,20 +1,24 @@
 const express = require('express')
 const router = express.Router()
 
-const Artist = require('../models/song')
+const Artist = require('../models/artist')
 const songsRouter = require('./artist-songs.js')
 
 const ARTIST_ATTRIBUTES = ['id', 'name']
 const SONG_ATTRIBUTES = ['id', 'title', 'text']
 
 router.get('/', async (req, res, next) => {
-  const artists = await Artist
-    .query()
-    .select(...ARTIST_ATTRIBUTES)
-  res.json({
-    error: false,
-    data: artists
-  })
+  try {
+    const artists = await Artist
+      .query()
+      .select(ARTIST_ATTRIBUTES)
+    res.json({
+      error: false,
+      data: artists
+    })
+  } catch (error) {
+    console.log(error.stack)
+  }
 })
 
 router.get('/:id', async (req, res, next) => {
