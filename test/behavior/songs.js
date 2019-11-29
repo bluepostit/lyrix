@@ -9,97 +9,98 @@ const Song = require('../../models/song')
 chai.use(chaiHttp)
 
 describe('songs', () => {
-  beforeEach(async (done) => {
-    await Song
-      .query()
-      .delete()
-
-    await Artist
-      .query()
-      .delete()
-
-    done()
+  beforeEach(async () => {
+    await Song.query().delete()
+    await Artist.query().delete()
   })
 
-  // describe('GET /songs', () => {
-    // it('should return a list of all songs in the database', done => {
-    //   db.Song.bulkCreate([
-    //     {
-    //       title: 'Song 1',
-    //       text: 'This is Song 1',
-    //       Artist: { name: 'Bobby' }
-    //     }, {
-    //       title: 'Song 2',
-    //       text: 'This is Song 2',
-    //       Artist: { name: 'Sue' }
-    //     }
-    //   ], {
-    //     include: [{
-    //       model: db.Artist
-    //     }]
-    //   }).done(() => {
-    //     chai.request(app)
-    //       .get('/songs')
-    //       .end((err, res) => {
-    //         expect(res).to.have.status(200)
-    //         expect(res.body).to.be.an('object')
-    //         let data = res.body.data
-    //         let data0 = data[0]
-    //         expect(data.length).to.eql(2)
-    //         expect(data0.title).to.eql('Song 1')
-    //         expect(data0.Artist).to.be.an('object')
-    //         expect(data0.Artist.name).to.be.eql('Bobby')
-    //         expect(data[1].text).to.eql('This is Song 2')
-    //         done()
-    //       })
-    //     })
-    // })
+  describe('GET /songs', () => {
+    it('should return a list of all songs in the database', async () => {
+      try {
+        await Song
+          .query()
+          .insertGraph([
+            {
+              title: 'Song 1',
+              text: 'This is Song 1',
 
-  //   it('should return empty when there are no songs', done => {
-  //     chai.request(app)
-  //       .get('/songs')
-  //       .end((err, res) => {
-  //         expect(res).to.have.status(200)
-  //         expect(res.body).to.be.an('object')
-  //         expect(res.body.data.length).to.eql(0)
-  //         done()
-  //       })
-  //   })
-  // })
+              artist: {
+                name: 'Bobby'
+              }
+            }, {
+              title: 'Song 2',
+              text: 'This is Song 2',
 
-  // describe('GET /songs/:id', () => {
-  //   it('should return an error when no matching song can be found', done => {
-  //     chai.request(app)
-  //       .get('/songs/23')
-  //       .end((err, res) => {
-  //         expect(res.body).to.have.status(404)
-  //         expect(res.body).to.be.an('object')
-  //         expect(res.body).to.haveOwnProperty('error')
-  //         done()
-  //       })
-  //   })
+              artist: {
+                name: 'Sue'
+              }
+            }
+          ])
+      } catch (error) {
+        console.log(error)
+      }
 
-    // it('should return the song with the given id when found', done => {
-    //   db.Artist.create({ name: 'Brian' })
-    //   .then(artist => {
-    //     return db.Song.create({
-    //       title: 'A good song',
-    //       text: 'This is a song',
-    //       ArtistId: artist.id
-    //     }, {
-    //       include: [{ model: db.Artist }]
-    //     });
-    //   })
-    //   .then(song => {
-    //     chai.request(app)
-    //     .get(`/songs/${song.id}`)
-    //     .end((err, res) => {
-    //       expect(res.body).to.have.status(200)
-    //       expect(res.body.data).to.be.an('object')
-    //       expect(res.body.data.title).to.eql('A good song')
-    //       done()
-    //     })
-    //   })
-    // })
-  // })
+      chai.request(app)
+        .get('/songs')
+        .end((err, res) => {
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('object')
+          let data = res.body.data
+          let data0 = data[0]
+          expect(data.length).to.eql(2)
+          expect(data0.title).to.eql('Song 1')
+          expect(data0.artist).to.be.an('object')
+          expect(data0.artist.name).to.be.eql('Bobby')
+          expect(data[1].text).to.eql('This is Song 2')
+        })
+    })
+
+    it('should return empty when there are no songs', async () => {
+      chai.request(app)
+        .get('/songs')
+        .end((err, res) => {
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('object')
+          expect(res.body.data.length).to.eql(0)
+        })
+    })
+  })
+
+  describe('GET /songs/:id', () => {
+    it('should return an error when no matching song can be found', async () => {
+      chai.request(app)
+        .get('/songs/23')
+        .end((err, res) => {
+          expect(res.body).to.have.status(404)
+          expect(res.body).to.be.an('object')
+          expect(res.body).to.haveOwnProperty('error')
+        })
+    })
+
+    it('should return the song with the given id when found', async () => {
+      const songTitle = 'A good song'
+      const songText = 'This is a good song'
+
+      let song = await Song
+        .query()
+        .insertGraph({
+          title: songTitle,
+          text: songText,
+
+          artist: {
+            name: 'Brian'
+          }
+        })
+
+      chai.request(app)
+        .get(`/songs/${song.id}`)
+        .end((err, res) => {
+          expect(res.body).to.have.status(200)
+          const data = res.body.data
+          expect(data).to.be.an('object')
+          expect(data.title).to.eql(songTitle)
+          expect(data.text).to.eql(songText)
+        })
+    })
+  })
 })

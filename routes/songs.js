@@ -29,7 +29,7 @@ router.get('/:id', async (req, res, next) => {
 
   let status = 200
   let error = false
-  if (song === null) {
+  if (song === undefined) {
     error = 'Song not found'
     status = 404
   }
