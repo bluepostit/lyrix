@@ -1,55 +1,49 @@
 'use strict'
 
 const expect = require('chai').expect
-const db = require('../../models/index')
-const Artist = db.Artist
-const Song = db.Song
+const Artist = require('../../models/artist')
+const Song = require('../../models/song')
 
 describe('Artist', () => {
-
-  const clearData = (done) => {
-    return db.Song.destroy({ where: {}, force: true })
-    .then(() => {
-      db.Artist.destroy({ where: {}, force: true })
-    })
+  const clearData = async () => {
+    await Song.query().delete()
+    await Artist.query().delete()
   }
 
   describe('#getSongs()', () => {
-    // Make this a synchronous function by passing in 'done'.
-    it('should return an empty list when there are no songs', (done) => {
-      Artist.create({ name: 'Bob' })
-      .then(artist => artist.getSongs())
-      .then(songs => {
-          expect(songs).to.eql([])
-          done()
-      })
+    it('should return an empty list when there are no songs', async () => {
+      const bob = await Artist
+        .query()
+        .insert({ name: 'Bob' })
+
+      const songs = await bob
+        .$relatedQuery('songs')
+      expect(songs).to.eql([])
     })
 
-    it('should return an array of songs when the artist has songs', (done) => {
-      let songArtist = null;
-      Artist.create({ name: 'Brian' })
-      .then(artist => {
-        songArtist = artist
-        return Song.create({
+    it('should return an array of songs when the artist has songs', async () => {
+      const brian = await Artist
+        .query()
+        .insert({ name: 'Brian' })
+
+      await brian
+        .$relatedQuery('songs')
+        .insert({
           title: 'A good song',
-          text: 'This is a song',
-          ArtistId: artist.id
-        }, {
-          include: [{ model: db.Artist }]
+          text: 'This is a good song',
         })
-      }).then(song => songArtist.countSongs())
-      .then(count => {
-        expect(count).to.eql(1)
-        done()
-      })
+      const songs = await brian
+        .$relatedQuery('songs')
+
+      expect(songs.length).to.eql(1)
     })
 
-    beforeEach('clear all records', (done) => {
-      clearData().then(() => done())
+    beforeEach('clear all records', async () => {
+      await clearData()
     })
 
-    after('clear all records', (done) => {
-      clearData().then(() => done())
+    after('clear all records', async () => {
+      await clearData()
     })
   })
 })

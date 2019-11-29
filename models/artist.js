@@ -1,10 +1,27 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const Artist = sequelize.define('Artist', {
-    name: DataTypes.STRING
-  }, {});
-  Artist.associate = function(models) {
-    Artist.hasMany(models.Song);
-  };
-  return Artist;
-};
+'use strict'
+
+const { Model } = require('objection')
+const knex = require('../db/knex')
+
+Model.knex(knex)
+
+module.exports = class Artist extends Model {
+  static get tableName () {
+    return 'artists'
+  }
+
+  static get relationMappings () {
+    const Song = require('./song')
+
+    return {
+      songs: {
+        relation: Model.HasManyRelation,
+        modelClass: Song,
+        join: {
+          from: 'artists.id',
+          to: 'songs.artist_id'
+        }
+      }
+    }
+  }
+}
