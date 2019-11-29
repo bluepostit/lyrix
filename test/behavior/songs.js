@@ -8,7 +8,7 @@ const Song = require('../../models/song')
 
 chai.use(chaiHttp)
 
-describe('songs', () => {
+describe('/songs', () => {
   beforeEach(async () => {
     await Song.query().delete()
     await Artist.query().delete()
