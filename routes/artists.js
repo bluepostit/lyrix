@@ -23,22 +23,32 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   res.type('json')
-  const artist = await Artist
-    .query()
-    .findById(req.params.id)
-    .eager('songs')
-
   let status = 200
   let error = null
-  if (artist == null) {
-    error = 'Artist not found'
-    status = 404
+  let data = null
+
+  try {
+    const artist = await Artist
+      .query()
+      .findById(req.params.id)
+      .eager('songs')
+
+    if (artist == null) {
+      error = 'Artist not found'
+      status = 404
+    } else {
+      data = artist
+    }
+  } catch (err) {
+    console.log(err.stack)
+    error = "Something went wrong"
+    status = 500
   }
 
   res.json({
-    error: error,
-    status: status,
-    data: artist
+    error,
+    status,
+    data
   })
 })
 
