@@ -83,32 +83,30 @@ describe('artists', () => {
         })
     })
     
-    // it('should also return the artist\'s songs', async () => {
-    //   let pete = await Artist.query().insert({ name: 'Skinny Pete' })
-    //   let songs = pete
-    //     .$relatedQuery('songs')
-    //     .insert([
-    //       {
-    //         title: 'A Blue Song',
-    //         text: 'This song is blue',
-    //         ArtistId: artist.id
-    //       }, {
-    //         title: 'A Green Song',
-    //         text: 'This song is green',
-    //         ArtistId: artist.id
-    //       }
-    //     ])
+    it('should also return the artist\'s songs', async () => {
+      let pete = await Artist.query().insert({ name: 'Skinny Pete' })
+      let songs = await pete
+        .$relatedQuery('songs')
+        .insert([
+          {
+            title: 'A Blue Song',
+            text: 'This song is blue'
+          }, {
+            title: 'A Green Song',
+            text: 'This song is green'
+          }
+        ])
 
-    //   chai.request(app)
-    //     .get(`/artists/${pete.id}`)
-    //     .end((err, res) => {
-    //       expect(res.body).to.have.status(200)
-    //       let artist = res.body.data;
-    //       expect(artist).to.be.an('object')
-    //       expect(artist.name).to.eql('Skinny Pete')
-    //       expect(artist.songs).to.be.an('array')
-    //       expect(artist.songs.length).to.eql(2)
-    //     })
-    // })
+      chai.request(app)
+        .get(`/artists/${pete.id}`)
+        .end((err, res) => {
+          expect(res.body).to.have.status(200)
+          let artist = res.body.data;
+          expect(artist).to.be.an('object')
+          expect(artist.name).to.eql('Skinny Pete')
+          expect(artist.songs).to.be.an('array')
+          expect(artist.songs.length).to.eql(2)
+        })
+    })
   })
 })
