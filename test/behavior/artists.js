@@ -84,18 +84,22 @@ describe('artists', () => {
     })
     
     it('should also return the artist\'s songs', async () => {
-      let pete = await Artist.query().insert({ name: 'Skinny Pete' })
-      let songs = await pete
-        .$relatedQuery('songs')
-        .insert([
-          {
-            title: 'A Blue Song',
-            text: 'This song is blue'
-          }, {
-            title: 'A Green Song',
-            text: 'This song is green'
-          }
-        ])
+      let greenSongText = 'This song is green'
+      let pete = await Artist
+        .query()
+        .insertGraph({
+          name: 'Skinny Pete',
+
+          songs: [
+            {
+              title: 'A Blue Song',
+              text: 'This song is blue'
+            }, {
+              title: 'A Green Song',
+              text: greenSongText
+            }
+          ]
+        })
 
       chai.request(app)
         .get(`/artists/${pete.id}`)
@@ -104,8 +108,11 @@ describe('artists', () => {
           let artist = res.body.data;
           expect(artist).to.be.an('object')
           expect(artist.name).to.eql('Skinny Pete')
-          expect(artist.songs).to.be.an('array')
-          expect(artist.songs.length).to.eql(2)
+
+          let artistSongs = artist.songs
+          expect(artistSongs).to.be.an('array')
+          expect(artistSongs.length).to.eql(2)
+          expect(artistSongs[1].text).to.eql(greenSongText)
         })
     })
   })
