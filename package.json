@@ -21,6 +21,7 @@
     "@babel/register": "^7.6.2",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "concurrently": "^5.0.0",
     "eslint": "^6.7.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
@@ -47,7 +48,9 @@
   },
   "scripts": {
     "start": "node app",
-    "start:dev": "nodemon app.js",
+    "client": "cd client && yarn start",
+    "server": "nodemon app.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "test": "bash test/lib/test.sh",
     "test:behav": "bash test/lib/test.sh behavior",
     "test:unit": "bash test/lib/test.sh models"
