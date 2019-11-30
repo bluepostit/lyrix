@@ -3,9 +3,32 @@ A Song Lyric collection app.
 
 **Server technologies:**
 - [Node.js](https://nodejs.org/en/)
+- [Yarn package manager](https://yarnpkg.com/lang/en/)
 - [Express framework](https://expressjs.com/)
+- [PostgreSQL database](https://www.postgresql.org/)
 - [Knex.js query builder](https://knexjs.org/)
 - [Ojection.js ORM](https://vincit.github.io/objection.js/)
+
+## Build
+1. Install requirements by running `yarn`
+1. Setup a **PostgreSQL** database for **development**.
+1. `$ touch .env`
+1. Provide database connection parameters inside `.env`:
+    - DB_HOST
+    - DB_NAME
+    - DB_USERNAME
+    - DB_PASSWORD
+1. Run the app: `yarn start:dev`
+
+## Test
+1. Setup a **PostgreSQL** database for **testing**.
+1. Provide database connection parameters inside `.env`:
+    - DB_TEST_NAME
+    - DB_TEST_USERNAME
+    - DB_TEST_PASSWORD
+1. Run all tests: `yarn test`.
+1. You can specify specific test types to run, eg. `yarn test:unit` for only unit tests, or `yarn test:behav` for only behavior/integration tests.
+
 
 ## Deployment: Heroku
 1. Ensure that the server **port** is read from `process.env.PORT` - Heroku will set this for your deplyed app.
