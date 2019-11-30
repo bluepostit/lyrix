@@ -1,5 +1,7 @@
 # Lyrix
-A Song Lyric collection app.
+A Song Lyric collection app, containing both **Node** server and **React** client:
+* In *development*, the **client** is accessed via the web. It proxies external URLs to the **server**.
+* In *production*, the **server** is accessed via the web. It routes clients to a static build of the React **client**.
 
 **Server technologies:**
 - [Node.js](https://nodejs.org/en/)
@@ -18,7 +20,7 @@ A Song Lyric collection app.
     - DB_NAME
     - DB_USERNAME
     - DB_PASSWORD
-1. Run the app: `yarn start:dev`
+1. Run the app: `yarn dev`
 
 ## Test
 1. Setup a **PostgreSQL** database for **testing**.
@@ -78,3 +80,5 @@ A Song Lyric collection app.
 #### References:
 - [How to Deploy an Express App on Heroku with Postgres and Knex](https://codeselfstudy.com/blog/deploy-node-postgres-heroku/)
 - [Setting the port for node.js server on Heroku (StackOverflow)](https://stackoverflow.com/questions/28706180/setting-the-port-for-node-js-server-on-heroku)
+- [How To Make create-react-app work with a Node Back-end API](https://www.freecodecamp.org/news/how-to-make-create-react-app-work-with-a-node-backend-api-7c5c48acb1b0/)
+- [Deploy React and Express to Heroku](https://daveceddia.com/deploy-react-express-app-heroku/)
