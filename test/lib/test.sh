@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export NODE_ENV=test
-export APP_PORT=4001
+export PORT=4001
 
 target="test/"
 
