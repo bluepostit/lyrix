@@ -20,3 +20,21 @@
 .App-link {
   color: #09d3ac;
 }
+
+.banner-vcenter {
+  height: 100vh;
+}
+
+.card-category-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* grid-template-rows: 50%; */
+  grid-column-gap: 16px;
+  grid-row-gap: 16px;
+}
+
+.card-category {
+  border: 1px solid #999;
+  border-radius: 5px;
+  padding: 1em;
+}
