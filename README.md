@@ -43,3 +43,9 @@ A Song Lyric collection app
     ````bash
     $ heroku run knex seed:run
     ````
+
+
+***
+#### References:
+- [How to Deploy an Express App on Heroku with Postgres and Knex](https://codeselfstudy.com/blog/deploy-node-postgres-heroku/)
+- [Setting the port for node.js server on Heroku (StackOverflow)](https://stackoverflow.com/questions/28706180/setting-the-port-for-node-js-server-on-heroku)
