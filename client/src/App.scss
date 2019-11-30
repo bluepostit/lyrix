@@ -1,3 +1,5 @@
+$border-gray: #999;
+
 .App {
   text-align: center;
 }
@@ -34,7 +36,7 @@
 }
 
 .card-category {
-  border: 1px solid #999;
+  border: 1px solid $border-gray;
   border-radius: 5px;
   padding: 1em;
 }
