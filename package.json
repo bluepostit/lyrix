@@ -46,7 +46,7 @@
     ]
   },
   "scripts": {
-    "start": "yarn app.js",
+    "start": "node app",
     "start:dev": "nodemon app.js",
     "test": "bash test/lib/test.sh",
     "test:behav": "bash test/lib/test.sh behavior",
