@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-const testCallApi = async () => {
+const getSongs = async () => {
   const response = await fetch('/artists')
   const json = await response.json()
   return json
@@ -19,11 +19,14 @@ function CategoryCard (props) {
 
 
 function App() {
-  // testCallApi()
-  //   .then(json => {
-  //     document.querySelector('body').innerHTML =
-  //       `<h1>There are ${json.data.length} songs in the database</h1>`
-  //   })
+  const [songCount, setSongCount] = useState(0)
+
+  getSongs()
+    .then(json => {
+      setSongCount(json.data.length)
+      console.log(json)
+    })
+
   return (
     <div className="App">
       <div className="container banner-vcenter d-flex flex-column justify-content-center">
@@ -33,8 +36,10 @@ function App() {
           <div className="card-category-wrapper col-12 col-lg-6 offset-lg-3">
             <CategoryCard title="Artists"
                           link="/artists"
-                          subtitle="All my people right here right now" />
-            <CategoryCard title="Songs" link="/songs" />
+                          subtitle="All my people, right here right now" />
+            <CategoryCard title="Songs"
+                          link="/songs"
+                          subtitle={`There are ${songCount} songs`} />
             <CategoryCard title="Sets" />
             <CategoryCard title="Gigs" />
           </div>
