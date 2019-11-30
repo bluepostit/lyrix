@@ -1,5 +1,11 @@
 # Lyrix
-A Song Lyric collection app
+A Song Lyric collection app.
+
+**Server technologies:**
+- [Node.js](https://nodejs.org/en/)
+- [Express framework](https://expressjs.com/)
+- [Knex.js query builder](https://knexjs.org/)
+- [Ojection.js ORM](https://vincit.github.io/objection.js/)
 
 ## Deployment: Heroku
 1. Ensure that the server **port** is read from `process.env.PORT` - Heroku will set this for your deplyed app.
