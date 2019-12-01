@@ -49,43 +49,52 @@ describe('/artists', () => {
         console.log(err)
       }
     })
-    
+
     it('should return empty when there are no artists', () => {
       chai.request(app)
-      .get('/artists')
-      .end((err, res) => {
-        expect(res).to.have.status(200)
-        expect(res.body).to.be.an('object')
-        expect(res.body.data.length).to.eql(0)
-      })
+        .get('/artists')
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('object')
+          expect(res.body.data.length).to.eql(0)
+        })
     })
   })
 
   describe('GET /artists/:id', () => {
     it('should return an error when no matching artist can be found', () => {
       chai.request(app)
-      .get('/artists/23')
-      .end((err, res) => {
-        expect(res.body).to.have.status(404)
-        expect(res.body).to.be.an('object')
-        expect(res.body).to.haveOwnProperty('error')
-      })
+        .get('/artists/23')
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(404)
+          expect(res.body).to.be.an('object')
+          expect(res.body).to.haveOwnProperty('error')
+        })
     })
-    
+
     it('should return the artist with the given id when found', async () => {
       const artist = await Artist.query().insert({ name: 'Brian' })
       chai.request(app)
         .get(`/artists/${artist.id}`)
         .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
           expect(res.body).to.have.status(200)
           expect(res.body.data).to.be.an('object')
           expect(res.body.data.name).to.eql('Brian')
         })
     })
-    
+
     it('should also return the artist\'s songs', async () => {
-      let greenSongText = 'This song is green'
-      let pete = await Artist
+      const greenSongText = 'This song is green'
+      const pete = await Artist
         .query()
         .insertGraph({
           name: 'Skinny Pete',
@@ -104,12 +113,15 @@ describe('/artists', () => {
       chai.request(app)
         .get(`/artists/${pete.id}`)
         .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
           expect(res.body).to.have.status(200)
-          let artist = res.body.data;
+          const artist = res.body.data;
           expect(artist).to.be.an('object')
           expect(artist.name).to.eql('Skinny Pete')
 
-          let artistSongs = artist.songs
+          const artistSongs = artist.songs
           expect(artistSongs).to.be.an('array')
           expect(artistSongs.length).to.eql(2)
           expect(artistSongs[1].text).to.eql(greenSongText)
