@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.scss';
 
-const getSongs = async () => {
-  const response = await fetch('/artists')
+const getSongCount = async () => {
+  const response = await fetch('/songs/count')
   const json = await response.json()
-  return json
+  return json.data
 }
 
 function CategoryCard (props) {
@@ -21,11 +21,8 @@ function CategoryCard (props) {
 function App() {
   const [songCount, setSongCount] = useState(0)
 
-  getSongs()
-    .then(json => {
-      setSongCount(json.data.length)
-      console.log(json)
-    })
+  getSongCount()
+    .then(count => setSongCount(count))
 
   return (
     <div className="App">
