@@ -43,10 +43,13 @@ describe('/songs', () => {
       chai.request(app)
         .get('/songs')
         .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
           expect(res).to.have.status(200)
           expect(res.body).to.be.an('object')
-          let data = res.body.data
-          let data0 = data[0]
+          const data = res.body.data
+          const data0 = data[0]
           expect(data.length).to.eql(2)
           expect(data0.title).to.eql('Song 1')
           expect(data0.artist).to.be.an('object')
@@ -59,6 +62,9 @@ describe('/songs', () => {
       chai.request(app)
         .get('/songs')
         .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
           expect(res).to.have.status(200)
           expect(res.body).to.be.an('object')
           expect(res.body.data.length).to.eql(0)
@@ -71,6 +77,9 @@ describe('/songs', () => {
       chai.request(app)
         .get('/songs/23')
         .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
           expect(res.body).to.have.status(404)
           expect(res.body).to.be.an('object')
           expect(res.body).to.haveOwnProperty('error')
@@ -95,6 +104,9 @@ describe('/songs', () => {
       chai.request(app)
         .get(`/songs/${song.id}`)
         .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
           expect(res.body).to.have.status(200)
           const data = res.body.data
           expect(data).to.be.an('object')
