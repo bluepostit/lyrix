@@ -23,6 +23,14 @@ function App() {
 
   getSongCount()
     .then(count => setSongCount(count))
+  
+  const pluralize = (number, noun) => {
+    let str = `${number} song`
+    if (number !== 1) {
+      str += 's'
+    }
+    return str
+  }
 
   return (
     <div className="App">
@@ -36,7 +44,7 @@ function App() {
                           subtitle="All my people, right here right now" />
             <CategoryCard title="Songs"
                           link="/songs"
-                          subtitle={`There are ${songCount} songs`} />
+                          subtitle={`We have ${pluralize(songCount, 'song')}`} />
             <CategoryCard title="Sets" />
             <CategoryCard title="Gigs" />
           </div>
