@@ -20,6 +20,19 @@ router.get('/', async (req, res, next) => {
   })
 })
 
+router.get('/count', async (req, res, next) => {
+  const data = await Song
+    .query()
+    .count()
+  const count = parseInt(data[0].count, 10)
+
+  res.json({
+    error: false,
+    status: 200,
+    data: count
+  })
+})
+
 router.get('/:id', async (req, res, next) => {
   res.type('json')
   const song = await Song

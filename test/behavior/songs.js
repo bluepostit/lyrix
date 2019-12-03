@@ -8,6 +8,28 @@ const Song = require('../../models/song')
 
 chai.use(chaiHttp)
 
+const insertTwoSongsWithArtists = async () => {
+  await Song
+    .query()
+    .insertGraph([
+      {
+        title: 'Song 1',
+        text: 'This is Song 1',
+
+        artist: {
+          name: 'Bobby'
+        }
+      }, {
+        title: 'Song 2',
+        text: 'This is Song 2',
+
+        artist: {
+          name: 'Sue'
+        }
+      }
+    ])
+}
+
 describe('/songs', () => {
   beforeEach(async () => {
     await Song.query().delete()
@@ -17,25 +39,7 @@ describe('/songs', () => {
   describe('GET /songs', () => {
     it('should return a list of all songs in the database', async () => {
       try {
-        await Song
-          .query()
-          .insertGraph([
-            {
-              title: 'Song 1',
-              text: 'This is Song 1',
-
-              artist: {
-                name: 'Bobby'
-              }
-            }, {
-              title: 'Song 2',
-              text: 'This is Song 2',
-
-              artist: {
-                name: 'Sue'
-              }
-            }
-          ])
+        await insertTwoSongsWithArtists()
       } catch (error) {
         console.log(error)
       }
@@ -113,6 +117,32 @@ describe('/songs', () => {
           expect(data.title).to.eql(songTitle)
           expect(data.text).to.eql(songText)
         })
+    })
+  })
+
+  describe('GET /songs/count', () => {
+    const expectSongCount = (count) => {
+      chai.request(app)
+        .get('/songs/count')
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(200)
+          expect(res.body.data).to.eql(0)
+        })
+    }
+    it('should return zero when there are no songs in the database', async () => {
+      expectSongCount(0)
+    })
+
+    it('should return the correct count of songs in the database', async () => {
+      try {
+        await insertTwoSongsWithArtists()
+      } catch (err) {
+        console.log(err)
+      }
+      expectSongCount(2)
     })
   })
 })
