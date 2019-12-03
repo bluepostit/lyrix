@@ -129,7 +129,7 @@ describe('/songs', () => {
             console.log(err)
           }
           expect(res.body).to.have.status(200)
-          expect(res.body.data).to.eql(0)
+          expect(res.body.data).to.eql(count)
         })
     }
     it('should return zero when there are no songs in the database', async () => {
