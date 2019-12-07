@@ -32,10 +32,10 @@ describe('User', () => {
   }
 
   beforeEach('clear all records', async () => {
-    deleteAllUsers()
+    await deleteAllUsers()
   })
 
   after('clear all records', async () => {
-    deleteAllUsers()
+    await deleteAllUsers()
   })
 })
