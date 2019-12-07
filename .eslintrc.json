@@ -3,7 +3,8 @@
         "browser": true,
         "commonjs": true,
         "es6": true,
-        "node": true
+        "node": true,
+        "mocha": true
     },
     "extends": [
         "plugin:react/recommended",
@@ -20,7 +21,8 @@
         "ecmaVersion": 2018
     },
     "plugins": [
-        "react"
+        "react",
+        "mocha"
     ],
     "rules": {
     }
