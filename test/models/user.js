@@ -26,6 +26,8 @@ describe('User', () => {
   /** CLEANUP **/
 
   const deleteAllUsers = async () => {
+    await RecordManager.deleteAll('SongListSong')
+    await RecordManager.deleteAll('SongList')
     await RecordManager.deleteAll('User')
   }
 

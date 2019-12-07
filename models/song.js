@@ -13,6 +13,7 @@ module.exports = class Song extends Model {
   }
 
   static get relationMappings () {
+    const SongList = require('./song-list')
     return {
       artist: {
         relation: Model.BelongsToOneRelation,
@@ -20,6 +21,18 @@ module.exports = class Song extends Model {
         join: {
           from: 'songs.artist_id',
           to: 'artists.id'
+        }
+      },
+      songLists: {
+        relation: Model.ManyToManyRelation,
+        modelClass: SongList,
+        join: {
+          from: 'songs.id',
+          through: {
+            from: 'song_list_songs.song_list_id',
+            to: 'song_list_songs.song_id'
+          },
+          to: 'song_lists.id'
         }
       }
     }
