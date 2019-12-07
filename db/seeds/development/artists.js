@@ -1,13 +1,33 @@
+const artists = [
+  'Black Eyed Peas',
+  'Bob Dylan',
+  'Britney Spears',
+  'Coldplay',
+  'Counting Crows',
+  'Eminem',
+  'George Harrison',
+  'Green Day',
+  'Jimmy Eat World',
+  'Keane',
+  'Lady Gaga',
+  'Madonna',
+  'Oasis',
+  'Outkast',
+  'R.E.M.',
+  'Taksim Trio',
+  'The Shins',
+  'Toploader',
+  'U2',
+  'Van Morrison'
+]
 
-exports.seed = function (knex) {
+exports.seed = async function (knex) {
+  console.log('Seed: artists')
   // Deletes ALL existing entries
-  return knex('artists').del()
-    .then(function () {
-      // Inserts seed entries
-      return knex('artists').insert([
-        { name: 'Coldplay' },
-        { name: 'Oasis' },
-        { name: 'Britney Spears' }
-      ])
-    })
+  await knex('songs').del()
+  await knex('artists').del()
+
+  const artistObjects = artists.map(name => ({ name }))
+  // Inserts seed entries
+  return knex('artists').insert(artistObjects)
 }
