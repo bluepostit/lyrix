@@ -21,6 +21,8 @@ const insertSong = (knex, song) => {
 exports.seed = async function (knex) {
   console.log('Seed: songs')
   // Deletes ALL existing songs
+  await knex('song_list_songs').del()
+  await knex('song_lists').del()
   await knex('songs').del()
 
   const promises = []
