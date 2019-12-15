@@ -1,8 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const SongList = require('../../models/song-list')
-const User = require('../../models/user')
+const { SongList, User } = require('../../models')
 const RecordManager = require('../record-manager')
 
 const insertOneEmptySongList = () => {

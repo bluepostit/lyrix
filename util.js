@@ -33,7 +33,12 @@ const buildModuleIndex = (directory) => {
     const fileName = match.replace('.js', '')
     const className = toCamelCase(fileName)
     const modulePath = path.join(directory, fileName)
-    moduleIndex[className] = require(modulePath)
+    Object.defineProperty(moduleIndex, className, {
+      get () {
+        return require(modulePath)
+      }
+    })
+    // moduleIndex[className] = require(modulePath)
   })
   return moduleIndex
 }

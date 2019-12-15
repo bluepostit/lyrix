@@ -1,8 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const Artist = require('../../models/artist')
-const Song = require('../../models/song')
+const { Artist, Song } = require('../../models')
 
 describe('Artist', () => {
   const clearData = async () => {

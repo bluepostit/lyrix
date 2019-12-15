@@ -2,8 +2,7 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
-const Artist = require('../../models/artist')
-const Song = require('../../models/song')
+const { Artist, Song } = require('../../models')
 
 chai.use(chaiHttp)
 

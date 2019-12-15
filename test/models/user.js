@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect
 const RecordManager = require('../record-manager')
-const User = require('../../models/user')
+const { User } = require('../../models')
 
 describe('User', () => {
   describe('#constructor()', () => {
