@@ -2,8 +2,7 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
-const Artist = require('../../models/artist')
-const Song = require('../../models/song')
+const { Artist, Song } = require('../../models')
 
 chai.use(chaiHttp)
 
@@ -117,7 +116,7 @@ describe('/artists', () => {
             console.log(err)
           }
           expect(res.body).to.have.status(200)
-          const artist = res.body.data;
+          const artist = res.body.data
           expect(artist).to.be.an('object')
           expect(artist.name).to.eql('Skinny Pete')
 

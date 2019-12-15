@@ -1,10 +1,10 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 
-const db = require('../models')
+const { User } = require('../models')
 
 const findUser = (username) => {
-  return db.User
+  return User
     .query()
     .findOne({ email: username })
 }
@@ -37,7 +37,7 @@ passport.serializeUser = (user, callback) => {
 }
 
 passport.deserializeUser = async (id, callback) => {
-  const user = await db.User.findById(id)
+  const user = await User.findById(id)
   // if (user) {
     callback(null, user)
   // } else {

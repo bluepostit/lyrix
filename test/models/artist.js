@@ -1,8 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const Artist = require('../../models/artist')
-const Song = require('../../models/song')
+const { Artist, Song } = require('../../models')
 
 describe('Artist', () => {
   const clearData = async () => {
@@ -30,7 +29,7 @@ describe('Artist', () => {
         .$relatedQuery('songs')
         .insert({
           title: 'A good song',
-          text: 'This is a good song',
+          text: 'This is a good song'
         })
       const songs = await brian
         .$relatedQuery('songs')

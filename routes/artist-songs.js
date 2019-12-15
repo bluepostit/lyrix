@@ -1,5 +1,5 @@
 const express = require('express')
-const Artist = require('../models/artist')
+const { Artist } = require('../models')
 
 /** Nested routing: artist's songs */
 const router = express.Router({ mergeParams: true })

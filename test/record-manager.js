@@ -1,9 +1,5 @@
 const path = require('path')
-
-const toSnakeCase = (camel) => {
-  const re = /([a-z])([A-Z])/g
-  return camel.replace(re, '$1-$2').toLowerCase()
-}
+const { toSnakeCase } = require('../util')
 
 class RecordManager {
   static async deleteAll (className) {
