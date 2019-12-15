@@ -1,6 +1,5 @@
-// Update with your config settings.
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/config/config')[env];
+const path = require('path')
+const config = require(path.join(__dirname, 'config'))
 
 module.exports = {
 
@@ -16,11 +15,11 @@ module.exports = {
       max: 10
     },
     migrations: {
-      directory: __dirname + '/db/migrations',
+      directory: path.join(__dirname, 'db/migrations'),
       tableName: 'knex_migrations'
     },
     seeds: {
-      directory: __dirname + '/db/seeds/development'
+      directory: path.join(__dirname, 'db/seeds/development')
     }
   },
 
@@ -36,11 +35,11 @@ module.exports = {
       max: 10
     },
     migrations: {
-      directory: __dirname + '/db/migrations',
+      directory: path.join(__dirname, '/db/migrations'),
       tableName: 'knex_migrations'
     },
     seeds: {
-      directory: __dirname + '/db/seeds/test'
+      directory: path.join(__dirname, '/db/seeds/test')
     }
   },
 
@@ -52,12 +51,11 @@ module.exports = {
       max: 10
     },
     migrations: {
-      directory: __dirname + '/db/migrations',
+      directory: path.join(__dirname, 'db/migrations'),
       tableName: 'knex_migrations'
     },
     seeds: {
-      directory: __dirname + '/db/seeds/production'
+      directory: path.join(__dirname, 'db/seeds/production')
     }
   }
-
-};
+}
