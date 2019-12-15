@@ -1,7 +1,6 @@
 const faker = require('faker')
 
-const Song = require('../../../models/song')
-const User = require('../../../models/user')
+const { Song, User } = require('../../../models')
 
 const USERS_TO_CREATE = 20
 const SONGS_TO_ADD_TO_LIST = 3

@@ -1,15 +1,10 @@
-process.env.NODE_ENV = 'test'
+process.env.NODE_ENV = 'development'
 
 console.log(`DB info for env ### ${process.env.NODE_ENV} ###:`)
 
-const Artist = require('./models/artist')
-const Song = require('./models/song')
-const SongList = require('./models/song-list')
-const User = require('./models/user')
+const db = require('../models')
 
-;(async () => {
-  console.log(await Artist.query().count())
-  console.log(await Song.query().count())
-  console.log(await SongList.query().count())
-  console.log(await User.query().count())
-})()
+Object.keys(db).forEach(async (key) => {
+  const count = await db[key].query().count()
+  console.log(count)
+})

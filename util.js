@@ -34,6 +34,7 @@ const buildModuleIndex = (directory) => {
     const className = toCamelCase(fileName)
     const modulePath = path.join(directory, fileName)
     Object.defineProperty(moduleIndex, className, {
+      enumerable: true,
       get () {
         return require(modulePath)
       }

@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const Artist = require('../models/artist')
+const { Artist } = require('../models')
 const songsRouter = require('./artist-songs.js')
 
 const ARTIST_ATTRIBUTES = ['id', 'name']
