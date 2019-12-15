@@ -13,7 +13,7 @@ const artists = require('./routes/artists')
 const songs = require('./routes/songs')
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname, 'client/build')))
 
 // Serve routes with server routers
 app.use('/artists', artists)
@@ -21,8 +21,8 @@ app.use('/songs', songs)
 
 // Fallback routing: respond with the React app's index page.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/client/build/index.html'));
-});
+  res.sendFile(path.join(__dirname, 'client/build/index.html'))
+})
 
 app.listen(port, () => console.log(`Lyrix listening on port ${port}`))
 
