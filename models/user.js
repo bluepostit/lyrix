@@ -38,4 +38,9 @@ module.exports = class User extends Model {
       password: hash
     })
   }
+
+  async checkPassword (password) {
+    const match = await bcrypt.compare(password, this.password)
+    return !!match
+  }
 }
