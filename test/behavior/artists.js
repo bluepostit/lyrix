@@ -117,7 +117,7 @@ describe('/artists', () => {
             console.log(err)
           }
           expect(res.body).to.have.status(200)
-          const artist = res.body.data;
+          const artist = res.body.data
           expect(artist).to.be.an('object')
           expect(artist.name).to.eql('Skinny Pete')
 

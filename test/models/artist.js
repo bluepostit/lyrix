@@ -30,7 +30,7 @@ describe('Artist', () => {
         .$relatedQuery('songs')
         .insert({
           title: 'A good song',
-          text: 'This is a good song',
+          text: 'This is a good song'
         })
       const songs = await brian
         .$relatedQuery('songs')
