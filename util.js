@@ -22,6 +22,8 @@ const toCamelCase = (snake) => {
  * Build an 'index' object for the given directory.
  * Requires all modules in the given directory, and
  * adds them to an object, which is returned.
+ * Uses lazy loading to ensure that a child module is
+ * loaded only when needed, in order to conserve resources.
  */
 const buildModuleIndex = (directory) => {
   const moduleIndex = {}
@@ -33,13 +35,13 @@ const buildModuleIndex = (directory) => {
     const fileName = match.replace('.js', '')
     const className = toCamelCase(fileName)
     const modulePath = path.join(directory, fileName)
+    // Lazy loading of the child module
     Object.defineProperty(moduleIndex, className, {
       enumerable: true,
       get () {
         return require(modulePath)
       }
     })
-    // moduleIndex[className] = require(modulePath)
   })
   return moduleIndex
 }
