@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
 
 const LoginError = (props) => {
   if (props.error) {
@@ -17,6 +18,9 @@ const Login = (props) => {
   const [password, setPassword] = useState('')
   const [canSubmit, setCanSubmit] = useState(true)
   const [error, setError] = useState('')
+
+  const history = useHistory()
+  const location = useLocation()
 
   const getFormData = () => {
     const data = new URLSearchParams()
@@ -42,6 +46,9 @@ const Login = (props) => {
         console.log(response)
         if (response.error) {
           setError(response.message)
+        } else {
+          let { from } = location.state || { from: { pathname: "/" } };
+          history.replace(from);
         }
       })
   }
