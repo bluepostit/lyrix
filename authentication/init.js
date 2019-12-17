@@ -11,7 +11,6 @@ const findUser = (username) => {
 
 passport.use(new LocalStrategy(
   (username, password, callback) => {
-    console.log('trying to find user now')
     findUser(username)
       .then(async (user, err) => {
         if (err) {
@@ -25,7 +24,6 @@ passport.use(new LocalStrategy(
         }
 
         const match = await user.checkPassword(password)
-        console.log('did the password match? ' + match)
         if (match) {
           return callback(null, user)
         } else {
@@ -36,7 +34,6 @@ passport.use(new LocalStrategy(
 ))
 
 passport.serializeUser((user, callback) => {
-  console.log('serializeUser')
   callback(null, user.id)
 })
 
