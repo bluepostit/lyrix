@@ -12,13 +12,14 @@ const findUser = (username) => {
 passport.use(new LocalStrategy(
   (username, password, callback) => {
     findUser(username)
-      .then(async (err, user) => {
+      .then(async (user, err) => {
         if (err) {
+          console.log('error finding user')
           return callback(err)
         }
 
         if (!user) {
-          console.log('User not found!')
+          console.log('user not found!')
           return callback(null, false)
         }
 
@@ -32,19 +33,18 @@ passport.use(new LocalStrategy(
   }
 ))
 
-passport.serializeUser = (user, callback) => {
+passport.serializeUser((user, callback) => {
   callback(null, user.id)
-}
+})
 
-passport.deserializeUser = async (id, callback) => {
-  const user = await User.findById(id)
-  // if (user) {
+passport.deserializeUser(async (id, callback) => {
+  const user = await User.query().findById(id)
+  if (user) {
     callback(null, user)
-  // } else {
-
-  //   return callback(`Could not deserialize user ${id}`)
-  // }
-}
+  } else {
+    return callback(new Error(`Could not deserialize user #${id}`))
+  }
+})
 
 passport.authenticationMiddleware = () => {
   require('./ensure-logged-in')

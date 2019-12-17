@@ -1,55 +1,35 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.scss';
-
-const getSongCount = async () => {
-  const response = await fetch('/songs/count')
-  const json = await response.json()
-  return json.data
-}
-
-function CategoryCard (props) {
-  return (
-    <div className="card-category">
-      <h3>{props.title}</h3>
-      <p>{props.subtitle}</p>
-    </div>
-  )
-}
+import React, { useState } from 'react'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom"
+import { Login, Home } from './pages'
 
 
 function App() {
-  const [songCount, setSongCount] = useState(0)
-
-  getSongCount()
-    .then(count => setSongCount(count))
-  
-  const pluralize = (number, noun) => {
-    let str = `${number} song`
-    if (number !== 1) {
-      str += 's'
-    }
-    return str
-  }
 
   return (
     <div className="App">
-      <div className="container banner-vcenter d-flex flex-column justify-content-center">
+      <Router>
         <div>
-          <h1>Welcome to Lyrix!</h1>
-          <p>Your lyrics managing companion</p>
-          <div className="card-category-wrapper col-12 col-lg-6 offset-lg-3">
-            <CategoryCard title="Artists"
-                          link="/artists"
-                          subtitle="All my people, right here right now" />
-            <CategoryCard title="Songs"
-                          link="/songs"
-                          subtitle={`We have ${pluralize(songCount, 'song')}`} />
-            <CategoryCard title="Sets" />
-            <CategoryCard title="Gigs" />
-          </div>
+          <nav>
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/login">Login</Link></li>
+            </ul>
+          </nav>
+          <Switch>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/">
+              <Home />
+            </Route>
+          </Switch>
         </div>
-      </div>
+      </Router>
     </div>
   );
 }

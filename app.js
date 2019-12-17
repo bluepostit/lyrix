@@ -31,6 +31,7 @@ app.use('/user', require('./routes/authentication'))
 
 // Fallback routing: respond with the React app's index page.
 app.get('*', (req, res) => {
+  console.log('serving client home page')
   res.sendFile(path.join(__dirname, 'client/build/index.html'))
 })
 
