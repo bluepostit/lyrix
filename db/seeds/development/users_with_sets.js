@@ -3,6 +3,7 @@ const faker = require('faker')
 const { Song, User } = require('../../../models')
 
 const USERS_TO_CREATE = 20
+const USER_EMAILS_SPECIFIC = ['bob@bob.bob', 'sue@sue.sue']
 const SONGS_TO_ADD_TO_LIST = 3
 
 const getRandomSongs = (count) => {
@@ -40,10 +41,17 @@ exports.seed = async function (knex) {
   await knex('users').del()
 
   const users = []
+  let email
+  const password = '123456'
   for (let i = 0; i < USERS_TO_CREATE; i++) {
+    if (USER_EMAILS_SPECIFIC.length > 0 && i < USER_EMAILS_SPECIFIC.length) {
+      email = USER_EMAILS_SPECIFIC[i]
+    } else {
+      email = faker.internet.exampleEmail()
+    }
     const data = {
-      email: faker.internet.exampleEmail(),
-      password: '123456'
+      email,
+      password
     }
     const user = await User.createUser(data)
     users.push(user)
