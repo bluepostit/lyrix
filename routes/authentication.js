@@ -35,7 +35,9 @@ router.post('/login', (req, res, next) => {
       }
       return res.json({
         status: 200,
-        user
+        user: {
+          email: user.email
+        }
       })
     })
   })(req, res, next)
