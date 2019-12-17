@@ -33,7 +33,7 @@ const Login = (props) => {
     e.preventDefault()
     const data = getFormData()
 
-    // setCanSubmit(false)
+    setCanSubmit(false)
     setError('')
 
     fetch(e.target.action, {
