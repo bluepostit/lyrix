@@ -10,7 +10,7 @@ router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     // console.log(user, err, info)
     if (!user) {
-      console.log('no user found')
+      console.log('no user found or incorrect credentials')
       return res.json({
         redirect: '/user/login',
         status: 401,
@@ -23,7 +23,7 @@ router.post('/login', (req, res, next) => {
       console.log(err)
       return next(err)
     }
-    req.logIn(user, (err) => {
+    req.logIn(user, async (err) => {
       if (err) {
         console.log('error logging in user')
         console.log(err)
@@ -36,7 +36,8 @@ router.post('/login', (req, res, next) => {
       return res.json({
         status: 200,
         user: {
-          email: user.email
+          email: user.email,
+          songLists: await user.$relatedQuery('songLists')
         }
       })
     })
