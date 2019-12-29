@@ -14,6 +14,12 @@ const RouterSwitch = () => {
       <Route path="/login">
         <Login />
       </Route>
+      <Route path="/perform">
+        <h1>Perform</h1>
+      </Route>
+      <Route path="/practice">
+        <h1>Practice</h1>
+      </Route>
       <Route path="/">
         <Home />
       </Route>

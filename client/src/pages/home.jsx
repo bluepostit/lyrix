@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+import { useHistory } from "react-router-dom"
 import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../common'
 
 
@@ -25,11 +26,6 @@ function CategoryCard (props) {
   )
 }
 
-const handleMenuButtonClick = (e) => {
-  console.log(`Clicked`)
-  console.log(e.target.dataset.action)
-}
-
 /**
  * Menu button for small screen's home page
  */
@@ -37,8 +33,16 @@ const MenuButton = (props) => {
   const action = props.action
   const title = action[0].toUpperCase() + action.slice(1)
 
+  const history = useHistory()
+
+  const handleMenuButtonClick = (e) => {
+    const url = '/' + e.target.dataset.action
+    history.push(url)
+  }
+
+  const className = `btn btn-primary menu-button menu-button-${action}`
   return (
-    <button className="btn btn-primary"
+    <button className={className}
             data-action={action}
             onClick={handleMenuButtonClick}>{title}
     </button>
@@ -62,7 +66,7 @@ const BigScreenContent = (props) => {
   return (
     <div className={MEDIA_CLASS_LARGE}>
       <div className="container banner-vcenter d-flex flex-column justify-content-center">
-        <div>
+        <div className="text-center">
           <h1>Welcome to Lyrix!</h1>
           <p>Your lyrics managing companion</p>
           <div className="card-category-wrapper col-12 col-lg-6 offset-lg-3">
