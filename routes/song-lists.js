@@ -4,7 +4,8 @@ const { SongList } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 
 const SONGLIST_ATTRIBUTES = [
-  'title'
+  'title',
+  'id'
 ]
 
 router.get('/', ensureLoggedIn,

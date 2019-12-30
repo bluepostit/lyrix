@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom"
 import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../common'
 
 const getSongLists = () => {
-  console.log('GET SONG LISTS')
+  // console.log('GET SONG LISTS')
   return fetch('/songlists')
     .then(response => response.json())
     .then((json) => {
@@ -17,19 +17,27 @@ const getSongLists = () => {
 const SongListItem = (props) => {
   const songList = props.songList
   return (
-    <div key={songList.id}>
-      {songList.title} ({songList.songs.length})
-    </div>
+    <li key={songList.id}>
+      {songList.title} ({songList.songs.length} songs)
+    </li>
+  )
+}
+
+const SongListComponent = (props) => {
+  return (
+    <ul>
+      { props.songLists.map((songList, index) =>
+        <SongListItem key={index} songList={songList} />
+      )}
+    </ul>
   )
 }
 
 const SmallScreenContent = (props) => {
   return (
     <div className={MEDIA_CLASS_SMALL}>
-      <h1>Song Lists</h1>
-      { props.songLists.map(songList =>
-        <SongListItem songList={songList} />
-      )}
+      <h1>Your Song Lists</h1>
+      <SongListComponent songLists={props.songLists} />
     </div>
   )
 }
@@ -39,9 +47,8 @@ const BigScreenContent = (props) => {
     <div className={MEDIA_CLASS_LARGE}>
       <div className="container banner-vcenter d-flex flex-column justify-content-center">
         <div className="text-center">
-          <h1>Welcome to Lyrix!</h1>
-          <p>Your lyrics managing companion</p>
-
+          <h1>Your Song Lists</h1>
+          <SongListComponent songLists={props.songLists} />
         </div>
       </div>
     </div>
