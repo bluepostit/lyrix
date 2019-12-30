@@ -31,9 +31,22 @@ const insertUserWithTwoSonglists = async () => {
 describe('/songlists', () => {
   beforeEach(async () => {
     await SongList.query().delete()
+    await User.query().where({
+      email: TEST_USER_DATA.email
+    }).delete()
   })
 
   describe('GET /songlists', () => {
+    it('should return an error when not logged in', async () => {
+      const val = await insertUserWithTwoSonglists()
+      const res = await chai.request(app)
+        .get('/songlists')
+
+      expect(res).to.have.status(200)
+      expect(res.body).to.have.status(401)
+      expect(res.body.error).to.not.be.empty
+    })
+
     it('should return a list of the current user\'s songlists', async () => {
       const val = await insertUserWithTwoSonglists()
 
