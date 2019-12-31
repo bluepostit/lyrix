@@ -1,0 +1,17 @@
+.list-page {
+  background-color: $bg-beige;
+  overflow: scroll;
+  height: 100vh;
+}
+
+.mobile-header {
+  margin-top: 1rem;
+  text-align: center;
+  background-color: #ccc;
+  color: #9656A1;
+  font-family: 'Sanchez', serif;
+
+  h1 {
+    font-size: 1.5rem;
+  }
+}

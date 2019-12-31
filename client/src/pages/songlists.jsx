@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory } from "react-router-dom"
+import { MobileHeader } from '../components'
 import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../common'
 
 const getSongLists = () => {
@@ -17,27 +18,37 @@ const getSongLists = () => {
 const SongListItem = (props) => {
   const songList = props.songList
   return (
-    <li key={songList.id}>
-      {songList.title} ({songList.songs.length} songs)
-    </li>
+    <button key={songList.id} className="list-group-item lyrix-list-item">
+      <div>
+        <i className="fas fa-clipboard-list"></i>
+        <span>{songList.title}</span>
+      </div>
+      <div>
+        <span className="badge badge-pill badge-info">
+          {songList.songs.length}
+        </span>
+      </div>
+    </button>
   )
 }
 
 const SongListComponent = (props) => {
   return (
-    <ul>
+    <div className="list-group lyrix-list">
       { props.songLists.map((songList, index) =>
         <SongListItem key={index} songList={songList} />
       )}
-    </ul>
+    </div>
   )
 }
 
 const SmallScreenContent = (props) => {
   return (
     <div className={MEDIA_CLASS_SMALL}>
-      <h1>Your Song Lists</h1>
-      <SongListComponent songLists={props.songLists} />
+      <div className="list-page">
+        <MobileHeader title="My Songlists" />
+        <SongListComponent songLists={props.songLists} />
+      </div>
     </div>
   )
 }
@@ -58,6 +69,7 @@ const BigScreenContent = (props) => {
 
 const Songlists = (props) => {
   const [songLists, setSongLists] = useState([])
+  const history = useHistory()
 
   useEffect(() => {
     getSongLists()
@@ -65,6 +77,7 @@ const Songlists = (props) => {
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
+        history.push('/login')
       })
     })
 
