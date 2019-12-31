@@ -1,6 +1,11 @@
-@import '~bootstrap/dist/css/bootstrap.min.css';
-@import './common/index.scss';
-@import './components/index.scss';
+// Must be imported before Bootstrap SASS to override default variable values.
+@import './common/variables';
+@import '~bootstrap/scss/bootstrap';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import './common/index';
+@import './components/index';
+@import './pages/index';
 
 body {
   margin: 0;
