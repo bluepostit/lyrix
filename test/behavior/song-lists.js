@@ -13,28 +13,53 @@ const TEST_USER_DATA = {
 
 const TEST_SONGLIST_DATA = [
   {
+    title: 'SongList 1'
+  },
+  {
+    title: 'SongList 2'
+  }
+]
+
+const TEST_SONGLIST_AND_SONG_DATA = [
+  {
     title: 'SongList 1',
     songs: [
       {
-        title: '1st Song',
-        text: 'This is the 1st Song',
+        title: 'List1 > Song1',
+        text: 'List1 > Song1',
 
         artist: {
-          name: '1st Artist'
+          name: 'Artist 1'
         }
       },
       {
-        title: '2nd Song',
-        text: 'This is the 2nd Song',
+        title: 'List1 > Song2',
+        text: 'List1 > Song2',
 
         artist: {
-          name: '2nd Artist'
+          name: 'Artist 2'
         }
       }
     ]
   },
   {
-    title: 'SongList 2'
+    title: 'SongList 2',
+    songs: [
+      {
+        title: 'List2 > Song1',
+        text: 'List2> Song1',
+        artist: {
+          name: 'Artist 3'
+        }
+      },
+      {
+        title: 'List2 > Song2',
+        text: 'List2> Song2',
+        artist: {
+          name: 'Artist 4'
+        }
+      }
+    ]
   }
 ]
 
@@ -45,6 +70,13 @@ const insertUserWithTwoSonglists = async () => {
   return bob
     .$relatedQuery('songLists')
     .insertGraph(TEST_SONGLIST_DATA)
+}
+
+const insertUserWithTwoFullSonglists = async () => {
+  const bob = await User.createUser(TEST_USER_DATA)
+  return bob
+    .$relatedQuery('songLists')
+    .insertGraph(TEST_SONGLIST_AND_SONG_DATA)
 }
 
 describe('/songlists', () => {
@@ -94,5 +126,31 @@ describe('/songlists', () => {
       expect(songLists.length).to.eql(2)
       expect(songLists[1].title).to.eql(TEST_SONGLIST_DATA[1].title)
     })
+  })
+
+  describe('GET /songlists/:id', () => {
+    it('should return an error when no matching songlist can be found',
+      async () => {
+        await insertUserWithTwoFullSonglists()
+        // Login with chai agent
+        const agent = chai.request.agent(app)
+
+        await agent
+          .post('/user/login')
+          .send({
+            username: TEST_USER_DATA.email,
+            password: TEST_USER_DATA.password
+          })
+
+        agent.get('/songlists/999999999')
+          .end((err, res) => {
+            if (err) {
+              console.log(err)
+            }
+            expect(res.body).to.have.status(404)
+            expect(res.body).to.be.an('object')
+            expect(res.body).to.haveOwnProperty('error')
+          })
+      })
   })
 })
