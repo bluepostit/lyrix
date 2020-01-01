@@ -4,19 +4,12 @@ const config = require('./config')
 const express = require('express')
 const app = express()
 const path = require('path')
-const session = require('express-session')
 const port = process.env.PORT || 4000
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// Session
-app.use(session({
-  secret: config.sessionSecret,
-  resave: false,
-  saveUninitialized: false
-}))
-
+require('./session').init(app, config)
 require('./authentication').init(app)
 
 // Routes
