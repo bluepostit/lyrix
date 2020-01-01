@@ -79,7 +79,8 @@ const Songlists = (props) => {
         console.log(e)
         history.push('/login')
       })
-    })
+    }, [history, songLists.length]) // things to monitor for render
+    // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
   return (
     <div className="songlists-page">
