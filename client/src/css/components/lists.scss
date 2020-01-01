@@ -18,3 +18,30 @@
   border-bottom: 1px solid $border-gray;
   background-color: $bg-beige;
 }
+
+.lyrix-list-item.multi-line {
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+
+  .content-multi-lines {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.4rem;
+  }
+
+  .content-secondary {
+    color: $light-gray;
+    font-style: italic;
+  }
+}
+
+.numbered-disc-bullet {
+  background-color: $list-gray;
+  border-radius: 50%;
+  height: 1.6rem;
+  width: 1.6rem;
+  margin-right: 1.5rem;
+}

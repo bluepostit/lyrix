@@ -4,7 +4,6 @@ import { MobileHeader } from '../components'
 import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../common'
 
 const getSongList = (songlistId) => {
-  // console.log('GET SONG LISTS')
   return fetch(`/songlists/${songlistId}`)
     .then(response => response.json())
     .then((json) => {
@@ -15,26 +14,27 @@ const getSongList = (songlistId) => {
     })
 }
 
-const SongListItem = (props) => {
+// A single song, eg. 'Toxic'
+const SongItem = (props) => {
   const song = props.song
+  const number = props.index + 1
   return (
-    <button key={song.id} className="list-group-item lyrix-list-item">
-      <div>
-        <i className="fas fa-clipboard-list"></i>
-        <span>{song.title}</span>
-      </div>
-      <div>
-
+    <button className="list-group-item lyrix-list-item multi-line">
+      <div className="numbered-disc-bullet">{number}</div>
+      <div className="content-multi-lines">
+        <div>{song.title}</div>
+        <div className="content-secondary">{song.artist_id}</div>
       </div>
     </button>
   )
 }
 
-const SongListComponent = (props) => {
+// A list of songs, eg. 'Greensleeves', 'Toxic'
+const SongsListComponent = (props) => {
   return (
     <div className="list-group lyrix-list">
       { props.songs.map((song, index) =>
-        <SongListItem key={index} song={song} />
+        <SongItem key={index} song={song} index={index} />
       )}
     </div>
   )
@@ -45,7 +45,7 @@ const SmallScreenContent = (props) => {
     <div className={MEDIA_CLASS_SMALL}>
       <div className="list-page">
         <MobileHeader title={props.songlist.title} />
-        <SongListComponent songs={props.songlist.songs} />
+        <SongsListComponent songs={props.songlist.songs} />
       </div>
     </div>
   )
@@ -57,7 +57,7 @@ const BigScreenContent = (props) => {
       <div className="container banner-vcenter d-flex flex-column justify-content-center">
         <div className="text-center">
           <h1>{props.songlist.title}</h1>
-          <SongListComponent songs={props.songlist.songs} />
+          <SongsListComponent songs={props.songlist.songs} />
         </div>
       </div>
     </div>
