@@ -152,5 +152,35 @@ describe('/songlists', () => {
             expect(res.body).to.haveOwnProperty('error')
           })
       })
+
+    it('should return the songlist with the given ID when found', async () => {
+      const lists = await insertUserWithTwoFullSonglists()
+      // Login with chai agent
+      const agent = chai.request.agent(app)
+
+      await agent
+        .post('/user/login')
+        .send({
+          username: TEST_USER_DATA.email,
+          password: TEST_USER_DATA.password
+        })
+
+      agent.get(`/songlists/${lists[0].id}`)
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(200)
+          const data = res.body.data
+          expect(data.title).to.eql(lists[0].title)
+          expect(data.songs).to.be.an('array')
+          expect(data.songs.length).to.eql(lists[0].songs.length)
+
+          const song = data.songs[0]
+          expect(song.title).to.eql(lists[0].songs[0].title)
+          expect(song.artist).to.be.an('object')
+          expect(song.artist.name).to.eql(lists[0].songs[0].artist.name)
+        })
+    })
   })
 })

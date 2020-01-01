@@ -41,7 +41,7 @@ router.get('/:id', ensureLoggedIn,
     const songList = await SongList
       .query()
       .findById(req.params.id)
-      .eager('songs')
+      .eager('[songs.artist]')
 
     let status = 200
     let error = false
