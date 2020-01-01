@@ -3,7 +3,8 @@ const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
 
-const { SongList, User } = require('../../models')
+const { Artist, Song, SongList, SongListSong, User } =
+  require('../../models')
 
 const TEST_USER_DATA = {
   email: 'bob-songlist@bob.bob',
@@ -12,7 +13,25 @@ const TEST_USER_DATA = {
 
 const TEST_SONGLIST_DATA = [
   {
-    title: 'SongList 1'
+    title: 'SongList 1',
+    songs: [
+      {
+        title: '1st Song',
+        text: 'This is the 1st Song',
+
+        artist: {
+          name: '1st Artist'
+        }
+      },
+      {
+        title: '2nd Song',
+        text: 'This is the 2nd Song',
+
+        artist: {
+          name: '2nd Artist'
+        }
+      }
+    ]
   },
   {
     title: 'SongList 2'
@@ -30,15 +49,18 @@ const insertUserWithTwoSonglists = async () => {
 
 describe('/songlists', () => {
   beforeEach(async () => {
+    await SongListSong.query().delete()
     await SongList.query().delete()
     await User.query().where({
       email: TEST_USER_DATA.email
     }).delete()
+    await Song.query().delete()
+    await Artist.query().delete()
   })
 
   describe('GET /songlists', () => {
     it('should return an error when not logged in', async () => {
-      const val = await insertUserWithTwoSonglists()
+      await insertUserWithTwoSonglists()
       const res = await chai.request(app)
         .get('/songlists')
 
@@ -48,12 +70,12 @@ describe('/songlists', () => {
     })
 
     it('should return a list of the current user\'s songlists', async () => {
-      const val = await insertUserWithTwoSonglists()
+      await insertUserWithTwoSonglists()
 
       // Login with chai agent
       const agent = chai.request.agent(app)
 
-      const loginRes = await agent
+      await agent
         .post('/user/login')
         .send({
           username: TEST_USER_DATA.email,
