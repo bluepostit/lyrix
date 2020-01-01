@@ -54,6 +54,12 @@
       ]
     ]
   },
+  "nodemonConfig": {
+    "ext": "js,mjs,jsx,json,scss",
+    "ignore": [
+      "dist/*"
+    ]
+  },
   "scripts": {
     "start": "node app",
     "client": "cd client && yarn start",
