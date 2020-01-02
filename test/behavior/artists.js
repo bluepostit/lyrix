@@ -2,14 +2,14 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
-const { Artist, Song } = require('../../models')
+const { Artist } = require('../../models')
+const RecordManager = require('../record-manager')
 
 chai.use(chaiHttp)
 
 describe('/artists', () => {
   beforeEach(async () => {
-    await Song.query().delete()
-    await Artist.query().delete()
+    await RecordManager.deleteAll()
   })
 
   describe('GET /artists', () => {

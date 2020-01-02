@@ -3,7 +3,8 @@ const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
 
-const { SongList, User } = require('../../models')
+const { Artist, Song, SongList, SongListSong, User } =
+  require('../../models')
 
 const TEST_USER_DATA = {
   email: 'bob-songlist@bob.bob',
@@ -19,6 +20,49 @@ const TEST_SONGLIST_DATA = [
   }
 ]
 
+const TEST_SONGLIST_AND_SONG_DATA = [
+  {
+    title: 'SongList 1',
+    songs: [
+      {
+        title: 'List1 > Song1',
+        text: 'List1 > Song1',
+
+        artist: {
+          name: 'Artist 1'
+        }
+      },
+      {
+        title: 'List1 > Song2',
+        text: 'List1 > Song2',
+
+        artist: {
+          name: 'Artist 2'
+        }
+      }
+    ]
+  },
+  {
+    title: 'SongList 2',
+    songs: [
+      {
+        title: 'List2 > Song1',
+        text: 'List2> Song1',
+        artist: {
+          name: 'Artist 3'
+        }
+      },
+      {
+        title: 'List2 > Song2',
+        text: 'List2> Song2',
+        artist: {
+          name: 'Artist 4'
+        }
+      }
+    ]
+  }
+]
+
 chai.use(chaiHttp)
 
 const insertUserWithTwoSonglists = async () => {
@@ -28,17 +72,27 @@ const insertUserWithTwoSonglists = async () => {
     .insertGraph(TEST_SONGLIST_DATA)
 }
 
+const insertUserWithTwoFullSonglists = async () => {
+  const bob = await User.createUser(TEST_USER_DATA)
+  return bob
+    .$relatedQuery('songLists')
+    .insertGraph(TEST_SONGLIST_AND_SONG_DATA)
+}
+
 describe('/songlists', () => {
   beforeEach(async () => {
+    await SongListSong.query().delete()
     await SongList.query().delete()
     await User.query().where({
       email: TEST_USER_DATA.email
     }).delete()
+    await Song.query().delete()
+    await Artist.query().delete()
   })
 
   describe('GET /songlists', () => {
     it('should return an error when not logged in', async () => {
-      const val = await insertUserWithTwoSonglists()
+      await insertUserWithTwoSonglists()
       const res = await chai.request(app)
         .get('/songlists')
 
@@ -48,12 +102,12 @@ describe('/songlists', () => {
     })
 
     it('should return a list of the current user\'s songlists', async () => {
-      const val = await insertUserWithTwoSonglists()
+      await insertUserWithTwoSonglists()
 
       // Login with chai agent
       const agent = chai.request.agent(app)
 
-      const loginRes = await agent
+      await agent
         .post('/user/login')
         .send({
           username: TEST_USER_DATA.email,
@@ -71,6 +125,62 @@ describe('/songlists', () => {
       expect(songLists).to.be.an('array')
       expect(songLists.length).to.eql(2)
       expect(songLists[1].title).to.eql(TEST_SONGLIST_DATA[1].title)
+    })
+  })
+
+  describe('GET /songlists/:id', () => {
+    it('should return an error when no matching songlist can be found',
+      async () => {
+        await insertUserWithTwoFullSonglists()
+        // Login with chai agent
+        const agent = chai.request.agent(app)
+
+        await agent
+          .post('/user/login')
+          .send({
+            username: TEST_USER_DATA.email,
+            password: TEST_USER_DATA.password
+          })
+
+        agent.get('/songlists/999999999')
+          .end((err, res) => {
+            if (err) {
+              console.log(err)
+            }
+            expect(res.body).to.have.status(404)
+            expect(res.body).to.be.an('object')
+            expect(res.body).to.haveOwnProperty('error')
+          })
+      })
+
+    it('should return the songlist with the given ID when found', async () => {
+      const lists = await insertUserWithTwoFullSonglists()
+      // Login with chai agent
+      const agent = chai.request.agent(app)
+
+      await agent
+        .post('/user/login')
+        .send({
+          username: TEST_USER_DATA.email,
+          password: TEST_USER_DATA.password
+        })
+
+      agent.get(`/songlists/${lists[0].id}`)
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(200)
+          const data = res.body.data
+          expect(data.title).to.eql(lists[0].title)
+          expect(data.songs).to.be.an('array')
+          expect(data.songs.length).to.eql(lists[0].songs.length)
+
+          const song = data.songs[0]
+          expect(song.title).to.eql(lists[0].songs[0].title)
+          expect(song.artist).to.be.an('object')
+          expect(song.artist.name).to.eql(lists[0].songs[0].artist.name)
+        })
     })
   })
 })

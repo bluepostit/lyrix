@@ -5,7 +5,7 @@ import {
   Route,
   Link
 } from "react-router-dom"
-import { Login, Home, Songlists } from './pages'
+import { Login, Home, Songlists, Songlist } from './pages'
 import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from './common'
 
 const RouterSwitch = () => {
@@ -20,6 +20,7 @@ const RouterSwitch = () => {
       <Route path="/practice">
         <Songlists />
       </Route>
+      <Route path="/songlists/:id" children={<Songlist />} />
       <Route path="/">
         <Home />
       </Route>
