@@ -23,7 +23,7 @@ const SongItem = (props) => {
       <div className="numbered-disc-bullet">{number}</div>
       <div className="content-multi-lines">
         <div>{song.title}</div>
-        <div className="content-secondary">{song.artist_id}</div>
+        <div className="content-secondary">{song.artist.name}</div>
       </div>
     </button>
   )
