@@ -49,4 +49,17 @@ router.get('/logout', (req, res) => {
   req.redirect('/')
 })
 
+router.post('/sign-up', async (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return res.json({
+      status: 403,
+      error: 'You are already logged in'
+    })
+  } else {
+    return res.json({
+      status: 500
+    })
+  }
+})
+
 module.exports = router
