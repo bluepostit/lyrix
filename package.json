@@ -63,7 +63,7 @@
     ]
   },
   "scripts": {
-    "build": "cd client && yarn build",
+    "heroku-postbuild": "cd client && yarn && yarn run build",
     "start": "node app",
     "client": "cd client && yarn start",
     "server": "nodemon app.js",
