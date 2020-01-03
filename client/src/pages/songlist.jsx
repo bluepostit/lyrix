@@ -18,8 +18,15 @@ const getSongList = (songlistId) => {
 const SongItem = (props) => {
   const song = props.song
   const number = props.index + 1
+  const { id } = useParams()
+  const history = useHistory()
+  const onClick = () => {
+    history.push(`/songlists/${id}/song/${song.id}`)
+  }
+
   return (
-    <button className="list-group-item lyrix-list-item multi-line">
+    <button className="list-group-item lyrix-list-item multi-line"
+            onClick={onClick} >
       <div className="numbered-disc-bullet">{number}</div>
       <div className="content-multi-lines">
         <div>{song.title}</div>

@@ -1,0 +1,9 @@
+.button-nav {
+  color: $border-gray;
+}
+
+.button-nav.button-to-top {
+  position: fixed;
+  right: 0;
+  top: 50%;
+}
