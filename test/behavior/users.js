@@ -151,6 +151,8 @@ describe('/user', () => {
             username: LOGGED_IN_USER_DATA.email,
             password: LOGGED_IN_USER_DATA.password
           })
+
+        // Now try to sign up as a different user
         const res = await agent
           .post('/user/sign-up')
           .send(GOOD_SIGN_UP_DATA)
@@ -165,20 +167,114 @@ describe('/user', () => {
 
     })
 
-    it('should fail with empty input', async () => {
+    it('should fail with empty or missing input', async () => {
+      try {
+        const agent = chai.request.agent(app)
 
+        // Empty password
+        let res = await agent
+          .post('/user/sign-up')
+          .send({
+            email: GOOD_SIGN_UP_DATA.email,
+            password: '',
+            password2: ''
+          })
+        expect(res.body).to.have.status(400) // bad request
+        // Empty email
+        res = await agent
+          .post('/user/sign-up')
+          .send({
+            email: '',
+            password: GOOD_SIGN_UP_DATA.password,
+            password2: GOOD_SIGN_UP_DATA.password2
+          })
+        expect(res.body).to.have.status(400) // bad request
+        // Missing password2
+        res = await agent
+          .post('/user/sign-up')
+          .send({
+            email: GOOD_SIGN_UP_DATA.email,
+            password: ''
+          })
+        expect(res.body).to.have.status(400) // bad request
+      } catch (e) {
+        console.log(e)
+      }
     })
 
     it('should fail with duplicated email address', async () => {
+      await User.createUser({
+        email: GOOD_SIGN_UP_DATA.email,
+        password: GOOD_SIGN_UP_DATA.password
+      })
 
+      try {
+        const agent = chai.request.agent(app)
+
+        const res = await agent
+          .post('/user/sign-up')
+          .send(GOOD_SIGN_UP_DATA)
+
+        expect(res.body).to.have.status(400) // forbidden
+        expect(res.body.message).to.include('already exists')
+      } catch (e) {
+        console.log(e)
+      }
     })
 
     it('should fail with non-email email address', async () => {
+      try {
+        const agent = chai.request.agent(app)
 
+        // Empty password
+        const res = await agent
+          .post('/user/sign-up')
+          .send({
+            email: 'not-an-email.address',
+            password: GOOD_SIGN_UP_DATA.password,
+            password2: GOOD_SIGN_UP_DATA.password2
+          })
+        expect(res.body).to.have.status(400) // bad request
+        expect(res.body.error).to.include('valid')
+      } catch (e) {
+        console.log(e)
+      }
     })
 
     it('should fail with password that is too short', async () => {
+      try {
+        const agent = chai.request.agent(app)
 
+        // Empty password
+        const res = await agent
+          .post('/user/sign-up')
+          .send({
+            email: GOOD_SIGN_UP_DATA.email,
+            password: '123',
+            password2: '123'
+          })
+        expect(res.body).to.have.status(400) // bad request
+      } catch (e) {
+        console.log(e)
+      }
+    })
+
+    it('should fail with passwords that don\'t match', async () => {
+      try {
+        const agent = chai.request.agent(app)
+
+        // Empty password
+        const res = await agent
+          .post('/user/sign-up')
+          .send({
+            email: GOOD_SIGN_UP_DATA.email,
+            password: GOOD_SIGN_UP_DATA.password,
+            password2: GOOD_SIGN_UP_DATA.password + 'x'
+          })
+        expect(res.body).to.have.status(400) // bad request
+      } catch (e) {
+        console.log(e)
+      }
     })
   })
 })

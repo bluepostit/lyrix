@@ -1,6 +1,70 @@
 const express = require('express')
 const router = express.Router()
 const passport = require('passport')
+const objection = require('objection')
+
+const { User } = require('../models')
+
+const signUpValidation = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return res.json({
+      status: 403,
+      error: 'You are already logged in'
+    })
+  }
+
+  const body = req.body
+  if (!body.email || !body.password || !body.password2) {
+    return res.json({
+      status: 400,
+      error: 'Something went wrong'
+    })
+  }
+
+  const email = req.body.email.trim()
+  const pw1 = req.body.password.trim()
+  const pw2 = req.body.password2.trim()
+  if (pw1 !== pw2) {
+    return res.json({
+      status: 400,
+      error: 'Passwords do not match'
+    })
+  }
+
+  if (!email || !pw1 || !pw2) {
+    return res.json({
+      status: 400,
+      error: 'Email and password cannot be empty'
+    })
+  }
+
+  const pwMinLength = User.jsonSchema.properties.password.minLength
+  if (pw1.length < pwMinLength) {
+    return res.json({
+      status: 400,
+      error: 'Password too short',
+      message: 'Password is too short. ' +
+        `It must be at least ${pwMinLength} characters long`
+    })
+  }
+  next()
+}
+
+const buildSignUpValidationErrorMessage = (error) => {
+  const data = error.data
+  let message = ''
+  if (data.email) {
+    message += 'Please check email address.'
+    data.email.forEach((err) => {
+      if (err.keyword === 'required') {
+        message += ' Cannot be empty.'
+      } else if (err.keyword === 'format') {
+        message += 'Must be a vaild email address'
+      }
+    })
+    return message
+  }
+}
 
 router.get('/login', (req, res) => {
   res.render('login')
@@ -49,15 +113,43 @@ router.get('/logout', (req, res) => {
   req.redirect('/')
 })
 
-router.post('/sign-up', async (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return res.json({
-      status: 403,
-      error: 'You are already logged in'
+router.post('/sign-up', signUpValidation, async (req, res, next) => {
+  try {
+    const user = await User.createUser({
+      email: req.body.email,
+      password: req.body.password
     })
-  } else {
+    req.login(user, (err) => {
+      if (err) {
+        return next(err)
+      }
+      return res.json({
+        status: 200,
+        message: 'You have successfully signed up'
+      })
+    })
+  } catch (error) {
+    if (error instanceof objection.ValidationError) {
+      return res.json({
+        status: 400,
+        error: 'Invalid input',
+        message: buildSignUpValidationErrorMessage(error)
+      })
+    }
+    if (error.constraint === 'users_email_unique') {
+      return res.json({
+        status: 400,
+        error: 'Email already exists',
+        message: 'An account already exists with that email address'
+      })
+    }
+
+    // Something else went wrong.
+    console.log(error)
     return res.json({
-      status: 500
+      status: 500,
+      error: 'Server error',
+      message: 'Something went wrong'
     })
   }
 })

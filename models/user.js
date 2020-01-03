@@ -31,6 +31,27 @@ module.exports = class User extends Model {
     }
   }
 
+  static get jsonSchema () {
+    return {
+      $schema: 'http://json-schema.org/schema#',
+      type: 'object',
+      required: ['email', 'password'],
+
+      properties: {
+        email: {
+          type: 'string',
+          minLength: 6,
+          maxLength: 24,
+          format: 'email'
+        },
+        password: {
+          type: 'string',
+          minLength: 12
+        }
+      }
+    }
+  }
+
   static async createUser (dataObject) {
     const hash = await encrypt(dataObject.password)
     return User.query().insert({
