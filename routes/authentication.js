@@ -9,7 +9,8 @@ const signUpValidation = (req, res, next) => {
   if (req.isAuthenticated()) {
     return res.json({
       status: 403,
-      error: 'You are already logged in'
+      error: 'You are already logged in',
+      message: 'You are already logged in'
     })
   }
 
@@ -17,7 +18,8 @@ const signUpValidation = (req, res, next) => {
   if (!body.email || !body.password || !body.password2) {
     return res.json({
       status: 400,
-      error: 'Something went wrong'
+      error: 'Something went wrong',
+      message: 'Please fill in all fields'
     })
   }
 
@@ -27,14 +29,16 @@ const signUpValidation = (req, res, next) => {
   if (pw1 !== pw2) {
     return res.json({
       status: 400,
-      error: 'Passwords do not match'
+      error: 'Passwords do not match',
+      message: 'Please ensure both passwords match'
     })
   }
 
   if (!email || !pw1 || !pw2) {
     return res.json({
       status: 400,
-      error: 'Email and password cannot be empty'
+      error: 'Email and password cannot be empty',
+      message: 'Fields cannot be empty'
     })
   }
 

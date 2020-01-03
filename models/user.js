@@ -46,7 +46,7 @@ module.exports = class User extends Model {
         },
         password: {
           type: 'string',
-          minLength: 12
+          minLength: 6
         }
       }
     }

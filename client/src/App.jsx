@@ -5,7 +5,7 @@ import {
   Route,
   Link
 } from "react-router-dom"
-import { Login, Home, Songlists, Songlist, Song } from './pages'
+import { Login, Home, SignUp, Songlists, Songlist, Song } from './pages'
 import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from './common'
 
 const RouterSwitch = () => {
@@ -13,6 +13,9 @@ const RouterSwitch = () => {
     <Switch>
       <Route path="/login">
         <Login />
+      </Route>
+      <Route path="/sign-up">
+        <SignUp />
       </Route>
       <Route path="/perform">
         <h1>Perform</h1>
