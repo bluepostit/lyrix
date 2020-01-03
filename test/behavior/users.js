@@ -11,6 +11,9 @@ describe('/user', () => {
   beforeEach(async () => {
     await RecordManager.deleteAll()
   })
+  after(async () => {
+    await RecordManager.deleteAll()
+  })
 
   const LOGGED_IN_USER_DATA = {
     email: 'bob-user@bob.bob',
