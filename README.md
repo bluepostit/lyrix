@@ -10,6 +10,7 @@ A Song Lyric collection app, containing both **Node** server and **React** clien
 - [PostgreSQL database](https://www.postgresql.org/)
 - [Knex.js query builder](https://knexjs.org/)
 - [Ojection.js ORM](https://vincit.github.io/objection.js/)
+- [Redis](https://redis.io/) and [connect-redis](https://github.com/tj/connect-redis)
 
 ## Build
 1. Install requirements by running `yarn`
@@ -20,6 +21,8 @@ A Song Lyric collection app, containing both **Node** server and **React** clien
     - DB_NAME
     - DB_USERNAME
     - DB_PASSWORD
+1. Install **Redis**
+    - If you have non-default Redis instance variables, add a **Redis URL** in `.env` as `REDIS_URL=redis://...`
 1. Run the app: `yarn dev`
 
 ## Test
@@ -62,6 +65,8 @@ A Song Lyric collection app, containing both **Node** server and **React** clien
         ````bash
         $ heroku config:set DB_URL='<database_url>' -a <app_name>
         ````
+1. Provision **Redis** for your Heroku instance.
+  There should be no further setup needed: the code will look for Heroku's Redis URL as `process.env.REDIS_URL`, and use it if found.
 1. Push your source code to Heroku:
     ````bash
     $ git push heroku master
