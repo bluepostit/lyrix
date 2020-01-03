@@ -63,6 +63,7 @@
     ]
   },
   "scripts": {
+    "build": "cd client && yarn build",
     "start": "node app",
     "client": "cd client && yarn start",
     "server": "nodemon app.js",
