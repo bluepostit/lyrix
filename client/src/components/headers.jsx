@@ -9,7 +9,7 @@ const MobileHeader = (props) => {
 
   return (
     <div className="mobile-header">
-      <button className="btn back-button" onClick={goBack}>
+      <button className="btn button-nav" onClick={goBack}>
         <i className="fas fa-arrow-left"></i>
       </button>
       <h1>{props.title}</h1>

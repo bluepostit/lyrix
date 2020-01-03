@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
-import { MobileHeader } from '../components'
+import { MobileHeader, ToTopButton } from '../components'
 import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../common'
 
 const getSong = (songId) => {
@@ -17,7 +17,7 @@ const getSong = (songId) => {
 const SongTextComponent = (props) => {
   return (
     <div class="song-text">
-      {props.text}
+      <div>{props.text}</div>
     </div>
   )
 }
@@ -28,6 +28,7 @@ const SmallScreenContent = (props) => {
       <div className="list-page">
         <MobileHeader title={props.song.title} />
         <SongTextComponent text={props.song.text} />
+        <ToTopButton />
       </div>
     </div>
   )
