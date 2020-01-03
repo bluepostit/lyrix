@@ -11,6 +11,9 @@ describe('/artists', () => {
   beforeEach(async () => {
     await RecordManager.deleteAll()
   })
+  after(async () => {
+    await RecordManager.deleteAll()
+  })
 
   describe('GET /artists', () => {
     it('should return a list of all artists in the database', async () => {

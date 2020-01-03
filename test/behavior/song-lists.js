@@ -3,8 +3,9 @@ const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
 
-const { Artist, Song, SongList, SongListSong, User } =
+const { User } =
   require('../../models')
+const RecordManager = require('../record-manager.js')
 
 const TEST_USER_DATA = {
   email: 'bob-songlist@bob.bob',
@@ -81,13 +82,10 @@ const insertUserWithTwoFullSonglists = async () => {
 
 describe('/songlists', () => {
   beforeEach(async () => {
-    await SongListSong.query().delete()
-    await SongList.query().delete()
-    await User.query().where({
-      email: TEST_USER_DATA.email
-    }).delete()
-    await Song.query().delete()
-    await Artist.query().delete()
+    await RecordManager.deleteAll()
+  })
+  after(async () => {
+    await RecordManager.deleteAll()
   })
 
   describe('GET /songlists', () => {
