@@ -8,6 +8,10 @@ const SONGLIST_ATTRIBUTES = [
   'id'
 ]
 
+const createSonglistValidation = (req, res, next) => {
+  next()
+}
+
 router.get('/', ensureLoggedIn,
   async (req, res, next) => {
     const songlists = await req.user
@@ -57,6 +61,13 @@ router.get('/:id', ensureLoggedIn,
       error: error,
       status: status,
       data: songList
+    })
+  })
+
+router.post('/', ensureLoggedIn, createSonglistValidation,
+  async (req, res, next) => {
+    res.json({
+      status: 200
     })
   })
 

@@ -66,15 +66,20 @@ const TEST_SONGLIST_AND_SONG_DATA = [
 
 chai.use(chaiHttp)
 
+const insertUser = async () => {
+  const user = await User.createUser(TEST_USER_DATA)
+  return user
+}
+
 const insertUserWithTwoSonglists = async () => {
-  const bob = await User.createUser(TEST_USER_DATA)
+  const bob = await insertUser()
   return bob
     .$relatedQuery('songLists')
     .insertGraph(TEST_SONGLIST_DATA)
 }
 
 const insertUserWithTwoFullSonglists = async () => {
-  const bob = await User.createUser(TEST_USER_DATA)
+  const bob = await insertUser()
   return bob
     .$relatedQuery('songLists')
     .insertGraph(TEST_SONGLIST_AND_SONG_DATA)
@@ -114,6 +119,7 @@ describe('/songlists', () => {
 
       const res = await agent
         .get('/songlists')
+      agent.close()
 
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
@@ -148,6 +154,7 @@ describe('/songlists', () => {
             expect(res.body).to.have.status(404)
             expect(res.body).to.be.an('object')
             expect(res.body).to.haveOwnProperty('error')
+            agent.close()
           })
       })
 
@@ -178,7 +185,47 @@ describe('/songlists', () => {
           expect(song.title).to.eql(lists[0].songs[0].title)
           expect(song.artist).to.be.an('object')
           expect(song.artist.name).to.eql(lists[0].songs[0].artist.name)
+
+          agent.close()
         })
     })
+  })
+
+  describe('POST /songlists', () => {
+    it('should return an error when not signed in', async () => {
+      chai.request(app).post('/songlists')
+        .send({ name: 'test songlist' })
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(401)
+        })
+    })
+
+    it('should return an error when a songlist with this name already exists',
+      async () => {
+        const lists = await insertUserWithTwoFullSonglists()
+        console.log(lists)
+
+        // Login with chai agent
+        const agent = chai.request.agent(app)
+
+        await agent
+          .post('/user/login')
+          .send({
+            username: TEST_USER_DATA.email,
+            password: TEST_USER_DATA.password
+          })
+
+        agent.post('/songlists')
+          .send({ title: lists[0].title })
+          .end((err, res) => {
+            if (err) {
+              console.log(err)
+            }
+            expect(res.body).to.have.status(400)
+          })
+      })
   })
 })
