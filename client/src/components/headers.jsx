@@ -6,12 +6,20 @@ const MobileHeader = (props) => {
   const goBack = () => {
     history.goBack()
   }
+  const goHome = () => {
+    history.push('/')
+  }
 
   return (
     <div className="mobile-header">
-      <button className="btn button-nav" onClick={goBack}>
-        <i className="fas fa-arrow-left"></i>
-      </button>
+      <div>
+        <button className="btn button-nav" onClick={goBack}>
+          <i className="fas fa-arrow-left"></i>
+        </button>
+        <button className="btn button-nav" onClick={goHome}>
+          <i className="fas fa-home"></i>
+        </button>
+      </div>
       <h1>{props.title}</h1>
     </div>
   )

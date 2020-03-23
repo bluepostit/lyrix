@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .list-page, .text-page {
   background-color: $bg-beige;
   overflow: scroll;
@@ -16,7 +20,7 @@
   font-family: 'Sanchez', serif;
   padding: 0.1rem;
   display: grid;
-  grid-template-columns: [first] 1fr 8fr [last] 1fr;
+  grid-template-columns: [first] 2fr 6fr [last] 2fr;
   justify-content: flex-start;
 
   h1 {
