@@ -65,12 +65,13 @@ const TEST_SONGLIST_AND_SONG_DATA = [
 ]
 
 const loginAsUser = async (chaiAgent, userData) => {
-  await chaiAgent
+  const result = await chaiAgent
     .post('/user/login')
     .send({
       username: userData.email,
       password: userData.password
     })
+  return result
 }
 
 chai.use(chaiHttp)
@@ -96,7 +97,7 @@ const insertUserWithTwoFullSonglists = async () => {
   return lists
 }
 
-describe('/songlists', () => {
+describe('/songlists', async () => {
   beforeEach(async () => {
     await RecordManager.deleteAll()
   })
@@ -231,5 +232,19 @@ describe('/songlists', () => {
             expect(res.body).to.have.status(400)
           })
       })
+
+    it('should create a new songlist when given valid data', async () => {
+      await insertUser()
+      // Login with chai agent
+      const agent = chai.request.agent(app)
+      await loginAsUser(agent, TEST_USER_DATA)
+
+      const res = await agent.post('/songlists')
+        .send({ title: 'a new songlist title' })
+      const body = res.body
+      expect(body).to.have.status(201) // Created
+      expect(body.id).to.match(/^\d+/)
+      agent.close()
+    })
   })
 })

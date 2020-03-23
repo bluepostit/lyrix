@@ -89,9 +89,26 @@ router.get('/:id', ensureLoggedIn,
 
 router.post('/', ensureLoggedIn, createSonglistValidation,
   async (req, res, next) => {
-    res.json({
-      status: 200
-    })
+    try {
+      const list = await req.user
+        .$relatedQuery('songLists')
+        .insertGraph([
+          {
+            title: req.body.title
+          }
+        ])
+      res.json({
+        status: 201, // created
+        id: list[0].id
+      })
+    } catch (error) {
+      console.log(error)
+      console.log(error.stack)
+      res.json({
+        status: 500,
+        error: "Couldn't create the songlist"
+      })
+    }
   })
 
 module.exports = router
