@@ -9,7 +9,30 @@ const SONGLIST_ATTRIBUTES = [
 ]
 
 const createSonglistValidation = (req, res, next) => {
-  next()
+  const body = req.body
+  // Is `title` present?
+  if (!body.title) {
+    return res.json({
+      status: 400,
+      error: 'Missing fields',
+      message: 'Please include a title for your songlist'
+    })
+  }
+
+  // Check for songlist with the same title
+  req.user
+    .$relatedQuery('songLists')
+    .where('title', '=', body.title)
+    .then((data) => {
+      if (data.length > 0) {
+        return res.json({
+          status: 400,
+          error: 'Duplicate songlist',
+          message: 'You already have a songlist with this name'
+        })
+      }
+      next()
+    })
 }
 
 router.get('/', ensureLoggedIn,

@@ -64,6 +64,15 @@ const TEST_SONGLIST_AND_SONG_DATA = [
   }
 ]
 
+const loginAsUser = async (chaiAgent, userData) => {
+  await chaiAgent
+    .post('/user/login')
+    .send({
+      username: userData.email,
+      password: userData.password
+    })
+}
+
 chai.use(chaiHttp)
 
 const insertUser = async () => {
@@ -73,16 +82,18 @@ const insertUser = async () => {
 
 const insertUserWithTwoSonglists = async () => {
   const bob = await insertUser()
-  return bob
+  const lists = await bob
     .$relatedQuery('songLists')
     .insertGraph(TEST_SONGLIST_DATA)
+  return lists
 }
 
 const insertUserWithTwoFullSonglists = async () => {
   const bob = await insertUser()
-  return bob
+  const lists = await bob
     .$relatedQuery('songLists')
     .insertGraph(TEST_SONGLIST_AND_SONG_DATA)
+  return lists
 }
 
 describe('/songlists', () => {
@@ -109,13 +120,7 @@ describe('/songlists', () => {
 
       // Login with chai agent
       const agent = chai.request.agent(app)
-
-      await agent
-        .post('/user/login')
-        .send({
-          username: TEST_USER_DATA.email,
-          password: TEST_USER_DATA.password
-        })
+      await loginAsUser(agent, TEST_USER_DATA)
 
       const res = await agent
         .get('/songlists')
@@ -138,13 +143,7 @@ describe('/songlists', () => {
         await insertUserWithTwoFullSonglists()
         // Login with chai agent
         const agent = chai.request.agent(app)
-
-        await agent
-          .post('/user/login')
-          .send({
-            username: TEST_USER_DATA.email,
-            password: TEST_USER_DATA.password
-          })
+        await loginAsUser(agent, TEST_USER_DATA)
 
         agent.get('/songlists/999999999')
           .end((err, res) => {
@@ -162,13 +161,7 @@ describe('/songlists', () => {
       const lists = await insertUserWithTwoFullSonglists()
       // Login with chai agent
       const agent = chai.request.agent(app)
-
-      await agent
-        .post('/user/login')
-        .send({
-          username: TEST_USER_DATA.email,
-          password: TEST_USER_DATA.password
-        })
+      await loginAsUser(agent, TEST_USER_DATA)
 
       agent.get(`/songlists/${lists[0].id}`)
         .end((err, res) => {
@@ -203,20 +196,31 @@ describe('/songlists', () => {
         })
     })
 
-    it('should return an error when a songlist with this name already exists',
+    it('should return an error when no title is given',
       async () => {
-        const lists = await insertUserWithTwoFullSonglists()
-        console.log(lists)
+        await insertUserWithTwoFullSonglists()
 
         // Login with chai agent
         const agent = chai.request.agent(app)
+        await loginAsUser(agent, TEST_USER_DATA)
 
-        await agent
-          .post('/user/login')
-          .send({
-            username: TEST_USER_DATA.email,
-            password: TEST_USER_DATA.password
+        agent.post('/songlists')
+          .end((err, res) => {
+            if (err) {
+              console.log(err)
+            }
+            expect(res.body).to.have.status(400)
+            expect(res.body.error).to.not.be.empty
           })
+      })
+
+    it('should return an error when a songlist with this name already exists',
+      async () => {
+        const lists = await insertUserWithTwoFullSonglists()
+
+        // Login with chai agent
+        const agent = chai.request.agent(app)
+        await loginAsUser(agent, TEST_USER_DATA)
 
         agent.post('/songlists')
           .send({ title: lists[0].title })
