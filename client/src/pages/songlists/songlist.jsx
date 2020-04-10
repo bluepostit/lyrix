@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
-import { MobileHeader } from '../components'
-import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../common'
+import { MobileHeader } from '../../components'
+import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../../common'
 
 const getSongList = (songlistId) => {
   return fetch(`/songlists/${songlistId}`)
