@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .list-page, .text-page {
   background-color: $bg-beige;
   overflow: scroll;
@@ -8,15 +12,31 @@
   position: relative;
 }
 
+.page-content {
+  display: block;
+  height: 80vh;
+}
+
+@media (min-width: 576px) {
+  .list-page {
+    margin: 0 5%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
 .mobile-header {
   margin-top: 1rem;
   text-align: center;
   background-color: #ccc;
-  color: #9656A1;
+  color: $primary;
   font-family: 'Sanchez', serif;
   padding: 0.1rem;
   display: grid;
-  grid-template-columns: [first] 1fr 8fr [last] 1fr;
+  grid-template-columns: [first] 2fr 6fr [last] 2fr;
   justify-content: flex-start;
 
   h1 {

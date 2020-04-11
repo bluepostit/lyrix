@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link
 } from "react-router-dom"
-import { Login, Home, SignUp, Songlists, Songlist, Song } from './pages'
+import { Login, Home, SignUp, Song } from './pages'
+import * as Songlists from './pages/songlists'
 import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from './common'
 
 const RouterSwitch = () => {
@@ -21,11 +22,12 @@ const RouterSwitch = () => {
         <h1>Perform</h1>
       </Route>
       <Route path="/practice">
-        <Songlists />
+        <Songlists.Index />
       </Route>
       <Route path="/songlists/:songlist_id/song/:song_id"
              children={<Song />} />
-      <Route path="/songlists/:id" children={<Songlist />} />
+      <Route path="/songlists/new" children={<Songlists.New />} />
+      <Route path="/songlists/:id" children={<Songlists.Show />} />
       <Route path="/">
         <Home />
       </Route>

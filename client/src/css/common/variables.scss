@@ -1,6 +1,7 @@
 $border-gray: #999;
 $list-gray: #C4C4C4;
 $light-gray: #C2C2C2;
+$darker-gray: #444;
 
 $bg-colorful: #36B5B0;
 $bg-beige: #F4EFD3;
@@ -12,3 +13,7 @@ $fg-colorful-complement: #9DD8C8;
 
 $primary:     #9656A1;
 $info:        $bg-colorful;
+
+.color-primary {
+  color: $primary;
+}

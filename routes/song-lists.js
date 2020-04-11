@@ -8,6 +8,33 @@ const SONGLIST_ATTRIBUTES = [
   'id'
 ]
 
+const createSonglistValidation = (req, res, next) => {
+  const body = req.body
+  // Is `title` present?
+  if (!body.title) {
+    return res.json({
+      status: 400,
+      error: 'Missing fields',
+      message: 'Please include a title for your songlist'
+    })
+  }
+
+  // Check for songlist with the same title
+  req.user
+    .$relatedQuery('songLists')
+    .where('title', '=', body.title)
+    .then((data) => {
+      if (data.length > 0) {
+        return res.json({
+          status: 400,
+          error: 'Duplicate songlist',
+          message: 'You already have a songlist with this name'
+        })
+      }
+      next()
+    })
+}
+
 router.get('/', ensureLoggedIn,
   async (req, res, next) => {
     const songlists = await req.user
@@ -58,6 +85,30 @@ router.get('/:id', ensureLoggedIn,
       status: status,
       data: songList
     })
+  })
+
+router.post('/', ensureLoggedIn, createSonglistValidation,
+  async (req, res, next) => {
+    try {
+      const list = await req.user
+        .$relatedQuery('songLists')
+        .insertGraph([
+          {
+            title: req.body.title
+          }
+        ])
+      res.json({
+        status: 201, // created
+        id: list[0].id
+      })
+    } catch (error) {
+      console.log(error)
+      console.log(error.stack)
+      res.json({
+        status: 500,
+        error: "Couldn't create the songlist"
+      })
+    }
   })
 
 module.exports = router

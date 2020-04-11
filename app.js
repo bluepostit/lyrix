@@ -29,6 +29,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client/build/index.html'))
 })
 
-app.listen(port, () => console.log(`Lyrix listening on port ${port}`))
+app.listen(port, () => console.log(`Lyrix server listening on port ${port}`))
 
 module.exports = app

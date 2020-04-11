@@ -12,6 +12,11 @@ A Song Lyric collection app, containing both **Node** server and **React** clien
 - [Ojection.js ORM](https://vincit.github.io/objection.js/)
 - [Redis](https://redis.io/) and [connect-redis](https://github.com/tj/connect-redis)
 
+**Client technologies:**
+- [React](https://reactjs.org/)
+- [React Router](https://reacttraining.com/react-router/)
+- [Formik](https://jaredpalmer.com/formik)
+
 ## Build
 1. Install requirements by running `yarn`
 1. Setup a **PostgreSQL** database for **development**.
@@ -21,6 +26,9 @@ A Song Lyric collection app, containing both **Node** server and **React** clien
     - DB_NAME
     - DB_USERNAME
     - DB_PASSWORD
+1. Optional: specify a port number for serving the React frontend, in `client/.env`:
+    - PORT
+    Default as per `react-scripts start`: `3000`
 1. Install **Redis**
     - If you have non-default Redis instance variables, add a **Redis URL** in `.env` as `REDIS_URL=redis://...`
 1. Run the app: `yarn dev`
