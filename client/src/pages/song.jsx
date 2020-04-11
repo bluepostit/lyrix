@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
-import { MobileHeader, ToTopButton } from '../components'
-import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../common'
+import { Page } from './page'
+import { ToTopButton } from '../components'
 
 const getSong = (songId) => {
   return fetch(`/songs/${songId}`)
@@ -14,39 +14,16 @@ const getSong = (songId) => {
     })
 }
 
-const SongTextComponent = (props) => {
+const PageContent = (props) => {
   return (
-    <div class="song-text">
-      <div>{props.text}</div>
-    </div>
-  )
-}
-
-const SmallScreenContent = (props) => {
-  return (
-    <div className={MEDIA_CLASS_SMALL}>
-      <div className="list-page">
-        <MobileHeader title={props.song.title} />
-        <SongTextComponent text={props.song.text} />
-        <ToTopButton />
+    <div>
+      <div class="song-text">
+        <div>{props.song.text}</div>
       </div>
+      <ToTopButton />
     </div>
   )
 }
-
-const BigScreenContent = (props) => {
-  return (
-    <div className={MEDIA_CLASS_LARGE}>
-      <div className="container banner-vcenter d-flex flex-column justify-content-center">
-        <div className="text-center">
-          <h1>{props.song.title}</h1>
-          <SongTextComponent text={props.song.text} />
-        </div>
-      </div>
-    </div>
-  )
-}
-
 
 const Song = (props) => {
   const { songlist_id, song_id } = useParams()
@@ -66,8 +43,10 @@ const Song = (props) => {
 
   return (
     <div className="song-page">
-      <SmallScreenContent songlistId={songlist_id} song={song} />
-      <BigScreenContent songlistId={songlist_id} song={song} />
+      <Page
+        content={<PageContent song={song} />}
+        title={song.title}
+      />
     </div>
   )
 }

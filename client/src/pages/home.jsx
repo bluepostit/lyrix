@@ -49,42 +49,34 @@ const MenuButton = (props) => {
   )
 }
 
-const SmallScreenContent = (props) => {
+const PageContent = (props) => {
   return (
-    <div className={MEDIA_CLASS_SMALL}>
-      <div className="menu-title">Lyrix</div>
-      <div className="menu-buttons">
-        <MenuButton action="arrange" />
-        <MenuButton action="practice" />
-        <MenuButton action="perform" />
+    <div className="page-content">
+      <div class="d-sm-block">
+        <div className="menu-title">Lyrix</div>
+        <div className="menu-buttons">
+          <MenuButton action="arrange" />
+          <MenuButton action="practice" />
+          <MenuButton action="perform" />
+        </div>
       </div>
-    </div>
-  )
-}
-
-const BigScreenContent = (props) => {
-  return (
-    <div className={MEDIA_CLASS_LARGE}>
-      <div className="container banner-vcenter d-flex flex-column justify-content-center">
-        <div className="text-center">
-          <h1>Welcome to Lyrix!</h1>
-          <p>Your lyrics managing companion</p>
-          <div className="card-category-wrapper col-12 col-lg-6 offset-lg-3">
-            <CategoryCard title="Artists"
-                          link="/artists"
-                          subtitle="All my people, right here right now" />
-            <CategoryCard title="Songs"
-                          link="/songs"
-                          subtitle={`We have ${pluralize(props.songCount, 'song')}`} />
-            <CategoryCard title="Sets" />
-            <CategoryCard title="Gigs" />
-          </div>
+      <div class="d-none d-sm-block">
+      <h1>Welcome to Lyrix!</h1>
+        <p>Your lyrics managing companion</p>
+        <div className="card-category-wrapper col-12 col-lg-6 offset-lg-3">
+          <CategoryCard title="Artists"
+                        link="/artists"
+                        subtitle="All my people, right here right now" />
+          <CategoryCard title="Songs"
+                        link="/songs"
+                        subtitle={`We have ${pluralize(props.songCount, 'song')}`} />
+          <CategoryCard title="Sets" />
+          <CategoryCard title="Gigs" />
         </div>
       </div>
     </div>
   )
 }
-
 
 const Home = (props) => {
   const [songCount, setSongCount] = useState(0)
@@ -94,8 +86,7 @@ const Home = (props) => {
 
   return (
     <div className="home-page">
-      <SmallScreenContent />
-      <BigScreenContent songCount={songCount} />
+      <PageContent songCount={songCount} />
     </div>
   )
 }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
-import { MobileHeader } from '../../components'
-import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../../common'
+import { Page } from '../page'
 
 const getSongList = (songlistId) => {
   return fetch(`/songlists/${songlistId}`)
@@ -47,31 +46,6 @@ const SongsListComponent = (props) => {
   )
 }
 
-const SmallScreenContent = (props) => {
-  return (
-    <div className={MEDIA_CLASS_SMALL}>
-      <div className="list-page">
-        <MobileHeader title={props.songlist.title} />
-        <SongsListComponent songs={props.songlist.songs} />
-      </div>
-    </div>
-  )
-}
-
-const BigScreenContent = (props) => {
-  return (
-    <div className={MEDIA_CLASS_LARGE}>
-      <div className="container banner-vcenter d-flex flex-column justify-content-center">
-        <div className="text-center">
-          <h1>{props.songlist.title}</h1>
-          <SongsListComponent songs={props.songlist.songs} />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-
 const Songlist = (props) => {
   const { id } = useParams()
   const [songlist, setSonglist] = useState({title: null, songs: []})
@@ -90,8 +64,10 @@ const Songlist = (props) => {
 
   return (
     <div className="songlist-page">
-      <SmallScreenContent songlist={songlist} />
-      <BigScreenContent songlist={songlist} />
+      <Page
+        content={<SongsListComponent songs={songlist.songs} />}
+        title={songlist.title}
+      />
     </div>
   )
 }

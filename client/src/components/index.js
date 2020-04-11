@@ -1,2 +1,2 @@
-export { MobileHeader } from './headers'
+export { PageHeader } from './headers'
 export { ToTopButton } from './buttons'

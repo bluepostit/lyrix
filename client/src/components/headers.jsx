@@ -1,7 +1,7 @@
 import React from 'react'
 import { useHistory } from "react-router-dom"
 
-const MobileHeader = (props) => {
+const PageHeader = (props) => {
   const history = useHistory()
   const goBack = () => {
     history.goBack()
@@ -25,4 +25,4 @@ const MobileHeader = (props) => {
   )
 }
 
-export { MobileHeader }
+export { PageHeader }

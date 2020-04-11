@@ -12,6 +12,22 @@ html {
   position: relative;
 }
 
+.page-content {
+  display: block;
+  height: 80vh;
+}
+
+@media (min-width: 576px) {
+  .list-page {
+    margin: 0 5%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
 .mobile-header {
   margin-top: 1rem;
   text-align: center;
