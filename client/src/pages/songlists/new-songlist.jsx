@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
+import { FormError } from '../../components/forms'
 import { MobileHeader } from '../../components'
 import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../../common'
+import { SonglistForm } from './form'
 
 const SmallScreenContent = (props) => {
   return (
     <div className={MEDIA_CLASS_SMALL}>
       <div className="list-page">
         <MobileHeader title={props.title} />
-        To Be Implemented
+        <SonglistForm onCreate={props.onCreationSuccess} />
       </div>
     </div>
   )
@@ -29,9 +31,15 @@ const BigScreenContent = (props) => {
 
 const NewSonglist = () => {
   const title = 'Add a Songlist'
+  const history = useHistory()
+
+  const onCreationSuccess = () => {
+    history.push('/practice')
+  }
+
   return (
     <div className="songlist-page">
-      <SmallScreenContent title={title} />
+      <SmallScreenContent title={title} onCreationSuccess={onCreationSuccess}/>
       <BigScreenContent title={title} />
     </div>
   )

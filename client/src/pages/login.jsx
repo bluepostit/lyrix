@@ -1,17 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
-
-const LoginError = (props) => {
-  if (props.error) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        {props.error}
-      </div>
-    )
-  } else {
-    return ''
-  }
-}
+import { FormError } from '../components/forms'
 
 const Login = (props) => {
   const [userName, setUserName] = useState('')
@@ -58,7 +47,7 @@ const Login = (props) => {
       <div className="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
         <h1>Login</h1>
         <form action="/user/login" method="post" onSubmit={onSubmit}>
-          <LoginError error={error} />
+          <FormError error={error} />
           <div className="form-group">
             <label htmlFor="username">User name</label>
             <input type="text" id="username" name="username"
