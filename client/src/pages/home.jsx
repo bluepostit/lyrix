@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import { useHistory } from "react-router-dom"
-import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from '../common'
-
 
 const pluralize = (number, noun) => {
   let str = `${number} song`

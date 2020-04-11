@@ -26,7 +26,7 @@ const PageContent = (props) => {
 }
 
 const Song = (props) => {
-  const { songlist_id, song_id } = useParams()
+  const { song_id } = useParams()
   const [song, setSong] = useState({title: null, text: null})
   const history = useHistory()
 
