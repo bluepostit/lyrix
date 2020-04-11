@@ -39,6 +39,21 @@ const SonglistItem = (props) => {
   )
 }
 
+const ListHeader = (props) => {
+  const history = useHistory()
+  const onClick = () => {
+    history.push('/songlists/new')
+  }
+  return (
+    <span>
+      {props.title}
+      <button className="btn my-0 py-0 pr-0" onClick={onClick}>
+        <i class="fa fa-plus color-primary"></i>
+      </button>
+    </span>
+  )
+}
+
 // A list of Songlists, eg. 'Light Lounge', 'Sat. Night Rock'
 const SonglistsList = (props) => {
   return (
@@ -54,7 +69,7 @@ const SmallScreenContent = (props) => {
   return (
     <div className={MEDIA_CLASS_SMALL}>
       <div className="list-page">
-        <MobileHeader title="My Songlists" />
+        <MobileHeader title={<ListHeader title="My Songlists" />} />
         <SonglistsList songlists={props.songlists} />
       </div>
     </div>
