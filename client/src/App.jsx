@@ -5,9 +5,8 @@ import {
   Route,
   Link
 } from "react-router-dom"
-import { Login, Home, SignUp, Song } from './pages'
+import { Login, Home, Page, SignUp, Song } from './pages'
 import * as Songlists from './pages/songlists'
-import { MEDIA_CLASS_SMALL, MEDIA_CLASS_LARGE } from './common'
 
 const RouterSwitch = () => {
   return (
@@ -35,40 +34,25 @@ const RouterSwitch = () => {
   )
 }
 
-const BigScreenContent = () => {
+const PageContent = () => {
   return (
-    <div className={MEDIA_CLASS_LARGE}>
-      <nav>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/login">Login</Link></li>
-        </ul>
-      </nav>
-      <RouterSwitch />
-    </div>
-  )
-}
-
-
-const SmallScreenContent = () => {
-  return (
-    <div className={MEDIA_CLASS_SMALL}>
-      <RouterSwitch />
+    <div>
+      <nav class="d-none d-sm-block">
+          <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/login">Login</Link></li>
+          </ul>
+        </nav>
+        <RouterSwitch />
     </div>
   )
 }
 
 function App() {
-
   return (
-    <div className="App">
-     <Router>
-        <div>
-          <SmallScreenContent />
-          <BigScreenContent />
-        </div>
-      </Router>
-    </div>
+    <Router>
+      <Page noHeader content={<PageContent />} />
+    </Router>
   )
 }
 
