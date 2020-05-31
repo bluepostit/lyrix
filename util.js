@@ -18,6 +18,11 @@ const toCamelCase = (snake) => {
   )
 }
 
+const toKebabCase = (phrase) => {
+  const words = phrase.split(/\s+/)
+  return words.join('-')
+}
+
 /**
  * Build an 'index' object for the given directory.
  * Requires all modules in the given directory, and
@@ -46,8 +51,36 @@ const buildModuleIndex = (directory) => {
   return moduleIndex
 }
 
+// https://www.tomas-dvorak.cz/posts/nodejs-request-without-dependencies/
+const getContent = (url) => {
+  let recursedTimes = 0
+  return new Promise((resolve, reject) => {
+    const lib = url.startsWith('https') ? require('https') : require('http')
+    const request = lib.get(url, (response) => {
+      const statusCode = response.statusCode
+      if (statusCode === 301 || statusCode === 302) {
+        recursedTimes += 1
+        if (recursedTimes <= 5) {
+          console.log('redirecting...')
+          resolve(getContent(response.headers.location))
+        } else {
+          reject(new Error(`Too many redirects. Location: ${response.headers.location}`))
+        }
+      } else if (statusCode < 200 || statusCode > 299) {
+        reject(new Error(`Failed to load content. Status code: ${statusCode}`))
+      }
+      const body = []
+      response.on('data', (chunk) => body.push(chunk))
+      response.on('end', () => resolve(body.join('')))
+    })
+    request.on('error', (err) => reject(err))
+  })
+}
+
 module.exports = {
   buildModuleIndex,
+  getContent,
   toCamelCase,
+  toKebabCase,
   toSnakeCase
 }

@@ -1,6 +1,7 @@
 const express = require('express')
 const { Song } = require('../models')
 const router = express.Router()
+const SongImporter = require('../services/song-importer')
 
 const SONG_ATTRIBUTES = [
   'id', 'title', 'text'
@@ -30,6 +31,19 @@ router.get('/count', async (req, res, next) => {
     error: false,
     status: 200,
     data: count
+  })
+})
+
+router.get('/import', async (req, res, next) => {
+  console.log(req.query)
+
+  const song = await SongImporter.search(req.query.q)
+  console.log('song')
+  console.log(song)
+  res.json({
+    error: false,
+    status: 200,
+    song
   })
 })
 

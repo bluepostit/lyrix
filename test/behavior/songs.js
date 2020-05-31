@@ -147,4 +147,24 @@ describe('/songs', () => {
       expectSongCount(2)
     })
   })
+
+  describe('GET /songs/import', () => {
+    it("should return the found song's data when a song is found", async () => {
+      const query = 'coldplay the scientist'
+      chai.request(app)
+        .get(`/songs/import?q=${query}`)
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(200)
+          expect(res.body.song).to.be.an('object')
+          const song = res.body.song
+          expect(song.artist).to.eql('Coldplay')
+          expect(song.title).to.eql('The Scientist')
+          expect(song.text).to.have.lengthOf.above(100)
+          console.log(song.text)
+        })
+    })
+  })
 })
