@@ -42,13 +42,21 @@ const getArtist = ($) => {
 class GeniusSongImporter {
   async search (query) {
     const songPageUrl = await getSongPageUrl(query)
-    const page = await util.getContent(songPageUrl)
-    util.saveToFile(page, 'out.html')
+    let artist = null
+    let title = null
+    let lyrics = null
 
-    const $ = cheerio.load(page)
-    const lyrics = getLyrics($)
-    const title = $('h1').first().text()
-    const artist = getArtist($)
+    try {
+      const page = await util.getContent(songPageUrl)
+      util.saveToFile(page, 'out.html')
+
+      const $ = cheerio.load(page)
+      lyrics = getLyrics($)
+      title = $('h1').first().text()
+      artist = getArtist($)
+    } catch (e) {
+      console.log(e)
+    }
 
     return {
       lyrics,
