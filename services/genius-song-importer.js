@@ -14,22 +14,41 @@ const getSongPageUrl = async (query) => {
   // TO DO: now parse the page for the first result URL, etc.
   // (Note: this did not present the search results when I tried!)
 
-  let suffix = `${util.toKebabCase(query)}-lyrics`
+  const suffix = `${util.toKebabCase(query)}-lyrics`
   return `${URL_PREFIX_LYRICS}${suffix}`
+}
+
+const getLyrics = ($) => {
+  let lyrics = $('div[class^="SongPage__Section"]').first().text()
+  if (lyrics === '') {
+    lyrics = $('.lyrics').first().text().trim()
+  }
+  return lyrics
+}
+
+const getArtist = ($) => {
+  // return $('[class*="SongHeader__Artist"]').text()
+  const title = $('title').text().trim()
+  const regex = /(?<title>[^–]+) – /
+  const found = title.match(regex)
+
+  if (!found) {
+    return found
+  }
+
+  return found.groups.title
 }
 
 class GeniusSongImporter {
   async search (query) {
     const songPageUrl = await getSongPageUrl(query)
-    console.log('song page url is: ')
-    console.log(songPageUrl)
     const page = await util.getContent(songPageUrl)
+    util.saveToFile(page, 'out.html')
 
     const $ = cheerio.load(page)
-    const lyrics = $('div[class^="SongPage__Section"]').first().text()
-    console.log(lyrics)
+    const lyrics = getLyrics($)
     const title = $('h1').first().text()
-    const artist = $('[class*="SongHeader__Artist"]').text()
+    const artist = getArtist($)
 
     return {
       lyrics,

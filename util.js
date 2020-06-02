@@ -77,10 +77,16 @@ const getContent = (url) => {
   })
 }
 
+const saveToFile = async (text, fileName) => {
+  const fs = require('fs')
+  await fs.promises.writeFile(fileName, text)
+}
+
 module.exports = {
   buildModuleIndex,
   getContent,
   toCamelCase,
   toKebabCase,
-  toSnakeCase
+  toSnakeCase,
+  saveToFile
 }
