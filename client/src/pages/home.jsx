@@ -50,7 +50,7 @@ const MenuButton = (props) => {
 const PageContent = (props) => {
   return (
     <div className="page-content">
-      <div class="d-sm-block">
+      <div className="d-sm-block">
         <div className="menu-title">Lyrix</div>
         <div className="menu-buttons">
           <MenuButton action="arrange" />
@@ -58,7 +58,7 @@ const PageContent = (props) => {
           <MenuButton action="perform" />
         </div>
       </div>
-      <div class="d-none d-sm-block">
+      <div className="d-none d-sm-block">
       <h1>Welcome to Lyrix!</h1>
         <p>Your lyrics managing companion</p>
         <div className="card-category-wrapper col-12 col-lg-6 offset-lg-3">
