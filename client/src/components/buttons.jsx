@@ -2,7 +2,6 @@ import React from 'react'
 
 const ToTopButton = (props) => {
   const onClick = () => {
-    console.log('to-top button clicked!')
     window.scrollTo(0, 0)
   }
 
