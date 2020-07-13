@@ -1,5 +1,6 @@
 const path = require('path')
 const glob = require('glob')
+const axios = require('axios')
 
 const toSnakeCase = (camel) => {
   const re = /([a-z])([A-Z])/g
@@ -52,7 +53,7 @@ const buildModuleIndex = (directory) => {
 }
 
 // https://www.tomas-dvorak.cz/posts/nodejs-request-without-dependencies/
-const getContent = (url) => {
+const getContentOld = (url) => {
   let recursedTimes = 0
   return new Promise((resolve, reject) => {
     const lib = url.startsWith('https') ? require('https') : require('http')
@@ -74,6 +75,14 @@ const getContent = (url) => {
       response.on('end', () => resolve(body.join('')))
     })
     request.on('error', (err) => reject(err))
+  })
+}
+
+const getContent = async (url) => {
+  return axios.get(url, {
+    headers: {
+      'User-Agent': 'Python2.1/urllib'
+    }
   })
 }
 

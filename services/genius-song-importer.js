@@ -48,9 +48,11 @@ class GeniusSongImporter {
 
     try {
       const page = await util.getContent(songPageUrl)
-      util.saveToFile(page, 'out.html')
+      const data = page.data
+      console.log(page.data)
+      util.saveToFile(page.data, 'out.html')
 
-      const $ = cheerio.load(page)
+      const $ = cheerio.load(data)
       lyrics = getLyrics($)
       title = $('h1').first().text()
       artist = getArtist($)
