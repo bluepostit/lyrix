@@ -17,7 +17,7 @@ const getSong = (songId) => {
 const PageContent = (props) => {
   return (
     <div>
-      <div class="song-text">
+      <div className="song-text">
         <div>{props.song.text}</div>
       </div>
       <ToTopButton />

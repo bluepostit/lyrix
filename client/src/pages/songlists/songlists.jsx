@@ -47,7 +47,7 @@ const ListHeader = (props) => {
     <span>
       {props.title}
       <button className="btn my-0 py-0 pr-0" onClick={onClick}>
-        <i class="fa fa-plus color-primary"></i>
+        <i className="fa fa-plus color-primary"></i>
       </button>
     </span>
   )

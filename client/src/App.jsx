@@ -37,7 +37,7 @@ const RouterSwitch = () => {
 const PageContent = () => {
   return (
     <div>
-      <nav class="d-none d-sm-block">
+      <nav className="d-none d-sm-block">
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/login">Login</Link></li>
