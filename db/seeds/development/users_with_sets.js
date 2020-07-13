@@ -47,7 +47,12 @@ exports.seed = async function (knex) {
     if (USER_EMAILS_SPECIFIC.length > 0 && i < USER_EMAILS_SPECIFIC.length) {
       email = USER_EMAILS_SPECIFIC[i]
     } else {
-      email = faker.internet.exampleEmail()
+      do {
+        email = faker.internet.exampleEmail()
+        if (email.length >= 24) {
+          email = null
+        }
+      } while (email === null)
     }
     const data = {
       email,
