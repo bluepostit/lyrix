@@ -40,7 +40,7 @@ router.get('/', ensureLoggedIn,
     const songlists = await req.user
       .$relatedQuery('songLists')
       .select(...SONGLIST_ATTRIBUTES)
-      .eager('songs')
+      .withGraphFetched('songs')
 
     res.json({
       error: false,

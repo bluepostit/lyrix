@@ -31,7 +31,7 @@ router.get('/:id', async (req, res, next) => {
     const artist = await Artist
       .query()
       .findById(req.params.id)
-      .eager('songs')
+      .withGraphFetched('songs')
 
     if (artist == null) {
       error = 'Artist not found'
