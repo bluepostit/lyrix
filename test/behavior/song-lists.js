@@ -3,8 +3,7 @@ const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
 
-const { User } =
-  require('../../models')
+const { User } = require('../../models')
 const RecordManager = require('../record-manager.js')
 
 const TEST_USER_DATA = {
@@ -164,13 +163,11 @@ describe('/songlists', async () => {
       const agent = chai.request.agent(app)
       await loginAsUser(agent, TEST_USER_DATA)
 
-      agent.get(`/songlists/${lists[0].id}`)
-        .end((err, res) => {
-          if (err) {
-            console.log(err)
-          }
+      await agent.get(`/songlists/${lists[0].id}`)
+        .then(res => {
           expect(res.body).to.have.status(200)
           const data = res.body.data
+
           expect(data.title).to.eql(lists[0].title)
           expect(data.songs).to.be.an('array')
           expect(data.songs.length).to.eql(lists[0].songs.length)

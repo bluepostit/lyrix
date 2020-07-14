@@ -68,11 +68,11 @@ router.get('/:id', ensureLoggedIn,
     const songList = await SongList
       .query()
       .findById(req.params.id)
-      .eager('[songs.artist]')
+      .allowGraph('[songs.artist]')
+      .withGraphFetched('[songs.artist]')
 
     let status = 200
     let error = false
-    // console.log(songList)
     if (songList === undefined) {
       error = 'Song list not found'
       status = 404

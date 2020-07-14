@@ -30,6 +30,7 @@ module.exports = class SongList extends Model {
         join: {
           from: 'song_lists.id',
           through: {
+            modelClass: SongListSong,
             from: 'song_list_songs.song_list_id',
             to: 'song_list_songs.song_id'
           },
