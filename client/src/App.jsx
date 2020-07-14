@@ -5,7 +5,7 @@ import {
   Route,
   Link
 } from "react-router-dom"
-import { Login, Home, Page, SignUp, Song } from './pages'
+import { Arrange, Login, Home, Page, SignUp, Song } from './pages'
 import * as Songlists from './pages/songlists'
 
 const RouterSwitch = () => {
@@ -17,8 +17,8 @@ const RouterSwitch = () => {
       <Route path="/sign-up">
         <SignUp />
       </Route>
-      <Route path="/perform">
-        <h1>Perform</h1>
+      <Route path="/arrange">
+        <Arrange />
       </Route>
       <Route path="/practice">
         <Songlists.Index />

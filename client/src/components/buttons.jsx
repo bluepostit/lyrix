@@ -22,8 +22,8 @@ const MenuButton = (props) => {
 
   const history = useHistory()
 
-  const handleMenuButtonClick = (e) => {
-    const url = '/' + e.target.dataset.action
+  const handleMenuButtonClick = () => {
+    const url = `/${action}`
     history.push(url)
   }
 
