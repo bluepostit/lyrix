@@ -14,6 +14,7 @@ router.get('/', async (req, res, next) => {
       .select(ARTIST_ATTRIBUTES)
       .count('songs', { as: 'songCount' })
       .leftJoin('songs', 'artists.id', 'songs.artist_id')
+      .orderBy('name')
       .groupBy('artists.id')
     res.json({
       error: false,

@@ -23,8 +23,7 @@ const renderArtist = (artist) => {
       </div>
       <div>
         <span className="badge badge-pill badge-info">
-          {/* {songlist.songs.length} */}
-          ?
+          {artist.songCount}
         </span>
       </div>
     </div>
