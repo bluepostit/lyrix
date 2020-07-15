@@ -12,6 +12,13 @@ app.use(express.urlencoded({ extended: true }))
 require('./session').init(app, config)
 require('./authentication').init(app)
 
+// Setup node data types for PostgreSQL
+// See https://github.com/brianc/node-pg-types#use
+var types = require('pg').types
+types.setTypeParser(20, function (val) {
+  return parseInt(val)
+})
+
 // Routes
 
 // Serve static files from the React app

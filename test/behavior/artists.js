@@ -40,16 +40,51 @@ describe('/artists', () => {
             expect(data).to.be.an('array')
             expect(data.length).to.eql(2)
 
-            const artist0 = data[0]
-            expect(artist0).to.be.an('object')
-            expect(artist0.name).to.eql('Bobby')
+            const artists = data
+            expect(artists[0]).to.be.an('object')
+            expect(artists[1]).to.be.an('object')
 
-            const artist1 = data[1]
-            expect(artist1.name).to.eql('Sue')
+            const names = artists.map(artist => artist.name)
+            expect(names.sort()).to.eql(['Bobby', 'Sue'])
           })
       } catch (err) {
         console.log(err)
       }
+    })
+
+    it('should also return the amount of songs that the artist has', async () => {
+      await Artist
+        .query()
+        .insertGraph({
+          name: 'Skinny Pete',
+
+          songs: [
+            {
+              title: 'A Blue Song',
+              text: 'This song is blue'
+            }, {
+              title: 'A Green Song',
+              text: 'This song is green'
+            }
+          ]
+        })
+
+      chai.request(app)
+        .get('/artists')
+        .end((err, res) => {
+          if (err) {
+            console.log(err.stack)
+          }
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('object')
+
+          const data = res.body.data
+          expect(data.length).to.eql(1)
+          const artist0 = data[0]
+          expect(artist0).to.be.an('object')
+          expect(artist0.name).to.eql('Skinny Pete')
+          expect(artist0.songCount).to.eql(2)
+        })
     })
 
     it('should return empty when there are no artists', () => {

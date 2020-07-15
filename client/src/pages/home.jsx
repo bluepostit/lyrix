@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useHistory } from "react-router-dom"
+import { MenuButton } from '../components/buttons'
 
 const pluralize = (number, noun) => {
   let str = `${number} song`
@@ -24,29 +24,6 @@ function CategoryCard (props) {
   )
 }
 
-/**
- * Menu button for small screen's home page
- */
-const MenuButton = (props) => {
-  const action = props.action
-  const title = action[0].toUpperCase() + action.slice(1)
-
-  const history = useHistory()
-
-  const handleMenuButtonClick = (e) => {
-    const url = '/' + e.target.dataset.action
-    history.push(url)
-  }
-
-  const className = `btn btn-primary menu-button menu-button-${action}`
-  return (
-    <button className={className}
-            data-action={action}
-            onClick={handleMenuButtonClick}>{title}
-    </button>
-  )
-}
-
 const PageContent = (props) => {
   return (
     <div className="page-content">
@@ -59,7 +36,7 @@ const PageContent = (props) => {
         </div>
       </div>
       <div className="d-none d-sm-block">
-      <h1>Welcome to Lyrix!</h1>
+        <h1>Welcome to Lyrix!</h1>
         <p>Your lyrics managing companion</p>
         <div className="card-category-wrapper col-12 col-lg-6 offset-lg-3">
           <CategoryCard title="Artists"

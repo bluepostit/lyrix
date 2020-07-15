@@ -5,20 +5,23 @@ import {
   Route,
   Link
 } from "react-router-dom"
-import { Login, Home, Page, SignUp, Song } from './pages'
+import { Arrange, Artists, Login, Home, Page, SignUp, Song } from './pages'
 import * as Songlists from './pages/songlists'
 
 const RouterSwitch = () => {
   return (
     <Switch>
+      <Route path="/artists">
+        <Artists />
+      </Route>
       <Route path="/login">
         <Login />
       </Route>
       <Route path="/sign-up">
         <SignUp />
       </Route>
-      <Route path="/perform">
-        <h1>Perform</h1>
+      <Route path="/arrange">
+        <Arrange />
       </Route>
       <Route path="/practice">
         <Songlists.Index />

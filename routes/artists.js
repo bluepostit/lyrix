@@ -4,7 +4,7 @@ const router = express.Router()
 const { Artist } = require('../models')
 const songsRouter = require('./artist-songs.js')
 
-const ARTIST_ATTRIBUTES = ['id', 'name']
+const ARTIST_ATTRIBUTES = ['artists.id', 'artists.name']
 const SONG_ATTRIBUTES = ['id', 'title', 'text']
 
 router.get('/', async (req, res, next) => {
@@ -12,6 +12,10 @@ router.get('/', async (req, res, next) => {
     const artists = await Artist
       .query()
       .select(ARTIST_ATTRIBUTES)
+      .count('songs', { as: 'songCount' })
+      .leftJoin('songs', 'artists.id', 'songs.artist_id')
+      .orderBy('name')
+      .groupBy('artists.id')
     res.json({
       error: false,
       data: artists
@@ -31,7 +35,7 @@ router.get('/:id', async (req, res, next) => {
     const artist = await Artist
       .query()
       .findById(req.params.id)
-      .eager('songs')
+      .withGraphFetched('songs')
 
     if (artist == null) {
       error = 'Artist not found'

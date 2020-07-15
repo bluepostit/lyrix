@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { useHistory } from "react-router-dom"
-import { Page } from '../page'
+import React from 'react'
+import { ItemList } from '../item-list'
 
 const getSonglists = () => {
-  // console.log('GET SONG LISTS')
   return fetch('/songlists')
     .then(response => response.json())
     .then((json) => {
@@ -14,17 +12,9 @@ const getSonglists = () => {
     })
 }
 
-// A single song list, eg. 'Sat. Night Rock'
-const SonglistItem = (props) => {
-  const songlist = props.songlist
-  const history = useHistory()
-  const onClick = () => {
-    history.push(`/songlists/${songlist.id}`)
-  }
-
+const renderSonglist = (songlist) => {
   return (
-    <button key={songlist.id} className="list-group-item lyrix-list-item"
-            onClick={onClick} >
+    <div class="d-flex w-100 justify-content-between">
       <div>
         <i className="fas fa-clipboard-list"></i>
         <span>{songlist.title}</span>
@@ -34,58 +24,26 @@ const SonglistItem = (props) => {
           {songlist.songs.length}
         </span>
       </div>
-    </button>
-  )
-}
-
-const ListHeader = (props) => {
-  const history = useHistory()
-  const onClick = () => {
-    history.push('/songlists/new')
-  }
-  return (
-    <span>
-      {props.title}
-      <button className="btn my-0 py-0 pr-0" onClick={onClick}>
-        <i className="fa fa-plus color-primary"></i>
-      </button>
-    </span>
-  )
-}
-
-// A list of Songlists, eg. 'Light Lounge', 'Sat. Night Rock'
-const SonglistsList = (props) => {
-  return (
-    <div className="list-group lyrix-list">
-      { props.songlists.map((songlist, index) =>
-        <SonglistItem key={index} songlist={songlist} />
-      )}
     </div>
   )
+}
+
+const onSonglistClick = (songlist, history) => {
+  history.push(`/songlists/${songlist.id}`)
+}
+
+const onNewClick = (history) => {
+  history.push('/songlists/new')
 }
 
 const Songlists = (props) => {
-  const [songlists, setSonglists] = useState([])
-  const history = useHistory()
-
-  useEffect(() => {
-    getSonglists()
-      .then(lists => setSonglists(lists))
-      .catch((e) => {
-        console.log('Something went wrong!')
-        console.log(e)
-        history.push('/login')
-      })
-    }, [history, songlists.length]) // things to monitor for render
-    // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
-
   return (
-    <div className="songlists-page">
-      <Page
-        content={<SonglistsList songlists={songlists} />}
-        title={<ListHeader title="My Songlists" />}
-      />
-    </div>
+    <ItemList title="My Songlists"
+              getItems={getSonglists}
+              onNewClick={onNewClick}
+              onItemClick={onSonglistClick}
+              renderItem={renderSonglist}
+    />
   )
 }
 

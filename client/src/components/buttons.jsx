@@ -1,4 +1,5 @@
 import React from 'react'
+import { useHistory } from "react-router-dom"
 
 const ToTopButton = (props) => {
   const onClick = () => {
@@ -12,4 +13,28 @@ const ToTopButton = (props) => {
   )
 }
 
-export { ToTopButton }
+/**
+ * Menu button for small screen
+ */
+const MenuButton = (props) => {
+  const action = props.action
+  const title = action[0].toUpperCase() + action.slice(1)
+
+  const history = useHistory()
+
+  const handleMenuButtonClick = () => {
+    const url = `/${action}`
+    history.push(url)
+  }
+
+  const className = `btn btn-primary menu-button menu-button-${action}`
+  return (
+    <button className={className}
+            data-action={action}
+            onClick={handleMenuButtonClick}>{title}
+    </button>
+  )
+}
+
+
+export { ToTopButton, MenuButton }
