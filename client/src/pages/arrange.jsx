@@ -5,7 +5,7 @@ const PageContent = (props) => {
     return (
       <div className="page-content">
         <div className="d-sm-block">
-          <div className="menu-title">Lyrix</div>
+          <div className="menu-title mb-5">Arrange</div>
           <div className="menu-buttons">
             <MenuButton action="artists" />
             <MenuButton action="songs" />
