@@ -39,5 +39,9 @@ html {
 
   h1 {
     font-size: 1.5rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
