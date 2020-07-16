@@ -28,7 +28,8 @@ const RouterSwitch = () => {
       <Route path="/practice">
         <Songlists.Index />
       </Route>
-      <Route path="/songlists/:songlist_id/song/:song_id"
+      <Route path="/songs/:song_id" children={<Song />} />
+      <Route path="/songlists/:songlist_id/songs/:song_id"
              children={<Song />} />
       <Route path="/songlists/new" children={<Songlists.New />} />
       <Route path="/songlists/:id" children={<Songlists.Show />} />
