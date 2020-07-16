@@ -14,7 +14,7 @@ const getSonglists = () => {
 
 const renderSonglist = (songlist) => {
   return (
-    <div class="d-flex w-100 justify-content-between">
+    <div className="d-flex w-100 justify-content-between">
       <div>
         <i className="fas fa-clipboard-list"></i>
         <span>{songlist.title}</span>

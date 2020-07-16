@@ -5,14 +5,16 @@ import {
   Route,
   Link
 } from "react-router-dom"
-import { Arrange, Artists, Login, Home, Page, SignUp, Song } from './pages'
+import { Arrange, Login, Home, Page, SignUp, Song } from './pages'
+import * as Artists from './pages/artists'
 import * as Songlists from './pages/songlists'
 
 const RouterSwitch = () => {
   return (
     <Switch>
+      <Route path="/artists/:artist_id" children={<Artists.Show />} />
       <Route path="/artists">
-        <Artists />
+        <Artists.Index />
       </Route>
       <Route path="/login">
         <Login />
