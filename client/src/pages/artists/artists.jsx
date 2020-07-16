@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { ItemList } from './item-list'
+import { ItemList } from '../item-list'
 
 const getArtists = () => {
-  // console.log('GET SONG LISTS')
   return fetch('/artists')
     .then(response => response.json())
     .then((json) => {
