@@ -41,40 +41,40 @@ const getPlainSong = async (id) => {
     .withGraphFetched('artist')
 }
 
-const getSongWithContext = async (id, context, contextId) => {
-  const song = await getPlainSong(id)
-  song.nextSongId = null
+const getNextSong = async (song, context, contextId) => {
   let nextSong
 
-  console.log(`getSongWithContext(${id}, ${context}, ${contextId})`)
+  console.log(`getSongWithContext(${song.id}, ${context}, ${contextId})`)
   if (context === 'artist') {
-    nextSong = await SongsHelper.getNextSongByArtist(id, context)
+    nextSong = await SongsHelper.getNextSongByArtist(song, context)
   } else if (context === 'songlist') {
-    nextSong = await SongsHelper.getNextSongBySonglist(id, contextId)
+    nextSong = await SongsHelper.getNextSongBySonglist(song, contextId)
   }
-  if (nextSong) {
-    song.nextSongId = nextSong.id
-  }
-  return song
+  return nextSong
 }
 
 router.get('/:id', async (req, res, next) => {
   res.type('json')
-  let songId = req.params.id
+  let song = await getPlainSong(req.params.id)
+  let nextSong
+  if (song) {
+    song.nextSongId = null
+  }
 
   const context = req.query.context
   const contextId = req.query.contextId
 
   switch(context) {
     case 'artist':
-      song = await getSongWithContext(songId, context)
+      nextSong = await getNextSong(song, context)
     break
     case 'songlist':
-      song = await getSongWithContext(songId, context, contextId)
+      nextSong = await getNextSong(song, context, contextId)
     break
-    case undefined:
-      song = await getPlainSong(songId)
-    break
+  }
+
+  if (song && nextSong) {
+    song.nextSongId = nextSong.id
   }
 
   let status = 200
