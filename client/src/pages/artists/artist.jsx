@@ -26,7 +26,7 @@ const renderSong = (song) => {
 }
 
 const onSongClick = (song, history) => {
-  history.push(`/songs/${song.id}`)
+  history.push(`/artists/${song.artist_id}/songs/${song.id}`)
 }
 
 const onNewClick = (history) => {
@@ -34,14 +34,14 @@ const onNewClick = (history) => {
 }
 
 const Artist = () => {
-  const { artist_id } = useParams()
+  const { artistId } = useParams()
   const [artist, setArtist] = useState({name: null, songs: []})
   const history = useHistory()
 
   useEffect(() => {
     async function fetchArtist () {
       try {
-        let artist = await getArtist(artist_id)
+        let artist = await getArtist(artistId)
         setArtist(artist)
       } catch(e) {
         console.log('Something went wrong!')
@@ -49,7 +49,7 @@ const Artist = () => {
       }
     }
     fetchArtist()
-  }, [history, artist_id, artist.name, artist.songs.length])  // things to monitor for render
+  }, [history, artistId, artist.name, artist.songs.length])  // things to monitor for render
   // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
   const getSongs = async () => {

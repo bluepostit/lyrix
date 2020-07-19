@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from "react-router-dom"
+import { useHistory, useLocation, useParams } from "react-router-dom"
 import { Page } from './page'
 import { ToTopButton } from '../components'
-import { getNextSongLink } from '../util'
 
-const getSong = (songId) => {
-  return fetch(`/songs/${songId}`)
+const getSong = (songId, songlistId, artistId) => {
+  let url = `/songs/${songId}`
+  if (songlistId) {
+    url += `?context=songlist&contextId=${songlistId}`
+  } else if (artistId) {
+    url += '?context=artist'
+  } else {
+    url += '?context=songlist' // Assumed context: ALL songs
+  }
+  return fetch(url)
     .then(response => response.json())
     .then((json) => {
       if (json.error) {
@@ -27,35 +34,29 @@ const PageContent = (props) => {
 }
 
 const Song = (props) => {
-  const { songlist_id, song_id } = useParams()
+  const { artistId, songlistId, songId } = useParams()
   const [song, setSong] = useState({title: null, text: null})
   const [nextLink, setNextLink] = useState()
   const history = useHistory()
+  const location = useLocation()
 
   useEffect(() => {
-    getSong(song_id)
-      .then(song => setSong(song))
+    getSong(songId, songlistId, artistId)
+      .then((song) => {
+        setSong(song)
+        if (song.nextSongId) {
+          setNextLink(location.pathname.replace(/songs\/\d+/, `songs/${song.nextSongId}`))
+        } else {
+          setNextLink(null)
+        }
+      })
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
         history.push('/login')
       })
-    }, [history, song_id, song.text, song.title]) // things to monitor for render
+    }, [history, songId, artistId, songlistId, location.pathname]) // things to monitor for render
     // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
-
-  useEffect(() => {
-    async function fetchNextSongLink() {
-      try {
-        let link = getNextSongLink(song, songlist_id)
-        setNextLink(link)
-      } catch (e) {
-        console.log('Something went wrong!')
-        console.log(e)
-      }
-    }
-    fetchNextSongLink()
-  }, [history, song, songlist_id, nextLink]) // things to monitor for render
-  // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
   return (
     <div className="song-page">
