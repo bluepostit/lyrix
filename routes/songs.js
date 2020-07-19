@@ -44,7 +44,6 @@ const getPlainSong = async (id) => {
 const getNextSong = async (song, context, contextId) => {
   let nextSong
 
-  console.log(`getSongWithContext(${song.id}, ${context}, ${contextId})`)
   if (context === 'artist') {
     nextSong = await SongsHelper.getNextSongByArtist(song, context)
   } else if (context === 'songlist') {

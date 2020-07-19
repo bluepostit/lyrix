@@ -37,4 +37,12 @@ module.exports = class Song extends Model {
       }
     }
   }
+
+  static get modifiers() {
+    return {
+      onlyId(builder) {
+        builder.select(`${Song.tableName}.id`)
+      }
+    }
+  }
 }
