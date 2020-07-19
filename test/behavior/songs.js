@@ -3,13 +3,13 @@ const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
 
-const { Song } = require('../../models')
+const { Artist, Song } = require('../../models')
 const RecordManager = require('../record-manager')
 
 chai.use(chaiHttp)
 
 const insertTwoSongsWithArtists = async () => {
-  await Song
+  return Song
     .query()
     .insertGraph([
       {
@@ -29,6 +29,27 @@ const insertTwoSongsWithArtists = async () => {
       }
     ])
 }
+
+const insertArtistWithTwoSongs = async () => {
+  return Artist
+    .query()
+    .insertGraph(
+      {
+        name: 'Bobby',
+        songs: [
+          {
+            title: 'Song 1',
+            text: 'This is Song 1'
+          },
+          {
+            title: 'Song 2',
+            text: 'This is Song 2'
+          }
+        ]
+      }
+    )
+}
+
 
 describe('/songs', () => {
   beforeEach(async () => {
@@ -121,6 +142,88 @@ describe('/songs', () => {
         })
     })
   })
+
+  describe('GET /songs/:id?context=artist', () => {
+    it("should return the song with a link to the artist's next song", async () => {
+      const artist = await insertArtistWithTwoSongs()
+      console.log(artist.songs)
+      const song0 = artist.songs[0]
+      const song1 = artist.songs[1]
+      const response = await chai.request(app)
+        .get(`/songs/${song0.id}?context=artist`)
+
+      const data = response.body.data
+      expect(data).to.be.an('object')
+      expect(data.id).to.eql(song0.id)
+      expect(data.nextSongId).to.eql(song1.id)
+    })
+    it("should return the song with no link to a next song if this is the artist's last song", async () => {
+      const artist = await insertArtistWithTwoSongs()
+      console.log(artist.songs)
+      const song0 = artist.songs[0]
+      const song1 = artist.songs[1]
+      const response = await chai.request(app)
+        .get(`/songs/${song1.id}?context=artist`)
+
+      const data = response.body.data
+      expect(data).to.be.an('object')
+      expect(data.id).to.eql(song1.id)
+      expect(data.nextSongId).to.eql(null)
+    })
+  })
+
+  /*describe('GET /songs/:id?context=songlist', () => {
+    it("should return the song with a link to the next song from the given songlist", async () => {
+      const songs = await insertTwoSongsWithArtists()
+      console.log(songs)
+
+      const response = await chai.request(app)
+        .get(`/songs/${songs[0].id}?context=songlist`)
+      const data = response.body.data
+      expect(data).to.be.an('object')
+      expect(data.id).to.eql(songs[0].id)
+      expect(data.nextSongId).to.eql(songs[1].id)
+    })
+
+    it("should return the song with no link to a next song if this is the last song in the songlist", async () => {
+      const songs = await insertTwoSongsWithArtists()
+      console.log(songs)
+
+      const response = await chai.request(app)
+        .get(`/songs/${songs[1].id}?context=songlist`)
+      const data = response.body.data
+      expect(data).to.be.an('object')
+      expect(data.id).to.eql(songs[1].id)
+      expect(data.nextSongId).to.eql(null)
+    })
+  })*/
+
+  describe('GET /songs/:id?context=songlist', () => {
+    it("should return the song with a link to the next song from the list of all songs", async () => {
+      const songs = await insertTwoSongsWithArtists()
+      console.log(songs)
+
+      const response = await chai.request(app)
+        .get(`/songs/${songs[0].id}?context=songlist`)
+      const data = response.body.data
+      expect(data).to.be.an('object')
+      expect(data.id).to.eql(songs[0].id)
+      expect(data.nextSongId).to.eql(songs[1].id)
+    })
+
+    it("should return the song with no link to a next song if this is the last song", async () => {
+      const songs = await insertTwoSongsWithArtists()
+      console.log(songs)
+
+      const response = await chai.request(app)
+        .get(`/songs/${songs[1].id}?context=songlist`)
+      const data = response.body.data
+      expect(data).to.be.an('object')
+      expect(data.id).to.eql(songs[1].id)
+      expect(data.nextSongId).to.eql(null)
+    })
+  })
+
 
   describe('GET /songs/count', () => {
     const expectSongCount = (count) => {
