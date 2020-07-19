@@ -6,11 +6,19 @@ const renderHeader = (props) => {
     return <></>
   } else {
     return (
-      <PageHeader title={props.title} />
+      <PageHeader title={props.title} nextLink={props.nextLink} />
     )
   }
 }
 
+/**
+ * Props:
+ * - title - string to be used as the page's title
+ * - content - string/JSX to be used as the page's content
+ * - nextLink - string to be used as the 'next' link. Can be undefined.
+ *
+ * @param {*} props
+ */
 const Page = (props) => {
   return (
     <div className="page-content">

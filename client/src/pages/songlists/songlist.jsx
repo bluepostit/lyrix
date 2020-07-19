@@ -20,7 +20,7 @@ const SongItem = (props) => {
   const { id } = useParams()
   const history = useHistory()
   const onClick = () => {
-    history.push(`/songlists/${id}/song/${song.id}`)
+    history.push(`/songlists/${id}/songs/${song.id}`)
   }
 
   return (

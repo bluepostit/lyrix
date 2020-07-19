@@ -1,5 +1,6 @@
 const express = require('express')
 const { Song } = require('../models')
+const { SongsHelper } = require('../helpers/songs')
 const router = express.Router()
 
 const SONG_ATTRIBUTES = [
@@ -12,7 +13,7 @@ router.get('/', async (req, res, next) => {
   const songs = await Song
     .query()
     .select(...SONG_ATTRIBUTES)
-    .eager('artist')
+    .withGraphFetched('artist')
 
   res.json({
     error: false,
@@ -33,12 +34,47 @@ router.get('/count', async (req, res, next) => {
   })
 })
 
+const getPlainSong = async (id) => {
+  return Song
+    .query()
+    .findById(id)
+    .withGraphFetched('artist')
+}
+
+const getNextSong = async (song, context, contextId) => {
+  let nextSong
+
+  if (context === 'artist') {
+    nextSong = await SongsHelper.getNextSongByArtist(song, context)
+  } else if (context === 'songlist') {
+    nextSong = await SongsHelper.getNextSongBySonglist(song, contextId)
+  }
+  return nextSong
+}
+
 router.get('/:id', async (req, res, next) => {
   res.type('json')
-  const song = await Song
-    .query()
-    .findById(req.params.id)
-    .eager('artist')
+  let song = await getPlainSong(req.params.id)
+  let nextSong
+  if (song) {
+    song.nextSongId = null
+  }
+
+  const context = req.query.context
+  const contextId = req.query.contextId
+
+  switch(context) {
+    case 'artist':
+      nextSong = await getNextSong(song, context)
+    break
+    case 'songlist':
+      nextSong = await getNextSong(song, context, contextId)
+    break
+  }
+
+  if (song && nextSong) {
+    song.nextSongId = nextSong.id
+  }
 
   let status = 200
   let error = false

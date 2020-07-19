@@ -1,5 +1,9 @@
 .button-nav {
   color: $border-gray;
+
+  &:focus {
+    box-shadow: none;
+  }
 }
 
 .button-nav.button-to-top {

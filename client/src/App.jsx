@@ -12,7 +12,8 @@ import * as Songlists from './pages/songlists'
 const RouterSwitch = () => {
   return (
     <Switch>
-      <Route path="/artists/:artist_id" children={<Artists.Show />} />
+      <Route path="/artists/:artistId/songs/:songId" children={<Song />} />
+      <Route path="/artists/:artistId" children={<Artists.Show />} />
       <Route path="/artists">
         <Artists.Index />
       </Route>
@@ -28,7 +29,9 @@ const RouterSwitch = () => {
       <Route path="/practice">
         <Songlists.Index />
       </Route>
-      <Route path="/songlists/:songlist_id/song/:song_id"
+      <Route path="/songs/:songId" children={<Song />} />
+
+      <Route path="/songlists/:songlistId/songs/:songId"
              children={<Song />} />
       <Route path="/songlists/new" children={<Songlists.New />} />
       <Route path="/songlists/:id" children={<Songlists.Show />} />
