@@ -24,6 +24,7 @@ const SongsHelper = {
     return getNextSong(song, artist.songs)
   },
   getNextSongBySonglist: async (song, songlistId) => {
+    console.log(`getNextSongBySonglist(${song.id}, ${songlistId})`)
     if (songlistId != undefined) {
       songlistId = Number.parseInt(songlistId, 10)
     }
@@ -37,6 +38,8 @@ const SongsHelper = {
         .query()
         .findById(songlistId)
         .withGraphFetched('songs')
+      console.log('================== found songlist ===================')
+      console.log(songlist)
       songs = songlist.songs
     }
     return getNextSong(song, songs)

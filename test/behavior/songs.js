@@ -3,10 +3,38 @@ const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
 
-const { Artist, Song } = require('../../models')
+const { Artist, Song, User } = require('../../models')
 const RecordManager = require('../record-manager')
 
 chai.use(chaiHttp)
+
+const TEST_USER_DATA = {
+  email: 'bob-songlist@bob.bob',
+  password: 'safe-and-secure'
+}
+
+const TEST_SONGLIST_AND_SONG_DATA = {
+  title: 'SongList 1',
+  songs: [
+    {
+      title: 'List1 > Song1',
+      text: 'List1 > Song1',
+
+      artist: {
+        name: 'Artist 1'
+      }
+    },
+    {
+      title: 'List1 > Song2',
+      text: 'List1 > Song2',
+
+      artist: {
+        name: 'Artist 2'
+      }
+    }
+  ]
+}
+
 
 const insertTwoSongsWithArtists = async () => {
   return Song
@@ -48,6 +76,17 @@ const insertArtistWithTwoSongs = async () => {
         ]
       }
     )
+}
+
+const insertUser = async () => {
+  return User.createUser(TEST_USER_DATA)
+}
+
+const insertUserSonglistWithTwoSongs = async (user) => {
+  const list = await user
+    .$relatedQuery('songLists')
+    .insertGraph(TEST_SONGLIST_AND_SONG_DATA)
+  return list
 }
 
 
@@ -146,7 +185,6 @@ describe('/songs', () => {
   describe('GET /songs/:id?context=artist', () => {
     it("should return the song with a link to the artist's next song", async () => {
       const artist = await insertArtistWithTwoSongs()
-      console.log(artist.songs)
       const song0 = artist.songs[0]
       const song1 = artist.songs[1]
       const response = await chai.request(app)
@@ -159,7 +197,6 @@ describe('/songs', () => {
     })
     it("should return the song with no link to a next song if this is the artist's last song", async () => {
       const artist = await insertArtistWithTwoSongs()
-      console.log(artist.songs)
       const song0 = artist.songs[0]
       const song1 = artist.songs[1]
       const response = await chai.request(app)
@@ -172,13 +209,14 @@ describe('/songs', () => {
     })
   })
 
-  /*describe('GET /songs/:id?context=songlist', () => {
+  describe('GET /songs/:id?context=songlist&contextId=:songlistId', () => {
     it("should return the song with a link to the next song from the given songlist", async () => {
-      const songs = await insertTwoSongsWithArtists()
-      console.log(songs)
+      const user = await insertUser()
+      const list = await insertUserSonglistWithTwoSongs(user)
+      const songs = list.songs
 
       const response = await chai.request(app)
-        .get(`/songs/${songs[0].id}?context=songlist`)
+        .get(`/songs/${songs[0].id}?context=songlist&contextId=${list.id}`)
       const data = response.body.data
       expect(data).to.be.an('object')
       expect(data.id).to.eql(songs[0].id)
@@ -186,22 +224,22 @@ describe('/songs', () => {
     })
 
     it("should return the song with no link to a next song if this is the last song in the songlist", async () => {
-      const songs = await insertTwoSongsWithArtists()
-      console.log(songs)
+      const user = await insertUser()
+      const list = await insertUserSonglistWithTwoSongs(user)
+      const songs = list.songs
 
       const response = await chai.request(app)
-        .get(`/songs/${songs[1].id}?context=songlist`)
+        .get(`/songs/${songs[1].id}?context=songlist&contextId=${list.id}`)
       const data = response.body.data
       expect(data).to.be.an('object')
       expect(data.id).to.eql(songs[1].id)
       expect(data.nextSongId).to.eql(null)
     })
-  })*/
+  })
 
   describe('GET /songs/:id?context=songlist', () => {
     it("should return the song with a link to the next song from the list of all songs", async () => {
       const songs = await insertTwoSongsWithArtists()
-      console.log(songs)
 
       const response = await chai.request(app)
         .get(`/songs/${songs[0].id}?context=songlist`)
@@ -213,7 +251,6 @@ describe('/songs', () => {
 
     it("should return the song with no link to a next song if this is the last song", async () => {
       const songs = await insertTwoSongsWithArtists()
-      console.log(songs)
 
       const response = await chai.request(app)
         .get(`/songs/${songs[1].id}?context=songlist`)
