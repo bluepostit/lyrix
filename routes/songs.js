@@ -14,6 +14,7 @@ router.get('/', async (req, res, next) => {
     .query()
     .select(...SONG_ATTRIBUTES)
     .withGraphFetched('artist')
+    .orderBy('title')
 
   res.json({
     error: false,

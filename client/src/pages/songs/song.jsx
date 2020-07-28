@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from "react-router-dom"
-import { Page } from './page'
-import { ToTopButton } from '../components'
+import { Page } from '../page'
+import { ToTopButton } from '../../components'
 
 const getSong = (songId, songlistId, artistId) => {
   let url = `/songs/${songId}`
