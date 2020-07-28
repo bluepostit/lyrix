@@ -27,7 +27,6 @@ html {
 }
 
 .mobile-header {
-  margin-top: 1rem;
   text-align: center;
   background-color: #ccc;
   color: $primary;
@@ -36,6 +35,10 @@ html {
   display: grid;
   grid-template-columns: [first] 2fr 6fr [last] 2fr;
   justify-content: flex-start;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 3px 15px darkgray;
 
   h1 {
     font-size: 1.5rem;
