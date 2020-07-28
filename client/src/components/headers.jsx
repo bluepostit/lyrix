@@ -24,6 +24,7 @@ const PageHeader = (props) => {
   }
   const goNext = () => {
     history.push(props.nextLink)
+    window.scrollTo(0, 0)
   }
 
   return (

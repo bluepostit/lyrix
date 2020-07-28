@@ -26,6 +26,7 @@ const SongsHelper = {
       songs = await Song
         .query()
         .select('id')
+        .orderBy('title')
     } else {
       const songlist = await SongList
         .query()
