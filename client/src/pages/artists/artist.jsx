@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
-import { ItemList } from '../item-list'
+import { ItemListPage } from '../item-list-page'
 
 const getArtist = async (artistId) => {
   return fetch(`/artists/${artistId}`)
@@ -57,7 +57,7 @@ const Artist = () => {
   }
 
   return (
-    <ItemList title={artist.name}
+    <ItemListPage title={artist.name}
       getItems={getSongs}
       onNewClick={onNewClick}
       onItemClick={onSongClick}

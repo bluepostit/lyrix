@@ -5,14 +5,15 @@ import {
   Route,
   Link
 } from "react-router-dom"
-import { Arrange, Login, Home, Page, SignUp, Song } from './pages'
+import { Arrange, Login, Home, Page, SignUp } from './pages'
 import * as Artists from './pages/artists'
 import * as Songlists from './pages/songlists'
+import * as Songs from './pages/songs'
 
 const RouterSwitch = () => {
   return (
     <Switch>
-      <Route path="/artists/:artistId/songs/:songId" children={<Song />} />
+      <Route path="/artists/:artistId/songs/:songId" children={<Songs.Show />} />
       <Route path="/artists/:artistId" children={<Artists.Show />} />
       <Route path="/artists">
         <Artists.Index />
@@ -29,10 +30,13 @@ const RouterSwitch = () => {
       <Route path="/practice">
         <Songlists.Index />
       </Route>
-      <Route path="/songs/:songId" children={<Song />} />
+      <Route path="/songs/:songId" children={<Songs.Show />} />
+      <Route path="/songs">
+        <Songs.Index />
+      </Route>
 
       <Route path="/songlists/:songlistId/songs/:songId"
-             children={<Song />} />
+             children={<Songs.Show />} />
       <Route path="/songlists/new" children={<Songlists.New />} />
       <Route path="/songlists/:id" children={<Songlists.Show />} />
       <Route path="/">

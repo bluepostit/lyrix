@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ItemList } from '../item-list'
+import { ItemListPage } from '../item-list-page'
 
 const getArtists = () => {
   return fetch('/artists')
@@ -39,7 +39,7 @@ const onNewClick = (history) => {
 
 const Artists = (props) => {
   return (
-    <ItemList title="Artists"
+    <ItemListPage title="Artists"
               getItems={getArtists}
               onNewClick={onNewClick}
               onItemClick={onArtistClick}

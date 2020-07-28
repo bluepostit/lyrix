@@ -1,5 +1,5 @@
 import React from 'react'
-import { ItemList } from '../item-list'
+import { ItemListPage } from '../item-list-page'
 
 const getSonglists = () => {
   return fetch('/songlists')
@@ -38,7 +38,7 @@ const onNewClick = (history) => {
 
 const Songlists = (props) => {
   return (
-    <ItemList title="My Songlists"
+    <ItemListPage title="My Songlists"
               getItems={getSonglists}
               onNewClick={onNewClick}
               onItemClick={onSonglistClick}

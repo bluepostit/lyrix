@@ -57,7 +57,7 @@ const ItemListDiv = (props) => {
  *
  * @param {*} props
  */
-const ItemList = (props) => {
+const ItemListPage = (props) => {
   const [items, setItems] = useState([])
   const history = useHistory()
 
@@ -82,4 +82,4 @@ const ItemList = (props) => {
   )
 }
 
-export { ItemList }
+export { ItemListPage }

@@ -18,12 +18,14 @@ const PageHeader = (props) => {
   const history = useHistory()
   const goBack = () => {
     history.goBack()
+    window.scrollTo(0, 0)
   }
   const goHome = () => {
     history.push('/')
   }
   const goNext = () => {
     history.push(props.nextLink)
+    window.scrollTo(0, 0)
   }
 
   return (
