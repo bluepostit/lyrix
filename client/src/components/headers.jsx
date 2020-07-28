@@ -18,6 +18,7 @@ const PageHeader = (props) => {
   const history = useHistory()
   const goBack = () => {
     history.goBack()
+    window.scrollTo(0, 0)
   }
   const goHome = () => {
     history.push('/')
