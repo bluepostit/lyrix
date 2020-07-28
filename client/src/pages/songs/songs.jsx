@@ -16,8 +16,8 @@ const renderSong = (song) => {
   return (
     <div className="d-flex w-100 justify-content-between">
       <div>
-        <i className="fas fa-clipboard-list"></i>
-        <span>{song.title}</span>
+        <i className="fas fa-microphone"></i>
+        <span>{song.title}</span> <em><small>&ndash; {song.artist.name}</small></em>
       </div>
       <div>
         {/* <span className="badge badge-pill badge-info">
