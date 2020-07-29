@@ -45,7 +45,7 @@ const ItemListDiv = (props) => {
   return (
     <div className="list-group lyrix-list">
       {props.items.map((item, index) =>
-        <Item index={index} item={item} {...props} />
+        <Item key={index} index={index} item={item} {...props} />
       )}
     </div>
   )
