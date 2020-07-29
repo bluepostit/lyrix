@@ -11,10 +11,14 @@ const Item = (props) => {
     props.onItemClick(item, history)
   }
 
+  let className = "list-group-item lyrix-list-item"
+  if (props.renderItemMultiLine) {
+    className += " multi-line"
+  }
+
   return (
-    <button key={item.id} className="list-group-item lyrix-list-item"
-      onClick={handleClick} >
-        {props.renderItem(item)}
+    <button key={item.id} className={className} onClick={handleClick} >
+        {props.renderItem(item, props.index)}
     </button>
   )
 }
@@ -41,7 +45,7 @@ const ItemListDiv = (props) => {
   return (
     <div className="list-group lyrix-list">
       {props.items.map((item, index) =>
-        <Item key={index} item={item} onItemClick={props.onItemClick} renderItem={props.renderItem} />
+        <Item index={index} item={item} {...props} />
       )}
     </div>
   )
@@ -90,7 +94,7 @@ const ItemListPage = (props) => {
   return (
     <div className="items-list-page">
       <Page
-        content={<ItemListDiv items={items} onItemClick={props.onItemClick} renderItem={props.renderItem} />}
+        content={<ItemListDiv items={items} {...props} />}
         title={<ListHeader title={props.title} onNewClick={props.onNewClick} />}
       />
     </div>
