@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { ItemListPage } from '../item-list-page'
 
 // A single artist list item
