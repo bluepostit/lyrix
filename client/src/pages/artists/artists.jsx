@@ -1,16 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { ItemListPage } from '../item-list-page'
-
-const getArtists = () => {
-  return fetch('/artists')
-    .then(response => response.json())
-    .then((json) => {
-      if (json.error) {
-        throw json
-      }
-      return json.data
-    })
-}
 
 // A single artist list item
 const renderArtist = (artist) => {
@@ -40,7 +29,7 @@ const onNewClick = (history) => {
 const Artists = (props) => {
   return (
     <ItemListPage title="Artists"
-              getItems={getArtists}
+              getItems='/artists'
               onNewClick={onNewClick}
               onItemClick={onArtistClick}
               renderItem={renderArtist}

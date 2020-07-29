@@ -1,17 +1,6 @@
 import React from 'react'
 import { ItemListPage } from '../item-list-page'
 
-const getSonglists = () => {
-  return fetch('/songlists')
-    .then(response => response.json())
-    .then((json) => {
-      if (json.error) {
-        throw json
-      }
-      return json.data
-    })
-}
-
 const renderSonglist = (songlist) => {
   return (
     <div className="d-flex w-100 justify-content-between">
@@ -39,7 +28,7 @@ const onNewClick = (history) => {
 const Songlists = (props) => {
   return (
     <ItemListPage title="My Songlists"
-              getItems={getSonglists}
+              getItems='/songlists'
               onNewClick={onNewClick}
               onItemClick={onSonglistClick}
               renderItem={renderSonglist}
