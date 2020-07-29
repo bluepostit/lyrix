@@ -47,6 +47,21 @@ const ItemListDiv = (props) => {
   )
 }
 
+const fetchItems = async (getItems) => {
+  if (typeof getItems === 'function') {
+    return await getItems()
+  } else {
+    return fetch(getItems)
+      .then(response => response.json())
+      .then((json) => {
+        if (json.error) {
+          throw json
+        }
+        return json.data
+      })
+  }
+}
+
 /**
  * Requires the following props:
  * - title - string to be used at the top of the page
@@ -62,7 +77,7 @@ const ItemListPage = (props) => {
   const history = useHistory()
 
   useEffect(() => {
-    props.getItems()
+    fetchItems(props.getItems)
       .then(items => setItems(items))
       .catch((e) => {
         console.log('Something went wrong!')
