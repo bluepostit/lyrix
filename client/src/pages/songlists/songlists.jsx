@@ -1,11 +1,12 @@
 import React from 'react'
 import { ItemListPage } from '../item-list-page'
+import { Icon } from '../../components/icons'
 
 const renderSonglist = (songlist) => {
   return (
     <div className="d-flex w-100 justify-content-between">
       <div>
-        <i className="fas fa-clipboard-list"></i>
+        <Icon entity="songlist" />
         <span>{songlist.title}</span>
       </div>
       <div>

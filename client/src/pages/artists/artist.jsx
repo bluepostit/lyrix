@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import { ItemListPage } from '../item-list-page'
+import { Icon } from '../../components/icons'
 
 const getArtist = async (artistId) => {
   return fetch(`/artists/${artistId}`)
@@ -18,7 +19,7 @@ const renderSong = (song) => {
   return (
     <div className="d-flex w-100 justify-content-between">
       <div>
-        <i className="fas fa-clipboard-list"></i>
+        <Icon entity="song" />
         <span>{song.title}</span>
       </div>
     </div>
