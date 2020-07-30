@@ -16,6 +16,7 @@ const getFontAwesomeClass = (entity) => {
       className = 'fas fa-file-alt' // lyric/file image
     break
   }
+  className += ' lyrix-icon'
   return className
 }
 

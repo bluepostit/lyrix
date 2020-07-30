@@ -27,11 +27,14 @@ const MenuButton = (props) => {
     history.push(url)
   }
 
+  const icon = props.icon || <></>
+
   const className = `btn btn-primary menu-button menu-button-${action}`
   return (
     <button className={className}
             data-action={action}
-            onClick={handleMenuButtonClick}>{title}
+            onClick={handleMenuButtonClick}>
+      {icon}{title}
     </button>
   )
 }
