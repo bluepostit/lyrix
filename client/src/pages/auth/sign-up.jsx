@@ -46,7 +46,7 @@ const SignUp = () => {
   }
 
   return (
-    <div class="page-content">
+    <div className="page-content">
       <Navbar title="Lyrix" />
       <div className="container text-page">
         <div className="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 pt-2">
