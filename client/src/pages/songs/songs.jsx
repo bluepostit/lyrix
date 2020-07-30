@@ -1,4 +1,5 @@
 import React from 'react'
+import { useHistory } from "react-router-dom"
 import { ItemListPage } from '../item-list-page'
 import { Icon } from '../../components/icons'
 
@@ -17,16 +18,17 @@ const renderSong = (song) => {
   )
 }
 
-const onSongClick = (song, history) => {
-  history.push(`/songs/${song.id}`)
-}
-
-const onNewClick = (history) => {
-  history.push('/songs/new')
-}
-
 const Songs = (props) => {
+  const history = useHistory()
   let title = props.title || "Songs"
+
+  const onSongClick = (song) => {
+    history.push(`/songs/${song.id}`)
+  }
+
+  const onNewClick = () => {
+    history.push('/songs/new')
+  }
 
   return (
     <ItemListPage title={title}

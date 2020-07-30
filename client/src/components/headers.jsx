@@ -1,17 +1,36 @@
 import React from 'react'
 import { useHistory } from "react-router-dom"
+import { Icon } from '../components/icons'
 
-const NextLink = (props) => {
-  if (!props.link) {
-    return (
-      <></>
-    )
+const BaseButton = (props) => {
+  if (!props.show) {
+    return <></>
   }
   return (
     <button className="btn button-nav" onClick={props.onClick}>
-      <i className="fas fa-arrow-right"></i>
+      {props.icon}
     </button>
   )
+}
+
+const NextButton = (props) => {
+  const icon = <Icon entity="action-next" />
+  return <BaseButton icon={icon} {...props} />
+}
+
+const BackButton = (props) => {
+  const icon = <Icon entity="action-prev" />
+  return <BaseButton icon={icon} {...props} />
+}
+
+const HomeButton = (props) => {
+  const icon = <Icon entity="home" />
+  return <BaseButton icon={icon} {...props} />
+}
+
+const NewButton = (props) => {
+  const icon = <Icon entity="new" />
+  return <BaseButton icon={icon} {...props} />
 }
 
 /**
@@ -36,18 +55,28 @@ const Navbar = (props) => {
     window.scrollTo(0, 0)
   }
 
+  let hasBackButton = true
+  if (props.hasOwnProperty('hasBackButton')) {
+    hasBackButton = props.hasBackButton
+  }
+
+  let hasHomeButton = true
+  if (props.hasOwnProperty('hasHomeButton')) {
+    hasHomeButton = props.hasHomeButton
+  }
+
+
   return (
     <nav className="navbar navbar-light mobile-header">
-      <div>
-        <button className="btn button-nav" onClick={goBack}>
-          <i className="fas fa-arrow-left"></i>
-        </button>
-        <button className="btn button-nav" onClick={goHome}>
-          <i className="fas fa-home"></i>
-        </button>
+      <div className="button-group">
+        <BackButton onClick={goBack} show={hasBackButton} />
+        <HomeButton onClick={goHome} show={hasHomeButton} />
       </div>
       <h1>{props.title}</h1>
-      <NextLink link={props.nextLink} onClick={goNext} />
+      <div className="button-group">
+        <NewButton onClick={props.onNewClick} show={props.onNewClick} />
+        <NextButton onClick={goNext} show={props.nextLink} />
+      </div>
     </nav>
   )
 }

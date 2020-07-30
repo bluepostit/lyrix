@@ -1,4 +1,5 @@
 import React from 'react'
+import { useHistory } from "react-router-dom"
 import { ItemListPage } from '../item-list-page'
 import { Icon } from '../../components/icons'
 
@@ -19,15 +20,17 @@ const renderArtist = (artist) => {
   )
 }
 
-const onArtistClick = (artist, history) => {
-  history.push(`/artists/${artist.id}`)
-}
+const Artists = () => {
+  const history = useHistory()
 
-const onNewClick = (history) => {
-  history.push('/artists/new')
-}
+  const onArtistClick = (artist) => {
+    history.push(`/artists/${artist.id}`)
+  }
 
-const Artists = (props) => {
+  const onNewClick = () => {
+    history.push('/artists/new')
+  }
+
   return (
     <ItemListPage title="Artists"
               getItems='/artists'

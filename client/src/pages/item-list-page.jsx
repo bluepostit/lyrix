@@ -5,10 +5,9 @@ import { Page } from './page'
 // A single list item
 const Item = (props) => {
   const item = props.item
-  const history = useHistory()
 
   const handleClick = () => {
-    props.onItemClick(item, history)
+    props.onItemClick(item)
   }
 
   let className = "list-group-item lyrix-list-item"
@@ -20,23 +19,6 @@ const Item = (props) => {
     <button key={item.id} className={className} onClick={handleClick} >
         {props.renderItem(item, props.index)}
     </button>
-  )
-}
-
-const ListHeader = (props) => {
-  const history = useHistory()
-
-  const handleNewClick = () => {
-    props.onNewClick(history)
-  }
-
-  return (
-    <span>
-      {props.title}
-      <button className="btn my-0 py-0 pr-0" onClick={handleNewClick}>
-        <i className="fa fa-plus color-primary"></i>
-      </button>
-    </span>
   )
 }
 
@@ -96,7 +78,8 @@ const ItemListPage = (props) => {
     <div className="items-list-page">
       <Page
         content={<ItemListDiv items={items} {...props} />}
-        title={<ListHeader title={props.title} onNewClick={props.onNewClick} />}
+        title={props.title}
+        {...props}
       />
     </div>
   )

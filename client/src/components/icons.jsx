@@ -5,16 +5,25 @@ const getFontAwesomeClass = (entity) => {
   switch (entity) {
     case 'artist':
       className = 'fas fa-user-circle'
-    break
+      break
     case 'song':
       className = 'fas fa-microphone'
-    break
+      break
     case 'songlist':
       className = 'fas fa-clipboard-list'
-    break
+      break
+    case 'action-prev':
+      className = 'fas fa-arrow-left'
+      break
+    case 'action-next':
+      className = 'fas fa-arrow-right'
+      break
+    case 'home':
+      className = 'fas fa-home'
+      break
     default:
       className = 'fas fa-file-alt' // lyric/file image
-    break
+      break
   }
   className += ' lyrix-icon'
   return className

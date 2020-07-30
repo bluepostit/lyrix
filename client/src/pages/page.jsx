@@ -1,14 +1,11 @@
 import React from 'react'
 import { Navbar } from '../components'
 
-const renderHeader = (props) => {
+const PageHeader = (props) => {
   if (props.noHeader) {
     return <></>
-  } else {
-    return (
-      <Navbar title={props.title} nextLink={props.nextLink} />
-    )
   }
+  return <Navbar {...props} />
 }
 
 /**
@@ -16,6 +13,8 @@ const renderHeader = (props) => {
  * - title - string to be used as the page's title
  * - content - string/JSX to be used as the page's content
  * - nextLink - string to be used as the 'next' link. Can be undefined.
+ * - hasBackButton - boolean, for navbar
+ * - hasHomeButton - boolean, for navbar
  *
  * @param {*} props
  */
@@ -23,7 +22,7 @@ const Page = (props) => {
   return (
     <div className="page-content">
       <div className="list-page">
-        {renderHeader(props)}
+        <PageHeader {...props} />
         {props.content}
       </div>
     </div>
