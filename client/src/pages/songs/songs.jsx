@@ -1,11 +1,12 @@
 import React from 'react'
 import { ItemListPage } from '../item-list-page'
+import { Icon } from '../../components/icons'
 
 const renderSong = (song) => {
   return (
     <div className="d-flex w-100 justify-content-between">
       <div>
-        <i className="fas fa-microphone"></i>
+        <Icon entity="song" />
         <span>{song.title}</span> <em><small>&ndash; {song.artist.name}</small></em>
       </div>
       <div>

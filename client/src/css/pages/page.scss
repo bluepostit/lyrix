@@ -15,6 +15,11 @@ html {
   display: block;
 }
 
+.beneath-nav {
+  height: 80vh !important;
+  margin-top: 5vh;
+}
+
 @media (min-width: 576px) {
   .list-page {
     margin: 0 5%;

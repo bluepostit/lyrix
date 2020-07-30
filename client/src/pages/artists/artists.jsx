@@ -1,12 +1,13 @@
 import React from 'react'
 import { ItemListPage } from '../item-list-page'
+import { Icon } from '../../components/icons'
 
 // A single artist list item
 const renderArtist = (artist) => {
   return (
     <div className="d-flex w-100 justify-content-between">
       <div>
-        <i className="fas fa-user-circle"></i>
+        <Icon entity="artist" />
         <span>{artist.name}</span>
       </div>
       <div>

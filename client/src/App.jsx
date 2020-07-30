@@ -5,7 +5,7 @@ import {
   Route,
   Link
 } from "react-router-dom"
-import { Arrange, Login, Home, Page, SignUp } from './pages'
+import { Login, Home, Page, SignUp } from './pages'
 import * as Artists from './pages/artists'
 import * as Songlists from './pages/songlists'
 import * as Songs from './pages/songs'
@@ -24,12 +24,6 @@ const RouterSwitch = () => {
       <Route path="/sign-up">
         <SignUp />
       </Route>
-      <Route path="/arrange">
-        <Arrange />
-      </Route>
-      <Route path="/practice">
-        <Songlists.Index />
-      </Route>
       <Route path="/songs/:songId" children={<Songs.Show />} />
       <Route path="/songs">
         <Songs.Index />
@@ -39,6 +33,9 @@ const RouterSwitch = () => {
              children={<Songs.Show />} />
       <Route path="/songlists/new" children={<Songlists.New />} />
       <Route path="/songlists/:id" children={<Songlists.Show />} />
+      <Route path="/songlists">
+        <Songlists.Index />
+      </Route>
       <Route path="/">
         <Home />
       </Route>

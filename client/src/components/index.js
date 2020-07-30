@@ -1,2 +1,2 @@
-export { PageHeader } from './headers'
+export { Navbar } from './headers'
 export { ToTopButton } from './buttons'

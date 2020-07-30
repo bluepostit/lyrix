@@ -1,12 +1,12 @@
 import React from 'react'
-import { PageHeader } from '../components'
+import { Navbar } from '../components'
 
 const renderHeader = (props) => {
   if (props.noHeader) {
     return <></>
   } else {
     return (
-      <PageHeader title={props.title} nextLink={props.nextLink} />
+      <Navbar title={props.title} nextLink={props.nextLink} />
     )
   }
 }
