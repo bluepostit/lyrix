@@ -14,7 +14,15 @@ const NextLink = (props) => {
   )
 }
 
-const PageHeader = (props) => {
+/**
+ *
+ * @param {*} props object containing the following:
+ * - title - (any) content to be displayed in the center of the navbar
+ * - nextLink - (string) OPTIONAL link to navigate to when clicking 'next' (right arrow).
+ *              If not provided, no right arrow will show.
+ * -
+ */
+const Navbar = (props) => {
   const history = useHistory()
   const goBack = () => {
     history.goBack()
@@ -29,7 +37,7 @@ const PageHeader = (props) => {
   }
 
   return (
-    <div className="mobile-header">
+    <nav className="navbar navbar-light mobile-header">
       <div>
         <button className="btn button-nav" onClick={goBack}>
           <i className="fas fa-arrow-left"></i>
@@ -40,8 +48,8 @@ const PageHeader = (props) => {
       </div>
       <h1>{props.title}</h1>
       <NextLink link={props.nextLink} onClick={goNext} />
-    </div>
+    </nav>
   )
 }
 
-export { PageHeader }
+export { Navbar }
