@@ -65,7 +65,6 @@ const Navbar = (props) => {
     hasHomeButton = props.hasHomeButton
   }
 
-
   return (
     <nav className="navbar navbar-light mobile-header">
       <div className="button-group">

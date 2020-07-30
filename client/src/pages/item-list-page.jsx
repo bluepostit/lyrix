@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory } from "react-router-dom"
-import { Page } from './page'
+import { Navbar } from '../components/headers'
 
 // A single list item
 const Item = (props) => {
@@ -74,13 +74,17 @@ const ItemListPage = (props) => {
   }, [history, props, items.length]) // things to monitor for render
   // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
+  let navbar = <></>
+  if (!props.noHeader) {
+    navbar = <Navbar {...props} />
+  }
+
   return (
-    <div className="items-list-page">
-      <Page
-        content={<ItemListDiv items={items} {...props} />}
-        title={props.title}
-        {...props}
-      />
+    <div className="page-content">
+      <div className="list-page">
+        {navbar}
+        <ItemListDiv items={items} {...props} />
+      </div>
     </div>
   )
 }
