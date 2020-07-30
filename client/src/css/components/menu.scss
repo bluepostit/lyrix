@@ -1,56 +1,54 @@
-.page-content {
-  .home-page {
-    background-color: $bg-colorful;
-    min-height: 100vh;
-    overflow: auto;
-  }
-
-  .menu-title {
-    background-color: $fg-prominent;
-    margin-top: 1.3em;
-    color: $fg-colorful;
-    font-family: 'Sanchez', serif;
-    font-style: italic;
-    text-shadow: 1px 0 1px $darker-gray;
-    font-size: 2rem;
-    text-align: center;
-  }
-
-  .menu-buttons {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 25%;
-  }
-
-  .menu-buttons .menu-button {
-    margin-bottom: 0.8em;
-    background-color: $fg-colorful-complement;
-    border-color: $fg-colorful-complement;
-    color: $darker-gray;
-    box-shadow: 1px 3px 4px $darker-gray;
-    // padding-inline: 1.5em;
-    font-size: 1.6rem;
-  }
-
-  .menu-button .lyrix-icon {
-    margin-right: 6%;
-  }
-
-  .menu-button {
-    font-family: 'Sanchez', serif;
-  }
-
-  .menu-button-arrange {
-    font-family: 'Reenie Beanie', cursive;
-  }
-
-  .menu-button-practice {
-    font-family: 'Sacramento', cursive;
-  }
-
+.home-page {
+  background-color: $bg-colorful;
+  min-height: 100vh;
+  overflow: auto;
 }
+
+.menu-title {
+  background-color: $fg-prominent;
+  margin-top: 1.3em;
+  color: $fg-colorful;
+  font-family: 'Sanchez', serif;
+  font-style: italic;
+  text-shadow: 1px 0 1px $darker-gray;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.menu-buttons {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 25%;
+}
+
+.menu-buttons .menu-button {
+  margin-bottom: 0.8em;
+  background-color: $fg-colorful-complement;
+  border-color: $fg-colorful-complement;
+  color: $darker-gray;
+  box-shadow: 1px 3px 4px $darker-gray;
+  // padding-inline: 1.5em;
+  font-size: 1.6rem;
+}
+
+.menu-button .lyrix-icon {
+  margin-right: 6%;
+}
+
+.menu-button {
+  font-family: 'Sanchez', serif;
+}
+
+.menu-button-arrange {
+  font-family: 'Reenie Beanie', cursive;
+}
+
+.menu-button-practice {
+  font-family: 'Sacramento', cursive;
+}
+
 
 // Don't show on medium+ screens
 @media (min-width: 576px) {
