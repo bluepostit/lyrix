@@ -3,7 +3,8 @@ import {
   Switch,
   Route,
 } from "react-router-dom"
-import { Login, Home, SignUp } from '../pages'
+import { Home } from '../pages'
+import * as Auth from '../pages/auth'
 import * as Artists from '../pages/artists'
 import * as Songlists from '../pages/songlists'
 import * as Songs from '../pages/songs'
@@ -17,10 +18,10 @@ const RouterSwitch = () => {
         <Artists.Index />
       </Route>
       <Route path="/login">
-        <Login />
+        <Auth.Login />
       </Route>
       <Route path="/sign-up">
-        <SignUp />
+        <Auth.SignUp />
       </Route>
       <Route path="/songs/:songId" children={<Songs.Show />} />
       <Route path="/songs">
