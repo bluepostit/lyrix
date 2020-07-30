@@ -11,7 +11,7 @@ const PageContent = (props) => {
     return (
       <div className="page-content">
         <div className="d-sm-block">
-          <Navbar title="Lyrix" />
+          <Navbar title="Lyrix" hasBackButton={false} hasHomeButton={false} />
           <div className="beneath-nav menu-buttons">
             <MenuButton action="artists" icon={artistsIcon} />
             <MenuButton action="songs" icon={songsIcon} />

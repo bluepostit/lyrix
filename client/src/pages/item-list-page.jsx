@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory } from "react-router-dom"
-import { Page } from './page'
+import { Navbar } from '../components/headers'
 
 // A single list item
 const Item = (props) => {
   const item = props.item
-  const history = useHistory()
 
   const handleClick = () => {
-    props.onItemClick(item, history)
+    props.onItemClick(item)
   }
 
   let className = "list-group-item lyrix-list-item"
@@ -20,23 +19,6 @@ const Item = (props) => {
     <button key={item.id} className={className} onClick={handleClick} >
         {props.renderItem(item, props.index)}
     </button>
-  )
-}
-
-const ListHeader = (props) => {
-  const history = useHistory()
-
-  const handleNewClick = () => {
-    props.onNewClick(history)
-  }
-
-  return (
-    <span>
-      {props.title}
-      <button className="btn my-0 py-0 pr-0" onClick={handleNewClick}>
-        <i className="fa fa-plus color-primary"></i>
-      </button>
-    </span>
   )
 }
 
@@ -92,12 +74,17 @@ const ItemListPage = (props) => {
   }, [history, props, items.length]) // things to monitor for render
   // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
+  let navbar = <></>
+  if (!props.noHeader) {
+    navbar = <Navbar {...props} />
+  }
+
   return (
-    <div className="items-list-page">
-      <Page
-        content={<ItemListDiv items={items} {...props} />}
-        title={<ListHeader title={props.title} onNewClick={props.onNewClick} />}
-      />
+    <div className="page-content">
+      <div className="list-page">
+        {navbar}
+        <ItemListDiv items={items} {...props} />
+      </div>
     </div>
   )
 }

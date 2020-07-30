@@ -13,7 +13,7 @@ const getSongList = (songlistId) => {
     })
 }
 
-const Songlist = (props) => {
+const Songlist = () => {
   const { id } = useParams()
   const [songlist, setSonglist] = useState({ title: null, songs: [] })
   const history = useHistory()
@@ -32,11 +32,11 @@ const Songlist = (props) => {
     return songlist.songs
   }
 
-  const onSongClick = (song, history) => {
+  const onSongClick = (song) => {
     history.push(`/songlists/${songlist.id}/songs/${song.id}`)
   }
 
-  const onNewClick = (history) => {
+  const onNewClick = () => {
     history.push('/songs/new')
   }
 

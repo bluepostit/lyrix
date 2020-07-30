@@ -26,14 +26,6 @@ const renderSong = (song) => {
   )
 }
 
-const onSongClick = (song, history) => {
-  history.push(`/artists/${song.artist_id}/songs/${song.id}`)
-}
-
-const onNewClick = (history) => {
-  history.push('/songs/new')
-}
-
 const Artist = () => {
   const { artistId } = useParams()
   const [artist, setArtist] = useState({name: null, songs: []})
@@ -55,6 +47,14 @@ const Artist = () => {
 
   const getSongs = async () => {
     return artist.songs
+  }
+
+  const onNewClick = () => {
+    history.push('/songs/new')
+  }
+
+  const onSongClick = (song) => {
+    history.push(`/artists/${song.artist_id}/songs/${song.id}`)
   }
 
   return (
