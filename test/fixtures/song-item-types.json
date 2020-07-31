@@ -1,0 +1,15 @@
+[
+  {
+    "table": "song_item_types",
+    "data": [
+      {
+        "id": 1,
+        "name": "lyrics"
+      },
+      {
+        "id": 2,
+        "name": "info"
+      }
+    ]
+  }
+]
