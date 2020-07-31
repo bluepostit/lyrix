@@ -22,7 +22,7 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return Promise.all([
-    knex.schema.dropTable('song_lists'),
+    knex.schema.dropTable('song_list_songs'),
     knex.schema.dropTable('song_lists')
   ])
 }
