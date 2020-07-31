@@ -65,34 +65,13 @@ describe('/song-items', async () => {
       expect(res.body.data).to.be.empty
     })
 
-    it('should return song items belonging to the current user', async () => {
-      await RecordManager.loadFixture('songs')
-      await RecordManager.loadFixture('song-item-types')
-      const data = [
-        {
-          title: 'Chords for Song',
-          text: 'Some funky chords',
-          song_id: 1,
-          song_item_type_id: 1
-        },
-        {
-          title: 'Chords for Song 2',
-          text: 'Some funky chords',
-          song_id: 2,
-          song_item_type_id: 1
-        },
-        {
-          title: 'Info for Song 2',
-          text: 'Some interesting information',
-          song_id: 2,
-          song_item_type_id: 2
-        }
-      ]
-
-      const user = await RecordManager.insertUser()
-
-      await user.$relatedQuery('songItems')
-        .insertGraph(data)
+    it('should return song items belonging to the current user, ordered by song title', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('song-items.with-song-item-types.user-id-1')
+      const items = await SongItem
+        .query()
+        .joinRelated('song')
+        .orderBy('song.title')
 
       const agent = await login(user)
       const res = await agent.get('/song-items')
@@ -100,8 +79,8 @@ describe('/song-items', async () => {
 
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
-      const items = res.body.data
-      expect(items.length).to.be.eql(data.length)
+      const data = res.body.data
+      expect(data.length).to.be.eql(items.length)
       data.forEach((o, index) => {
         expect(items[index].title).to.eql(o.title)
         expect(items[index].song_id).to.eql(o.song_id)
