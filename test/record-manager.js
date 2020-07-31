@@ -2,7 +2,7 @@ const path = require('path')
 const { toSnakeCase } = require('../util')
 
 const MODEL_CLASSES_IN_DELETE_ORDER =
-  ['SongListSong', 'SongList', 'User', 'Song', 'Artist']
+  ['SongItem', 'SongItemType', 'SongListSong', 'SongList', 'User', 'Song', 'Artist']
 
 const deleteAllForClassName = async (className) => {
   const moduleName = toSnakeCase(className)

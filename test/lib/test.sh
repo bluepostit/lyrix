@@ -11,4 +11,5 @@ if [ $# -eq 1 ]
 fi
 
 knex migrate:latest
+echo "mocha --exit --recursive $target"
 mocha --exit --recursive $target
