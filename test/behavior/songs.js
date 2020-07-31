@@ -100,28 +100,23 @@ describe('/songs', () => {
 
   describe('GET /songs', () => {
     it('should return a list of all songs in the database', async () => {
-      try {
-        await insertTwoSongsWithArtists()
-      } catch (error) {
-        console.log(error)
-      }
+      await RecordManager.loadFixture('songs')
+      const songs = await Song
+        .query()
+        .joinRelated('artist')
+        .withGraphFetched('artist')
+        .orderBy(['title', 'artist.name'])
 
-      chai.request(app)
-        .get('/songs')
-        .end((err, res) => {
-          if (err) {
-            console.log(err)
-          }
-          expect(res).to.have.status(200)
-          expect(res.body).to.be.an('object')
-          const data = res.body.data
-          const data0 = data[0]
-          expect(data.length).to.eql(2)
-          expect(data0.title).to.eql('Song 1')
-          expect(data0.artist).to.be.an('object')
-          expect(data0.artist.name).to.be.eql('Bobby')
-          expect(data[1].text).to.eql('This is Song 2')
-        })
+      const res = await chai.request(app).get('/songs')
+      expect(res).to.have.status(200)
+      expect(res.body).to.be.an('object')
+      const data = res.body.data
+      const data0 = data[0]
+      expect(data.length).to.eql(songs.length)
+      expect(data0.title).to.eql(songs[0].title)
+      expect(data0.artist).to.be.an('object')
+      expect(data0.artist.name).to.be.eql(songs[0].artist.name)
+      expect(data[1].text).to.eql(songs[1].text)
     })
 
     it('should return empty when there are no songs', async () => {
@@ -153,19 +148,8 @@ describe('/songs', () => {
     })
 
     it('should return the song with the given id when found', async () => {
-      const songTitle = 'A good song'
-      const songText = 'This is a good song'
-
-      let song = await Song
-        .query()
-        .insertGraph({
-          title: songTitle,
-          text: songText,
-
-          artist: {
-            name: 'Brian'
-          }
-        })
+      await RecordManager.loadFixture('songs')
+      const song = await Song.query().findById(1)
 
       chai.request(app)
         .get(`/songs/${song.id}`)
@@ -176,8 +160,8 @@ describe('/songs', () => {
           expect(res.body).to.have.status(200)
           const data = res.body.data
           expect(data).to.be.an('object')
-          expect(data.title).to.eql(songTitle)
-          expect(data.text).to.eql(songText)
+          expect(data.title).to.eql(song.title)
+          expect(data.text).to.eql(song.text)
         })
     })
   })
@@ -280,11 +264,12 @@ describe('/songs', () => {
 
     it('should return the correct count of songs in the database', async () => {
       try {
-        await insertTwoSongsWithArtists()
+        await RecordManager.loadFixture('songs')
+        const count = await Song.query().resultSize()
+        expectSongCount(count)
       } catch (err) {
         console.log(err)
       }
-      expectSongCount(2)
     })
   })
 })
