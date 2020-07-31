@@ -19,6 +19,8 @@ module.exports = class User extends Model {
 
   static get relationMappings () {
     const SongList = require('./song-list')
+    const SongItem = require('./song-item')
+
     return {
       songLists: {
         relation: Model.HasManyRelation,
@@ -26,6 +28,14 @@ module.exports = class User extends Model {
         join: {
           from: 'users.id',
           to: 'song_lists.user_id'
+        }
+      },
+      songItems: {
+        relation: Model.HasManyRelation,
+        modelClass: SongItem,
+        join: {
+          from: 'users.id',
+          to: 'song_items.user_id'
         }
       }
     }
