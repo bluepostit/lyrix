@@ -1,5 +1,6 @@
 const chai = require('chai')
 const chaiHttp = require('chai-http')
+chai.use(chaiHttp)
 const expect = chai.expect
 const app = require('../../app')
 
@@ -72,8 +73,6 @@ const loginAsUser = async (chaiAgent, userData) => {
     })
   return result
 }
-
-chai.use(chaiHttp)
 
 const insertUser = async () => {
   const user = await User.createUser(TEST_USER_DATA)

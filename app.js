@@ -28,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'client/build')))
 app.use('/artists', require('./routes/artists'))
 app.use('/songs', require('./routes/songs'))
 app.use('/songlists', require('./routes/song-lists'))
+app.use('/song-items', require('./routes/song-items'))
 app.use('/user', require('./routes/authentication'))
 
 // Fallback routing: respond with the React app's index page.
