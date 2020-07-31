@@ -24,6 +24,9 @@ const getFontAwesomeClass = (entity) => {
     case 'new':
       className = 'fas fa-plus'
       break
+    case 'song-item':
+      className = 'fas fa-file-alt'
+      break
     default:
       className = 'fas fa-file-alt' // lyric/file image
       break

@@ -7,6 +7,7 @@ import { Home } from '../pages'
 import * as Auth from '../pages/auth'
 import * as Artists from '../pages/artists'
 import * as Songlists from '../pages/songlists'
+import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
 
 const RouterSwitch = () => {
@@ -35,6 +36,9 @@ const RouterSwitch = () => {
       <Route path="/songlists">
         <Songlists.Index />
       </Route>
+
+      <Route path="/song-items" children={<SongItems.Index />} />
+
       <Route path="/">
         <Home />
       </Route>

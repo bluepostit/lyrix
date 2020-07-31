@@ -30,11 +30,11 @@
     align-items: flex-start;
     line-height: 1.4rem;
   }
+}
 
-  .content-secondary {
-    color: $light-gray;
-    font-style: italic;
-  }
+.lyrix-list-item .content-secondary {
+  color: $light-gray;
+  font-style: italic;
 }
 
 .numbered-disc-bullet {
