@@ -15,20 +15,6 @@ describe('/song-items', async () => {
   beforeEach(async () => cleanUp())
   after(async () => cleanUp())
 
-  /**
-   * Logs in with RecordManager's default user.
-   * @param user OPTIONAL a User entity to use for logging in.
-   * Must have property `unencryptedPassword` set, or login will fail.
-   *
-   * @returns ChaiAgent the agent to use for subsequent requests
-   */
-  const login = async (user) => {
-    user = user || await RecordManager.insertUser()
-    const agent = chai.request.agent(app)
-    await SessionManager.loginAsUser(agent, user)
-    return agent
-  }
-
   describe('GET /', () => {
 
     it('should return an error when not logged in', async () => {
@@ -40,7 +26,8 @@ describe('/song-items', async () => {
     })
 
     it('should return empty when the user has no song items', async () => {
-      const agent = await login()
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent.get('/song-items')
       agent.close()
 
@@ -56,7 +43,8 @@ describe('/song-items', async () => {
       const allItemsCount = await SongItem.query().resultSize()
       expect(allItemsCount).to.be.greaterThan(0)
 
-      const agent = await login()
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent.get('/song-items')
       agent.close()
 
@@ -71,9 +59,9 @@ describe('/song-items', async () => {
       const items = await SongItem
         .query()
         .joinRelated('song')
-        .orderBy('song.title')
+        .orderBy(['song.title', 'title'])
 
-      const agent = await login(user)
+      const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent.get('/song-items')
       agent.close()
 
