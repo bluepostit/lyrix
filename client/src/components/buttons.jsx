@@ -18,7 +18,8 @@ const ToTopButton = (props) => {
  */
 const MenuButton = (props) => {
   const action = props.action
-  const title = action[0].toUpperCase() + action.slice(1)
+  let title = action[0].toUpperCase() + action.slice(1)
+  title = title.replace('-', ' ')
 
   const history = useHistory()
 

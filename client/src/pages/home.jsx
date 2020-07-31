@@ -7,6 +7,7 @@ const PageContent = (props) => {
   const artistsIcon = <Icon entity="artist" />
   const songsIcon = <Icon entity="song" />
   const songlistsIcon = <Icon entity="songlist" />
+  const songItemsIcon = <Icon entity="song-item" />
 
     return (
       <div className="page-content">
@@ -16,6 +17,7 @@ const PageContent = (props) => {
             <MenuButton action="artists" icon={artistsIcon} />
             <MenuButton action="songs" icon={songsIcon} />
             <MenuButton action="songlists" icon={songlistsIcon} />
+            <MenuButton action="song-items" icon={songItemsIcon} />
           </div>
         </div>
       </div>
