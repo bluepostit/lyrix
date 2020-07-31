@@ -5,7 +5,7 @@ const { toSnakeCase } = require('../util')
 const knex = require('../db/knex')
 
 const DEFAULT_USER_DATA = {
-  email: 'bob@bob.com',
+  email: 'user@record-manager.com',
   password: '123456'
 }
 
