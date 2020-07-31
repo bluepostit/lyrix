@@ -4,96 +4,9 @@ chai.use(chaiHttp)
 const expect = chai.expect
 const app = require('../../app')
 
-const { User } = require('../../models')
+const { SongList } = require('../../models')
 const RecordManager = require('../record-manager.js')
-
-const TEST_USER_DATA = {
-  email: 'bob-songlist@bob.bob',
-  password: 'safe-and-secure'
-}
-
-const TEST_SONGLIST_DATA = [
-  {
-    title: 'SongList 1'
-  },
-  {
-    title: 'SongList 2'
-  }
-]
-
-const TEST_SONGLIST_AND_SONG_DATA = [
-  {
-    title: 'SongList 1',
-    songs: [
-      {
-        title: 'List1 > Song1',
-        text: 'List1 > Song1',
-
-        artist: {
-          name: 'Artist 1'
-        }
-      },
-      {
-        title: 'List1 > Song2',
-        text: 'List1 > Song2',
-
-        artist: {
-          name: 'Artist 2'
-        }
-      }
-    ]
-  },
-  {
-    title: 'SongList 2',
-    songs: [
-      {
-        title: 'List2 > Song1',
-        text: 'List2> Song1',
-        artist: {
-          name: 'Artist 3'
-        }
-      },
-      {
-        title: 'List2 > Song2',
-        text: 'List2> Song2',
-        artist: {
-          name: 'Artist 4'
-        }
-      }
-    ]
-  }
-]
-
-const loginAsUser = async (chaiAgent, userData) => {
-  const result = await chaiAgent
-    .post('/user/login')
-    .send({
-      username: userData.email,
-      password: userData.password
-    })
-  return result
-}
-
-const insertUser = async () => {
-  const user = await User.createUser(TEST_USER_DATA)
-  return user
-}
-
-const insertUserWithTwoSonglists = async () => {
-  const bob = await insertUser()
-  const lists = await bob
-    .$relatedQuery('songLists')
-    .insertGraph(TEST_SONGLIST_DATA)
-  return lists
-}
-
-const insertUserWithTwoFullSonglists = async () => {
-  const bob = await insertUser()
-  const lists = await bob
-    .$relatedQuery('songLists')
-    .insertGraph(TEST_SONGLIST_AND_SONG_DATA)
-  return lists
-}
+const SessionManager = require('../session-manager')
 
 describe('/songlists', async () => {
   beforeEach(async () => {
@@ -105,7 +18,6 @@ describe('/songlists', async () => {
 
   describe('GET /songlists', () => {
     it('should return an error when not logged in', async () => {
-      await insertUserWithTwoSonglists()
       const res = await chai.request(app)
         .get('/songlists')
 
@@ -115,12 +27,13 @@ describe('/songlists', async () => {
     })
 
     it('should return a list of the current user\'s songlists', async () => {
-      await insertUserWithTwoSonglists()
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('songlists.with-user-id-1')
+      const songlists = await SongList
+        .query()
+        .orderBy('title')
 
-      // Login with chai agent
-      const agent = chai.request.agent(app)
-      await loginAsUser(agent, TEST_USER_DATA)
-
+      const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent
         .get('/songlists')
       agent.close()
@@ -129,20 +42,18 @@ describe('/songlists', async () => {
       expect(res.body).to.be.an('object')
       expect(res.body.error).to.eql(false)
 
-      const songLists = res.body.data
-      expect(songLists).to.be.an('array')
-      expect(songLists.length).to.eql(2)
-      expect(songLists[1].title).to.eql(TEST_SONGLIST_DATA[1].title)
+      const data = res.body.data
+      expect(data).to.be.an('array')
+      expect(data.length).to.eql(songlists.length)
+      expect(data[1].title).to.eql(songlists[1].title)
     })
   })
 
   describe('GET /songlists/:id', () => {
     it('should return an error when no matching songlist can be found',
       async () => {
-        await insertUserWithTwoFullSonglists()
-        // Login with chai agent
-        const agent = chai.request.agent(app)
-        await loginAsUser(agent, TEST_USER_DATA)
+        const user = await RecordManager.insertUser({ id: 1 })
+        const agent = await SessionManager.loginAsUser(app, user)
 
         agent.get('/songlists/999999999')
           .end((err, res) => {
@@ -157,10 +68,13 @@ describe('/songlists', async () => {
       })
 
     it('should return the songlist with the given ID when found', async () => {
-      const lists = await insertUserWithTwoFullSonglists()
-      // Login with chai agent
-      const agent = chai.request.agent(app)
-      await loginAsUser(agent, TEST_USER_DATA)
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('songlists.with-user-id-1')
+      const lists = await SongList
+        .query()
+        .withGraphFetched('songs.artist')
+        .orderBy('title')
+      const agent = await SessionManager.loginAsUser(app, user)
 
       await agent.get(`/songlists/${lists[0].id}`)
         .then(res => {
@@ -195,11 +109,8 @@ describe('/songlists', async () => {
 
     it('should return an error when no title is given',
       async () => {
-        await insertUserWithTwoFullSonglists()
-
-        // Login with chai agent
-        const agent = chai.request.agent(app)
-        await loginAsUser(agent, TEST_USER_DATA)
+        const user = await RecordManager.insertUser()
+        const agent = await SessionManager.loginAsUser(app, user)
 
         agent.post('/songlists')
           .end((err, res) => {
@@ -213,14 +124,13 @@ describe('/songlists', async () => {
 
     it('should return an error when a songlist with this name already exists',
       async () => {
-        const lists = await insertUserWithTwoFullSonglists()
+        const user = await RecordManager.insertUser({ id: 1 })
+        await RecordManager.loadFixture('songlists.with-user-id-1')
+        const list = await SongList.query().first()
 
-        // Login with chai agent
-        const agent = chai.request.agent(app)
-        await loginAsUser(agent, TEST_USER_DATA)
-
+        const agent = await SessionManager.loginAsUser(app, user)
         agent.post('/songlists')
-          .send({ title: lists[0].title })
+          .send({ title: list.title })
           .end((err, res) => {
             if (err) {
               console.log(err)
@@ -230,10 +140,8 @@ describe('/songlists', async () => {
       })
 
     it('should create a new songlist when given valid data', async () => {
-      await insertUser()
-      // Login with chai agent
-      const agent = chai.request.agent(app)
-      await loginAsUser(agent, TEST_USER_DATA)
+      const user = await RecordManager.insertUser({ id: 1 })
+      const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent.post('/songlists')
         .send({ title: 'a new songlist title' })

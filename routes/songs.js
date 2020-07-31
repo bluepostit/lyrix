@@ -4,17 +4,18 @@ const { SongsHelper } = require('../helpers/songs')
 const router = express.Router()
 
 const SONG_ATTRIBUTES = [
-  'id', 'title', 'text'
+  'songs.id', 'title', 'text'
 ]
 
-const ARTIST_ATTRIBUTES = ['id', 'name']
+const ARTIST_ATTRIBUTES = ['artist.id', 'artist.name']
 
 router.get('/', async (req, res, next) => {
   const songs = await Song
     .query()
-    .select(...SONG_ATTRIBUTES)
+    .select(...SONG_ATTRIBUTES, ...ARTIST_ATTRIBUTES)
     .withGraphFetched('artist')
-    .orderBy('title')
+    .joinRelated('artist')
+    .orderBy(['title', 'artist.name'])
 
   res.json({
     error: false,

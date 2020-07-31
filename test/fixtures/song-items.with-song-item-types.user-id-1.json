@@ -1,0 +1,65 @@
+[
+  {
+    "table": "artists",
+    "data": {
+      "id": 1,
+      "name": "Skinny Pete"
+    }
+  },
+  {
+    "table": "songs",
+    "data": [
+      {
+        "id": 1,
+        "title": "A Green Song",
+        "text": "This song is green",
+        "artist_id": 1
+      },
+      {
+        "id": 2,
+        "title": "A Blue Song",
+        "text": "This song is blue",
+        "artist_id": 1
+      }
+    ]
+  },
+  {
+    "table": "song_item_types",
+    "data": [
+      {
+        "id": 1,
+        "name": "lyrics"
+      },
+      {
+        "id": 2,
+        "name": "info"
+      }
+    ]
+  },
+  {
+    "table": "song_items",
+    "data": [
+      {
+        "title": "Chords for Song",
+        "text": "Some funky chords",
+        "song_id": 1,
+        "song_item_type_id": 1,
+        "user_id": 1
+      },
+      {
+        "title": "Chords for Song 2",
+        "text": "Some funky chords",
+        "song_id": 2,
+        "song_item_type_id": 1,
+        "user_id": 1
+      },
+      {
+        "title": "Info for Song 2",
+        "text": "Some interesting information",
+        "song_id": 2,
+        "song_item_type_id": 2,
+        "user_id": 1
+      }
+    ]
+  }
+]

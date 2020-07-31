@@ -9,7 +9,7 @@ router.get('/', ensureLoggedIn, async(req, res) => {
     .$relatedQuery('songItems')
     .joinRelated('song')
     .withGraphFetched('[song, songItemType]')
-    .orderBy('song.title')
+    .orderBy(['song.title', 'title'])
 
     res.json({
       error: false,

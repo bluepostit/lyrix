@@ -1,0 +1,78 @@
+[
+  {
+    "table": "artists",
+    "data": {
+      "id": 1,
+      "name": "Skinny Pete"
+    }
+  },
+  {
+    "table": "songs",
+    "data": [
+      {
+        "id": 1,
+        "title": "A Green Song",
+        "text": "This song is green",
+        "artist_id": 1
+      },
+      {
+        "id": 2,
+        "title": "A Blue Song",
+        "text": "This song is blue",
+        "artist_id": 1
+      },
+      {
+        "id": 3,
+        "title": "A Purple Song",
+        "text": "This song is purple",
+        "artist_id": 1
+      },
+      {
+        "id": 4,
+        "title": "A Red Song",
+        "text": "This song is red",
+        "artist_id": 1
+      }
+    ]
+  },
+  {
+    "table": "song_lists",
+    "data": [
+      {
+        "id": 1,
+        "title": "Songlist 1",
+        "user_id": 1
+      },
+      {
+        "id": 2,
+        "title": "Songlist 2",
+        "user_id": 1
+      }
+    ]
+  },
+  {
+    "table": "song_list_songs",
+    "data": [
+      {
+        "song_list_id": 1,
+        "song_id": 1,
+        "position": 1
+      },
+      {
+        "song_list_id": 1,
+        "song_id": 2,
+        "position": 2
+      },
+      {
+        "song_list_id": 2,
+        "song_id": 3,
+        "position": 1
+      },
+      {
+        "song_list_id": 2,
+        "song_id": 4,
+        "position": 2
+      }
+    ]
+  }
+]

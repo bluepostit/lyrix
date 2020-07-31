@@ -62,12 +62,17 @@ module.exports = class User extends Model {
     }
   }
 
-  static async createUser (dataObject) {
-    const hash = await encrypt(dataObject.password)
-    return User.query().insert({
-      email: dataObject.email,
-      password: hash
-    })
+  static async createUser (data) {
+    const hashedPassword = await encrypt(data.password)
+    const cleanData = {
+      email: data.email,
+      password: hashedPassword
+    }
+    if (data.id) {
+      cleanData.id = data.id
+    }
+
+    return User.query().insert(cleanData)
   }
 
   async checkPassword (password) {
