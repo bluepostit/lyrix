@@ -36,7 +36,8 @@
     "mocha": "^8.0.1",
     "mocha-cli": "^1.0.1",
     "nodemon": "^2.0.4",
-    "should": "^13.2.3"
+    "should": "^13.2.3",
+    "simple-knex-fixtures": "^2.0.2"
   },
   "babel": {
     "presets": [
