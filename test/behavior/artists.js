@@ -16,58 +16,32 @@ describe('/artists', () => {
   })
 
   describe('GET /artists', () => {
-    it('should return a list of all artists in the database', async () => {
+    it('should return a list of all artists in the database ordered by name', async () => {
+      await RecordManager.loadFixture('artists')
+      const artists = await Artist.query().orderBy('name')
+
       try {
-        await Artist
-          .query()
-          .insert([
-            {
-              name: 'Bobby'
-            }, {
-              name: 'Sue'
-            }
-          ])
-        chai.request(app)
+        const res = await chai.request(app)
           .get('/artists')
-          .end((err, res) => {
-            if (err) {
-              console.log(err.stack)
-            }
-            expect(res).to.have.status(200)
-            expect(res.body).to.be.an('object')
+        expect(res).to.have.status(200)
+        expect(res.body).to.be.an('object')
 
-            const data = res.body.data
-            expect(data).to.be.an('array')
-            expect(data.length).to.eql(2)
+        const data = res.body.data
+        expect(data).to.be.an('array')
+        expect(data.length).to.eql(artists.length)
 
-            const artists = data
-            expect(artists[0]).to.be.an('object')
-            expect(artists[1]).to.be.an('object')
-
-            const names = artists.map(artist => artist.name)
-            expect(names.sort()).to.eql(['Bobby', 'Sue'])
-          })
+        expect(data[0]).to.be.an('object')
+        expect(data[1]).to.be.an('object')
+        expect(data[0].name).to.eql(artists[0].name)
       } catch (err) {
         console.log(err)
       }
     })
 
     it('should also return the amount of songs that the artist has', async () => {
-      await Artist
-        .query()
-        .insertGraph({
-          name: 'Skinny Pete',
-
-          songs: [
-            {
-              title: 'A Blue Song',
-              text: 'This song is blue'
-            }, {
-              title: 'A Green Song',
-              text: 'This song is green'
-            }
-          ]
-        })
+      await RecordManager.loadFixture('artist.with-songs')
+      const songs = await Artist.relatedQuery('songs')
+        .for(1)
 
       chai.request(app)
         .get('/artists')
@@ -82,8 +56,8 @@ describe('/artists', () => {
           expect(data.length).to.eql(1)
           const artist0 = data[0]
           expect(artist0).to.be.an('object')
-          expect(artist0.name).to.eql('Skinny Pete')
-          expect(artist0.songCount).to.eql(2)
+          expect(artist0.id).to.eql(1)
+          expect(artist0.songCount).to.eql(songs.length)
         })
     })
 
@@ -130,25 +104,12 @@ describe('/artists', () => {
     })
 
     it('should also return the artist\'s songs', async () => {
-      const greenSongText = 'This song is green'
-      const pete = await Artist
-        .query()
-        .insertGraph({
-          name: 'Skinny Pete',
-
-          songs: [
-            {
-              title: 'A Blue Song',
-              text: 'This song is blue'
-            }, {
-              title: 'A Green Song',
-              text: greenSongText
-            }
-          ]
-        })
+      await RecordManager.loadFixture('artist.with-songs')
+      const songs = await Artist.relatedQuery('songs')
+        .for(1)
 
       chai.request(app)
-        .get(`/artists/${pete.id}`)
+        .get('/artists/1')
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -156,12 +117,12 @@ describe('/artists', () => {
           expect(res.body).to.have.status(200)
           const artist = res.body.data
           expect(artist).to.be.an('object')
-          expect(artist.name).to.eql('Skinny Pete')
+          expect(artist.id).to.eql(1)
 
           const artistSongs = artist.songs
           expect(artistSongs).to.be.an('array')
           expect(artistSongs.length).to.eql(2)
-          expect(artistSongs[1].text).to.eql(greenSongText)
+          expect(artistSongs[1].text).to.eql(songs[1].text)
         })
     })
   })
