@@ -3,91 +3,10 @@ const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
 
-const { Artist, Song, User } = require('../../models')
+const { Artist, Song, SongList, User } = require('../../models')
 const RecordManager = require('../record-manager')
 
 chai.use(chaiHttp)
-
-const TEST_USER_DATA = {
-  email: 'bob-songlist@bob.bob',
-  password: 'safe-and-secure'
-}
-
-const TEST_SONGLIST_AND_SONG_DATA = {
-  title: 'SongList 1',
-  songs: [
-    {
-      title: 'List1 > Song1',
-      text: 'List1 > Song1',
-
-      artist: {
-        name: 'Artist 1'
-      }
-    },
-    {
-      title: 'List1 > Song2',
-      text: 'List1 > Song2',
-
-      artist: {
-        name: 'Artist 2'
-      }
-    }
-  ]
-}
-
-
-const insertTwoSongsWithArtists = async () => {
-  return Song
-    .query()
-    .insertGraph([
-      {
-        title: 'Song 1',
-        text: 'This is Song 1',
-
-        artist: {
-          name: 'Bobby'
-        }
-      }, {
-        title: 'Song 2',
-        text: 'This is Song 2',
-
-        artist: {
-          name: 'Sue'
-        }
-      }
-    ])
-}
-
-const insertArtistWithTwoSongs = async () => {
-  return Artist
-    .query()
-    .insertGraph(
-      {
-        name: 'Bobby',
-        songs: [
-          {
-            title: 'Song 1',
-            text: 'This is Song 1'
-          },
-          {
-            title: 'Song 2',
-            text: 'This is Song 2'
-          }
-        ]
-      }
-    )
-}
-
-const insertUser = async () => {
-  return User.createUser(TEST_USER_DATA)
-}
-
-const insertUserSonglistWithTwoSongs = async (user) => {
-  const list = await user
-    .$relatedQuery('songLists')
-    .insertGraph(TEST_SONGLIST_AND_SONG_DATA)
-  return list
-}
 
 
 describe('/songs', () => {
@@ -167,8 +86,16 @@ describe('/songs', () => {
   })
 
   describe('GET /songs/:id?context=artist', () => {
+    let artist
+    beforeEach(async () => {
+      await RecordManager.loadFixture('artist.with-songs')
+      artist = await Artist
+        .query()
+        .withGraphFetched('songs')
+        .first()
+    })
+
     it("should return the song with a link to the artist's next song", async () => {
-      const artist = await insertArtistWithTwoSongs()
       const song0 = artist.songs[0]
       const song1 = artist.songs[1]
       const response = await chai.request(app)
@@ -179,9 +106,8 @@ describe('/songs', () => {
       expect(data.id).to.eql(song0.id)
       expect(data.nextSongId).to.eql(song1.id)
     })
+
     it("should return the song with no link to a next song if this is the artist's last song", async () => {
-      const artist = await insertArtistWithTwoSongs()
-      const song0 = artist.songs[0]
       const song1 = artist.songs[1]
       const response = await chai.request(app)
         .get(`/songs/${song1.id}?context=artist`)
@@ -194,11 +120,22 @@ describe('/songs', () => {
   })
 
   describe('GET /songs/:id?context=songlist&contextId=:songlistId', () => {
-    it("should return the song with a link to the next song from the given songlist", async () => {
-      const user = await insertUser()
-      const list = await insertUserSonglistWithTwoSongs(user)
-      const songs = list.songs
+    let list
+    let songs
+    beforeEach(async () => {
+      await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('songlists.with-user-id-1')
+      // const agent = await SessionManager.loginAsUser(app, user)
+      list = await SongList
+        .query()
+        .withGraphFetched('songs')
+        .joinRelated('items')
+        .orderBy('position')
+        .first()
+      songs = list.songs
+    })
 
+    it("should return the song with a link to the next song from the given songlist", async () => {
       const response = await chai.request(app)
         .get(`/songs/${songs[0].id}?context=songlist&contextId=${list.id}`)
       const data = response.body.data
@@ -208,10 +145,6 @@ describe('/songs', () => {
     })
 
     it("should return the song with no link to a next song if this is the last song in the songlist", async () => {
-      const user = await insertUser()
-      const list = await insertUserSonglistWithTwoSongs(user)
-      const songs = list.songs
-
       const response = await chai.request(app)
         .get(`/songs/${songs[1].id}?context=songlist&contextId=${list.id}`)
       const data = response.body.data
@@ -222,9 +155,16 @@ describe('/songs', () => {
   })
 
   describe('GET /songs/:id?context=songlist', () => {
-    it("should return the song with a link to the next song from the list of all songs", async () => {
-      const songs = await insertTwoSongsWithArtists()
+    let songs
+    beforeEach(async () => {
+      await RecordManager.loadFixture('songs')
+      songs = await Song
+        .query()
+        .joinRelated('artist')
+        .orderBy(['title', 'artist.name'])
+    })
 
+    it("should return the song with a link to the next song from the list of all songs", async () => {
       const response = await chai.request(app)
         .get(`/songs/${songs[0].id}?context=songlist`)
       const data = response.body.data
@@ -234,13 +174,13 @@ describe('/songs', () => {
     })
 
     it("should return the song with no link to a next song if this is the last song", async () => {
-      const songs = await insertTwoSongsWithArtists()
+      const lastSong = songs.slice(-1)[0]
 
       const response = await chai.request(app)
-        .get(`/songs/${songs[1].id}?context=songlist`)
+        .get(`/songs/${lastSong.id}?context=songlist`)
       const data = response.body.data
       expect(data).to.be.an('object')
-      expect(data.id).to.eql(songs[1].id)
+      expect(data.id).to.eql(lastSong.id)
       expect(data.nextSongId).to.eql(null)
     })
   })

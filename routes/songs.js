@@ -10,7 +10,6 @@ const SONG_ATTRIBUTES = [
 const ARTIST_ATTRIBUTES = ['artist.id', 'artist.name']
 
 router.get('/', async (req, res, next) => {
-  console.log(...SONG_ATTRIBUTES, ...ARTIST_ATTRIBUTES)
   const songs = await Song
     .query()
     .select(...SONG_ATTRIBUTES, ...ARTIST_ATTRIBUTES)
