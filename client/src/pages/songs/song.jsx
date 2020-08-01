@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from "react-router-dom"
 import { Page } from '../page'
-import { ToTopButton } from '../../components'
+import { ToTopButton, SongItemsButton } from '../../components'
 
 const getSong = (songId, songlistId, artistId) => {
   let url = `/songs/${songId}`
@@ -24,7 +24,7 @@ const getSong = (songId, songlistId, artistId) => {
 
 const PageContent = (props) => {
   return (
-    <div>
+    <div className="song-page-contents">
       <div className="song-text">
         <div>{props.song.text}</div>
       </div>
@@ -58,12 +58,18 @@ const Song = (props) => {
     }, [history, songId, artistId, songlistId, location.pathname]) // things to monitor for render
     // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
+  let peeker = <></>
+  if (song.songItems && song.songItems.length > 0) {
+    peeker = <SongItemsButton song={song} {...props} />
+  }
+
   return (
     <div className="song-page">
       <Page
         content={<PageContent song={song} />}
         title={song.title}
         nextLink={nextLink}
+        peeker={peeker}
       />
     </div>
   )

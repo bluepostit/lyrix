@@ -1,2 +1,2 @@
 export { Navbar } from './headers'
-export { ToTopButton } from './buttons'
+export { ToTopButton, SongItemsButton } from './buttons'

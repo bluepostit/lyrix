@@ -76,6 +76,7 @@ const Navbar = (props) => {
         <NewButton onClick={props.onNewClick} show={props.onNewClick} />
         <NextButton onClick={goNext} show={props.nextLink} />
       </div>
+      {props.peeker}
     </nav>
   )
 }

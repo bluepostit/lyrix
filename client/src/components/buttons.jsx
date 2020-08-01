@@ -1,5 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory } from "react-router-dom"
+import { Button } from 'react-bootstrap'
+import { Icon } from './icons'
+import { SongItemsModal } from './modals'
 
 const ToTopButton = (props) => {
   const onClick = () => {
@@ -40,5 +43,28 @@ const MenuButton = (props) => {
   )
 }
 
+const SongItemsButton = (props) => {
+  const song = props.song
+  const items = song.songItems
+  const [show, setShow] = useState(false)
 
-export { ToTopButton, MenuButton }
+  if (!items) {
+    return <></>
+  }
+
+  const handleClose = () => setShow(false)
+  const handleShow = () => setShow(true)
+
+  return (
+    <div className="song-items-container">
+      <Button variant="outline-secondary" onClick={handleShow}>
+        <Icon entity="song-item" />
+        <strong> {items.length} </strong>
+      </Button>
+      <SongItemsModal title="Your Song Items" songItems={items} show={show} handleClose={handleClose} />
+    </div>
+  )
+}
+
+
+export { ToTopButton, MenuButton, SongItemsButton }
