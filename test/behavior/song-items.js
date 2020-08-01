@@ -144,17 +144,23 @@ describe('/song-items', async () => {
     it('should return an error when no title is given',
       async () => {
         const user = await RecordManager.insertUser()
+        await RecordManager.loadFixture('songs.with-song-item-types')
+        const song = await Song.query().first()
+        const songItemType = await SongItemType.query().first()
+
         const agent = await SessionManager.loginAsUser(app, user)
+        const data = {
+          text: 'This is the text we want',
+          userId: user.id,
+          songId: song.id,
+          songItemTypeId: songItemType.id
+        }
 
-        agent.post('/song-items')
-          .end((err, res) => {
-            if (err) {
-              console.log(err)
-            }
-
-            expect(res.body).to.have.status(400)
-            expect(res.body.error).to.not.be.empty
-          })
+        const res = await agent
+          .post('/song-items')
+          .send(data)
+        expect(res.body).to.have.status(400)
+        expect(res.body.error).to.not.be.empty
       })
 
     it('should return an error when a song item with this name and song already exists',
