@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const { ValidationError } = require('objection')
 const { SongItem } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 
@@ -8,6 +7,7 @@ const checkForDuplicates = async (req, res, next) => {
   const body = req.body
   const duplicate = await SongItem
     .query()
+    .first()
     .where({
       title: body.title,
       song_id: body.songId,
@@ -88,6 +88,23 @@ router.post('/', ensureLoggedIn, newSongItemValidation, checkForDuplicates,
         status: 201 // created
       }
 
+      try {
+        const body = req.body
+        const songItem = await req.user
+          .$relatedQuery('songItems')
+          .insertGraph({
+            title: body.title,
+            text: body.text,
+            song_id: body.songId,
+            song_item_type_id: body.songItemTypeId
+          })
+          response.id = songItem.id
+      } catch (error) {
+        console.log(error)
+        console.log(error.stack)
+        response.status = 500
+        response.error = "Couldn't create the song item"
+      }
       res.json(response)
   })
 

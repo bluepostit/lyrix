@@ -3,7 +3,7 @@ const chaiHttp = require('chai-http')
 chai.use(chaiHttp)
 const expect = chai.expect
 const app = require('../../app')
-const { SongItem } = require('../../models')
+const { Song, SongItem, SongItemType } = require('../../models')
 const RecordManager = require('../record-manager')
 const SessionManager = require('../session-manager')
 
@@ -177,17 +177,30 @@ describe('/song-items', async () => {
         expect(res.body).to.have.status(400)
       })
 
-    // it('should create a new songlist when given valid data', async () => {
-    //   const user = await RecordManager.insertUser({ id: 1 })
-    //   const agent = await SessionManager.loginAsUser(app, user)
+    it('should create a new song item when given valid data', async () => {
+      const user = await RecordManager.insertUser()
+      await RecordManager.loadFixture('songs.with-song-item-types')
+      const song = await Song.query().first()
+      const songItemType = await SongItemType.query().first()
 
-    //   const res = await agent.post('/songlists')
-    //     .send({ title: 'a new songlist title' })
-    //   const body = res.body
-    //   expect(body).to.have.status(201) // Created
-    //   expect(body.id).to.match(/^\d+/)
-    //   agent.close()
-    // })
+      const agent = await SessionManager.loginAsUser(app, user)
+      const data = {
+        title: 'A new song item',
+        text: 'This is the text we want',
+        userId: user.id,
+        songId: song.id,
+        songItemTypeId: songItemType.id
+      }
+
+      const res = await agent.post('/song-items').send(data)
+
+      const body = res.body
+      expect(body).to.have.status(201) // Created
+      expect(body.id).to.match(/^\d+/)
+      agent.close()
+
+      items = await SongItem.query()
+    })
   })
 
 })
