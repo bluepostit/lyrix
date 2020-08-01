@@ -42,4 +42,19 @@ module.exports = class SongItem extends Model {
       }
     }
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['title', 'userId', 'songId', 'songItemTypeId', 'text'],
+      properties: {
+        id: { type: 'integer' },
+        title: { type: 'string', minLength: 5, maxLength: 255 },
+        userId: { type: 'integer' },
+        songId: { type: 'integer' },
+        songItemTypeId: { type: 'integer' },
+        text: { type: 'string', minLength: 5, maxLength: 2000 }
+      }
+    }
+  }
 }
