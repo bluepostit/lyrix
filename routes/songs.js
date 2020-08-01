@@ -46,13 +46,12 @@ const getPlainSong = async (req) => {
 
   if (user && user.id) {
     query = query
-      .withGraphFetched('songItems')
+      .withGraphFetched('[songItems.songItemType]')
       .leftJoinRelated('songItems')
       .modifyGraph('songItems', builder => {
         builder.orderBy('title').where({user_id: user.id})
       })
   }
-  console.log(query.toKnexQuery().toSQL())
   return await query
 }
 
@@ -70,7 +69,6 @@ const getNextSong = async (song, context, contextId) => {
 router.get('/:id', async (req, res, next) => {
   res.type('json')
   let song = await getPlainSong(req)
-  console.log(song)
   let nextSong
   if (song) {
     song.nextSongId = null
