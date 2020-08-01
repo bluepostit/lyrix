@@ -10,10 +10,11 @@ const checkForDuplicates = async (req, res, next) => {
     .first()
     .where({
       title: body.title,
-      song_id: body.songId,
-      user_id: body.userId
+      song_id: body.song_id,
+      user_id: req.user.id
     })
-  if (duplicate) {
+
+    if (duplicate) {
     return res.json({
       status: 400,
       error: 'Invalid input',
@@ -28,6 +29,13 @@ const newSongItemValidation = async (req, res, next) => {
   body.userId = req.user.id
   try {
     // Trigger model class's validation rules
+    if (body.song_id) {
+      body.song_id = Number.parseInt(body.song_id)
+    }
+    if (body.song_item_type_id) {
+      body.song_item_type_id =
+        Number.parseInt(body.song_item_type_id)
+    }
     await SongItem.fromJson(body)
     await next()
   } catch (e) {
@@ -95,8 +103,8 @@ router.post('/', ensureLoggedIn, newSongItemValidation, checkForDuplicates,
           .insertGraph({
             title: body.title,
             text: body.text,
-            song_id: body.songId,
-            song_item_type_id: body.songItemTypeId
+            song_id: body.song_id,
+            song_item_type_id: body.song_item_type_id
           })
           response.id = songItem.id
       } catch (error) {

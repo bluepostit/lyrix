@@ -193,9 +193,8 @@ describe('/song-items', async () => {
       const data = {
         title: 'A new song item',
         text: 'This is the text we want',
-        userId: user.id,
-        songId: song.id,
-        songItemTypeId: songItemType.id
+        song_id: song.id,
+        song_item_type_id: songItemType.id
       }
 
       const res = await agent.post('/song-items').send(data)
@@ -204,8 +203,6 @@ describe('/song-items', async () => {
       expect(body).to.have.status(201) // Created
       expect(body.id).to.match(/^\d+/)
       agent.close()
-
-      items = await SongItem.query()
     })
   })
 
