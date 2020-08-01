@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 
 const SongItemForm = (props) => {
@@ -9,10 +9,9 @@ const SongItemForm = (props) => {
   const [validated, setValidated] = useState(false)
   const [title, setTitle] = useState(item.title || '')
   const [text, setText] = useState(item.title || '')
+  const [song, setSong] = useState(props.song)
   const [songItemType, setSongItemType] =
     useState(item.songItemTypeId || '')
-
-  const { songId } = useParams()
 
   const onTitleChange = (event) => {
     setTitle(event.target.value)
@@ -24,6 +23,10 @@ const SongItemForm = (props) => {
 
   const onSongItemTypeChange = (event) => {
     setSongItemType(event.target.value)
+  }
+
+  const onSongChange = (event) => {
+    setSong(event.target.value)
   }
 
   const getFormData = (form) => {
@@ -73,8 +76,13 @@ const SongItemForm = (props) => {
     <div className="container">
       <Form noValidate validated={validated}
             onSubmit={handleSubmit} method="post"
+            className="mt-2"
+            id="song-item-form"
             action="/song-items">
-        <input type="hidden" name="song_id" value={songId} />
+        <input type="hidden"
+               name="song_id"
+               value={song}
+               onChange={onSongChange} />
         <Form.Group controlId="songItemTitle">
           <Form.Label>Title</Form.Label>
           <Form.Control
@@ -106,16 +114,19 @@ const SongItemForm = (props) => {
           <Form.Label>Text</Form.Label>
           <Form.Control
             as="textarea"
-            rows="10"
+            rows="5"
             name="text"
             value={text}
-            placeholder="Type your text here"
+            className="song-item-text-box"
+            placeholder="G#..."
             onChange={onTextChange}
           />
         </Form.Group>
-        <Button variant="primary" type="submit">
-          Submit
-        </Button>
+        <div className="d-flex justify-content-end">
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
+        </div>
       </Form>
     </div>
   )
