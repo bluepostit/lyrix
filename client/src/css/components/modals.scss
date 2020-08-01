@@ -1,0 +1,11 @@
+.song-items-modal .modal-content {
+  background-color: $bg-beige;
+}
+
+.song-items-modal .modal-content .list-group-item {
+  background-color: $bg-beige;
+}
+
+.song-items-modal .list-group-item.active {
+  background-color: $primary;
+}

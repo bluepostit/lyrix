@@ -2,7 +2,7 @@
   {
     "table": "users",
     "data": {
-      "id": 1,
+      "id": 10,
       "email": "alice@alice.com",
       "password": "safe-and-secure"
     }
@@ -50,7 +50,7 @@
       {
         "id": 1,
         "title": "My chords for Song 1",
-        "user_id": 1,
+        "user_id": 10,
         "song_id": 1,
         "song_item_type_id": 1,
         "text": "My chords are cool"
@@ -58,7 +58,7 @@
       {
         "id": 2,
         "title": "My chords for Song 2",
-        "user_id": 1,
+        "user_id": 10,
         "song_id": 2,
         "song_item_type_id": 1,
         "text": "These chords are cool, too"

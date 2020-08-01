@@ -44,3 +44,25 @@
   width: 1.6rem;
   margin-right: 1.5rem;
 }
+
+.song-item-row {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.song-item-row .lyrix-icon {
+  color: $border-gray;
+  margin-right: 0.5rem;
+}
+
+
+.song-item-row .info {
+  display: flex;
+
+  .song-item-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

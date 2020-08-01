@@ -7,7 +7,7 @@ const SONG_ATTRIBUTES = [
   'songs.id', 'title', 'text'
 ]
 
-const ARTIST_ATTRIBUTES = ['artist.id', 'artist.name']
+const ARTIST_ATTRIBUTES = ['artist.id as artist_id', 'artist.name']
 
 router.get('/', async (req, res, next) => {
   const songs = await Song
@@ -36,11 +36,23 @@ router.get('/count', async (req, res, next) => {
   })
 })
 
-const getPlainSong = async (id) => {
-  return Song
+const getPlainSong = async (req) => {
+  const songId = req.params.id
+  const user = req.user
+  let query = Song
     .query()
-    .findById(id)
+    .findById(songId)
     .withGraphFetched('artist')
+
+  if (user && user.id) {
+    query = query
+      .withGraphFetched('[songItems.songItemType]')
+      .leftJoinRelated('songItems')
+      .modifyGraph('songItems', builder => {
+        builder.orderBy('title').where({user_id: user.id})
+      })
+  }
+  return await query
 }
 
 const getNextSong = async (song, context, contextId) => {
@@ -56,7 +68,7 @@ const getNextSong = async (song, context, contextId) => {
 
 router.get('/:id', async (req, res, next) => {
   res.type('json')
-  let song = await getPlainSong(req.params.id)
+  let song = await getPlainSong(req)
   let nextSong
   if (song) {
     song.nextSongId = null
