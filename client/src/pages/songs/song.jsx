@@ -58,10 +58,7 @@ const Song = (props) => {
     }, [history, songId, artistId, songlistId, location.pathname]) // things to monitor for render
     // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
-  let peeker = <></>
-  if (song.songItems && song.songItems.length > 0) {
-    peeker = <SongItemsButton song={song} {...props} />
-  }
+  const peeker = <SongItemsButton song={song} {...props} />
 
   return (
     <div className="song-page">

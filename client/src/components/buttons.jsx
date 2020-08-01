@@ -45,12 +45,8 @@ const MenuButton = (props) => {
 
 const SongItemsButton = (props) => {
   const song = props.song
-  const items = song.songItems
+  const items = song.songItems || []
   const [show, setShow] = useState(false)
-
-  if (!items) {
-    return <></>
-  }
 
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
@@ -61,7 +57,12 @@ const SongItemsButton = (props) => {
         <Icon entity="song-item" />
         <strong> {items.length} </strong>
       </Button>
-      <SongItemsModal title="Your Song Items" songItems={items} show={show} handleClose={handleClose} />
+      <SongItemsModal title="Your Song Items"
+        song={song}
+        songItems={items}
+        show={show}
+        handleClose={handleClose}
+      />
     </div>
   )
 }
