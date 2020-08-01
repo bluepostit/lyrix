@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
+import { FormError } from '../../components/forms'
 
 const SongItemForm = (props) => {
   const history = useHistory()
@@ -9,6 +10,7 @@ const SongItemForm = (props) => {
   const [validated, setValidated] = useState(false)
   const [title, setTitle] = useState(item.title || '')
   const [text, setText] = useState(item.title || '')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const [songItemType, setSongItemType] =
     useState(item.songItemTypeId || '')
@@ -31,6 +33,7 @@ const SongItemForm = (props) => {
   }
 
   const handleSubmit = async (event) => {
+    setErrorMessage('')
     event.preventDefault()
     const form = event.currentTarget
     console.log(form)
@@ -38,13 +41,20 @@ const SongItemForm = (props) => {
     const data = getFormData(form)
     console.log(data)
 
-    const res = await fetch(event.target.action, {
+    fetch(event.target.action, {
       method: 'POST',
       body: data,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       }
-    })
+    }).then(response => response.json())
+      .then((json) => {
+        if (json.error) {
+          setErrorMessage(json.message)
+        } else {
+          props.onCreate()
+        }
+      })
   }
 
   const fetchSongItemTypes = async () => {
@@ -70,6 +80,7 @@ const SongItemForm = (props) => {
 
   return (
     <div className="container">
+      <FormError error={errorMessage} />
       <Form noValidate validated={validated}
             onSubmit={handleSubmit} method="post"
             className="mt-2"
