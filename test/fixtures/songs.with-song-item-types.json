@@ -1,0 +1,67 @@
+[
+  {
+    "table": "artists",
+    "data": [
+      {
+        "id": 1,
+        "name": "Artist 1"
+      },
+      {
+        "id": 2,
+        "name": "Artist 2"
+      },
+      {
+        "id": 3,
+        "name": "Artist 3"
+      }
+    ]
+  },
+  {
+    "table": "songs",
+    "data": [
+      {
+        "id": 1,
+        "artist_id": 1,
+        "title": "Song 1",
+        "text": "Lyrics for Song 1"
+      },
+      {
+        "id": 2,
+        "artist_id": 2,
+        "title": "Song 2",
+        "text": "Lyrics for Song 2"
+      },
+      {
+        "id": 3,
+        "artist_id": 3,
+        "title": "Song 3",
+        "text": "Lyrics for Song 3"
+      },
+      {
+        "id": 4,
+        "artist_id": 2,
+        "title": "Song 4",
+        "text": "Lyrics for Song 4"
+      },
+      {
+        "id": 5,
+        "artist_id": 3,
+        "title": "Song 5",
+        "text": "Lyrics for Song 5"
+      }
+    ]
+  },
+  {
+    "table": "song_item_types",
+    "data": [
+      {
+        "id": 1,
+        "name": "lyrics"
+      },
+      {
+        "id": 2,
+        "name": "info"
+      }
+    ]
+  }
+]

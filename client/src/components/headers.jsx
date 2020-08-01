@@ -1,6 +1,7 @@
 import React from 'react'
-import { useHistory } from "react-router-dom"
+import { useHistory, Link } from "react-router-dom"
 import { Icon } from '../components/icons'
+
 
 const BaseButton = (props) => {
   if (!props.show) {
@@ -81,4 +82,30 @@ const Navbar = (props) => {
   )
 }
 
-export { Navbar }
+const SongItemPageTitle = (props) => {
+  let lines = []
+  let song
+  if (props.songItem) {
+    lines[0] = props.songItem.title
+    lines[1] = props.songItem.song.title
+    song = props.songItem.song
+  } else if (props.song) {
+    lines[0] = props.title || 'Add a New Song Item'
+    lines[1] = props.song.title
+    song = props.song
+  }
+
+  return (
+    <div className="title">
+      <div>
+        <Icon entity="song-item" />
+        <strong className="ml-2">{lines[0]}</strong>
+      </div>
+      <Link to={`/songs/${song.id}`}>
+        <span className="content-secondary">{lines[1]}</span>
+      </Link>
+    </div>
+  )
+}
+
+export { Navbar, SongItemPageTitle }

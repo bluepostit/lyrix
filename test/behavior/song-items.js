@@ -3,7 +3,7 @@ const chaiHttp = require('chai-http')
 chai.use(chaiHttp)
 const expect = chai.expect
 const app = require('../../app')
-const { SongItem } = require('../../models')
+const { Song, SongItem, SongItemType } = require('../../models')
 const RecordManager = require('../record-manager')
 const SessionManager = require('../session-manager')
 
@@ -128,4 +128,82 @@ describe('/song-items', async () => {
       expect(data.song.title).to.eql(item.song.title)
     })
   })
+
+  describe('POST /', () => {
+    it('should return an error when not signed in', async () => {
+      chai.request(app).post('/song-items')
+        .send({ title: 'test' })
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(401)
+        })
+    })
+
+    it('should return an error when no title is given',
+      async () => {
+        const user = await RecordManager.insertUser()
+        await RecordManager.loadFixture('songs.with-song-item-types')
+        const song = await Song.query().first()
+        const songItemType = await SongItemType.query().first()
+
+        const agent = await SessionManager.loginAsUser(app, user)
+        const data = {
+          text: 'This is the text we want',
+          userId: user.id,
+          songId: song.id,
+          songItemTypeId: songItemType.id
+        }
+
+        const res = await agent
+          .post('/song-items')
+          .send(data)
+        expect(res.body).to.have.status(400)
+        expect(res.body.error).to.not.be.empty
+      })
+
+    it('should return an error when a song item with this name and song already exists',
+      async () => {
+        const user = await RecordManager.insertUser({ id: 1 })
+        await RecordManager.loadFixture('song-items.with-song-item-types.user-id-1')
+        const item = await SongItem.query().first()
+
+        const agent = await SessionManager.loginAsUser(app, user)
+        const data = {
+          title: item.title,
+          text: item.text + ' la la la',
+          userId: item.user_id,
+          songId: item.song_id,
+          songItemTypeId: item.song_item_type_id
+        }
+        const res = await agent
+          .post('/song-items')
+          .send(data)
+        expect(res.body).to.have.status(400)
+      })
+
+    it('should create a new song item when given valid data', async () => {
+      const user = await RecordManager.insertUser()
+      await RecordManager.loadFixture('songs.with-song-item-types')
+      const song = await Song.query().first()
+      const songItemType = await SongItemType.query().first()
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const data = {
+        title: 'A new song item',
+        text: 'This is the text we want',
+        song_id: song.id,
+        song_item_type_id: songItemType.id
+      }
+
+      const res = await agent.post('/song-items').send(data)
+
+      const body = res.body
+      expect(body).to.have.status(201) // Created
+      expect(body.id).to.match(/^\d+/)
+      agent.close()
+    })
+  })
+
 })

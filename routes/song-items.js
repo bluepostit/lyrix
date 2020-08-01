@@ -3,6 +3,49 @@ const router = express.Router()
 const { SongItem } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 
+const checkForDuplicates = async (req, res, next) => {
+  const body = req.body
+  const duplicate = await SongItem
+    .query()
+    .first()
+    .where({
+      title: body.title,
+      song_id: body.song_id,
+      user_id: req.user.id
+    })
+
+    if (duplicate) {
+    return res.json({
+      status: 400,
+      error: 'Invalid input',
+      message: 'A similar song item already exists'
+    })
+  }
+  next()
+}
+
+const newSongItemValidation = async (req, res, next) => {
+  const body = req.body
+  body.userId = req.user.id
+  try {
+    // Trigger model class's validation rules
+    if (body.song_id) {
+      body.song_id = Number.parseInt(body.song_id)
+    }
+    if (body.song_item_type_id) {
+      body.song_item_type_id =
+        Number.parseInt(body.song_item_type_id)
+    }
+    await SongItem.fromJson(body)
+    await next()
+  } catch (e) {
+    return res.json({
+      status: 400,
+      error: 'Invalid input',
+      message: e.message
+    })
+  }
+}
 
 router.get('/', ensureLoggedIn, async(req, res) => {
   const songItems = await req.user
@@ -46,5 +89,31 @@ router.get('/:id', ensureLoggedIn, async(req, res) => {
 
   res.json(response)
 })
+
+router.post('/', ensureLoggedIn, newSongItemValidation, checkForDuplicates,
+    async (req, res, next) => {
+      const response = {
+        status: 201 // created
+      }
+
+      try {
+        const body = req.body
+        const songItem = await req.user
+          .$relatedQuery('songItems')
+          .insertGraph({
+            title: body.title,
+            text: body.text,
+            song_id: body.song_id,
+            song_item_type_id: body.song_item_type_id
+          })
+          response.id = songItem.id
+      } catch (error) {
+        console.log(error)
+        console.log(error.stack)
+        response.status = 500
+        response.error = "Couldn't create the song item"
+      }
+      res.json(response)
+  })
 
 module.exports = router

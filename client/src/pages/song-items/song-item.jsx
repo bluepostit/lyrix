@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams, Link } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
-import { Icon } from '../../components/icons'
+import { SongItemPageTitle } from '../../components/headers'
 
 const getSongItem = (songItemId) => {
   let url = `/song-items/${songItemId}`
@@ -20,24 +20,11 @@ const PageContent = (props) => {
   return (
     <div>
       <div className="song-text">
-        <div>{props.songItem.text}</div>
+        <div className="song-item-text-box">
+          {props.songItem.text}
+        </div>
       </div>
       <ToTopButton />
-    </div>
-  )
-}
-
-const Title = (props) => {
-  const song = props.songItem.song
-  return (
-    <div className="title">
-      <div>
-        <Icon entity="song-item" />
-        <strong className="ml-2">{props.songItem.title}</strong>
-      </div>
-      <Link to={`/songs/${song.id}`}>
-        <span className="content-secondary">{song.title}</span>
-      </Link>
     </div>
   )
 }
@@ -63,7 +50,7 @@ const SongItem = () => {
     <div className="song-item-page">
       <Page
         content={<PageContent songItem={songItem} />}
-        title={<Title songItem={songItem} />}
+        title={<SongItemPageTitle songItem={songItem} />}
       />
     </div>
   )
