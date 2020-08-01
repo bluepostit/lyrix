@@ -75,4 +75,57 @@ describe('/song-items', async () => {
       })
     })
   })
+
+  describe('GET /:id', () => {
+    it('should return an error when not logged in', async () => {
+      const res = await chai.request(app).get('/song-items/2')
+
+      expect(res).to.have.status(200)
+      expect(res.body).to.have.status(401)
+      expect(res.body.error).to.not.be.empty
+    })
+
+    it('should return an error if the song item belongs to another user', async () => {
+      await RecordManager.loadFixture('song-items.only-other-user')
+      const item = await SongItem.query().first()
+
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.get(`/song-items/${item.id}`)
+      agent.close()
+
+      expect(res).to.have.status(200)
+      expect(res.body).to.be.an('object')
+      expect(res.body).to.have.status(401)
+      expect(res.body.error).to.not.be.empty
+      expect(res.body.data).to.be.undefined
+    })
+
+    it('should return an error when no matching song item can be found', async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.get('/song-items/23')
+      expect(res.body).to.have.status(404)
+      expect(res.body).to.be.an('object')
+      expect(res.body).to.haveOwnProperty('error')
+    })
+
+    it('should return the song item with the given id when found', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('song-items.with-song-item-types.user-id-1')
+      const item = await SongItem
+        .query().first().withGraphFetched('song')
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.get(`/song-items/${item.id}`)
+      agent.close()
+
+      expect(res.body).to.have.status(200)
+      const data = res.body.data
+      expect(data).to.be.an('object')
+      expect(data.title).to.eql(item.title)
+      expect(data.text).to.eql(item.text)
+      expect(data.song.title).to.eql(item.song.title)
+    })
+  })
 })
