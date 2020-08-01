@@ -26,12 +26,14 @@
       {
         "id": 1,
         "title": "Song 1",
-        "text": "Text for Song 1"
+        "text": "Text for Song 1",
+        "artist_id": 1
       },
       {
         "id": 2,
         "title": "Song 2",
-        "text": "Text for Song 2"
+        "text": "Text for Song 2",
+        "artist_id": 2
       }
     ]
   },
