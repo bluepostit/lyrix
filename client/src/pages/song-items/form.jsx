@@ -9,7 +9,7 @@ const SongItemForm = (props) => {
   const [validated, setValidated] = useState(false)
   const [title, setTitle] = useState(item.title || '')
   const [text, setText] = useState(item.title || '')
-  const [song, setSong] = useState(props.song)
+
   const [songItemType, setSongItemType] =
     useState(item.songItemTypeId || '')
 
@@ -23,10 +23,6 @@ const SongItemForm = (props) => {
 
   const onSongItemTypeChange = (event) => {
     setSongItemType(event.target.value)
-  }
-
-  const onSongChange = (event) => {
-    setSong(event.target.value)
   }
 
   const getFormData = (form) => {
@@ -81,8 +77,8 @@ const SongItemForm = (props) => {
             action="/song-items">
         <input type="hidden"
                name="song_id"
-               value={song}
-               onChange={onSongChange} />
+               value={props.song.id}
+               />
         <Form.Group controlId="songItemTitle">
           <Form.Label>Title</Form.Label>
           <Form.Control

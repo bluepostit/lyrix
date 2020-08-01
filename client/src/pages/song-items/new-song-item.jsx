@@ -19,7 +19,7 @@ const fetchSong = async (id) => {
 const NewSongItem = () => {
   const title = 'Add a Song Item'
   const history = useHistory()
-  const [song, setSong] = useState({id: null})
+  const [song, setSong] = useState({id: ''})
 
   const { songId } = useParams()
 
@@ -31,7 +31,7 @@ const NewSongItem = () => {
         console.log(e)
         history.push('/login')
       })
-  }, [history, song.id]) // things to monitor for render
+  }, [history, songId]) // things to monitor for render
 
 
   const onCreationSuccess = () => {
