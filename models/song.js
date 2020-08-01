@@ -14,6 +14,7 @@ module.exports = class Song extends Model {
 
   static get relationMappings () {
     const SongList = require('./song-list')
+    const SongItem = require('./song-item')
     return {
       artist: {
         relation: Model.BelongsToOneRelation,
@@ -34,6 +35,14 @@ module.exports = class Song extends Model {
           },
           to: 'song_lists.id'
         }
+      },
+      songItems: {
+        relation: Model.HasManyRelation,
+        modelClass: SongItem,
+        join: {
+          from: 'songs.id',
+          to: 'song_items.song_id'
+        }
       }
     }
   }
@@ -41,7 +50,8 @@ module.exports = class Song extends Model {
   static get modifiers() {
     return {
       onlyId(builder) {
-        builder.select(`${Song.tableName}.id`)
+        const { ref } = Song;
+        builder.select(ref('id'))
       }
     }
   }

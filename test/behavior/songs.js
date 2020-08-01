@@ -3,8 +3,9 @@ const chaiHttp = require('chai-http')
 const expect = chai.expect
 const app = require('../../app')
 
-const { Artist, Song, SongList, User } = require('../../models')
+const { Artist, Song, SongList, SongItem } = require('../../models')
 const RecordManager = require('../record-manager')
+const SessionManager = require('../session-manager')
 
 chai.use(chaiHttp)
 
@@ -82,6 +83,51 @@ describe('/songs', () => {
           expect(data.title).to.eql(song.title)
           expect(data.text).to.eql(song.text)
         })
+    })
+
+    it("should return the current user's song items for the song", async () => {
+      const songId = 1
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('song-items.with-song-item-types.user-id-1')
+      const items = await SongItem
+        .query()
+        .joinRelated('song')
+        .where({song_id: songId})
+        .orderBy(['song.title', 'title'])
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.get(`/songs/${songId}`)
+      agent.close()
+
+      expect(res.body).to.have.status(200)
+      const data = res.body.data
+      expect(data).to.be.an('object')
+      expect(data.songItems).to.be.an('array')
+      expect(data.songItems.length).to.eql(items.length)
+      expect(data.songItems[0].title).to.eql(items[0].title)
+    })
+
+    it("should return no song items for the song if the user has none", async () => {
+      const songId = 1
+      const userId = 1
+      const user = await RecordManager.insertUser({ id: userId })
+      await RecordManager.loadFixture('song-items.only-other-user')
+      const items = await SongItem
+        .query()
+        .joinRelated('song')
+        .where({ song_id: songId, user_id: userId})
+        .orderBy(['song.title', 'title'])
+      expect(items.length).to.eql(0)
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.get(`/songs/${songId}`)
+      agent.close()
+
+      expect(res.body).to.have.status(200)
+      const data = res.body.data
+      expect(data).to.be.an('object')
+      expect(data.songItems).to.be.an('array')
+      expect(data.songItems.length).to.eql(items.length)
     })
   })
 
