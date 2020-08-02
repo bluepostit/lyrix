@@ -4,8 +4,8 @@ import { Page } from '../page'
 import { SongItemForm } from './form'
 import { SongItemPageTitle } from '../../components/headers'
 
-const fetchSong = async (id) => {
-  let url = `/songs/${id}`
+const fetchSongItem = async (id) => {
+  let url = `/song-items/${id}`
   return fetch(url)
     .then(response => response.json())
     .then((json) => {
@@ -16,54 +16,50 @@ const fetchSong = async (id) => {
     })
 }
 
-const NewSongItem = () => {
-  const title = 'Add a Song Item'
+const EditSongItem = () => {
+  const title = 'Editing Song Item'
   const history = useHistory()
-  const [song, setSong] = useState({id: ''})
   const [songItem, setSongItem] = useState({
     id: '',
     title: '',
-    text: '',
-    song: song,
-    songItemType: { id: '', name: '' }
+    songItemType: { id: '', name: '' },
+    song: { id: '' }
   })
-  const { songId } = useParams()
+
+  const { id } = useParams()
 
   useEffect(() => {
-    fetchSong(songId)
-      .then((song) => {
-        setSong(song)
-        // songItem.song = song
-      })
+    fetchSongItem(id)
+      .then(songItem => setSongItem(songItem))
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
         history.push('/login')
       })
-  }, [history, songId, songItem.song]) // things to monitor for render
+  }, [history, id]) // things to monitor for render
 
 
-  const onCreateSuccess = () => {
-    history.push('/song-items')
+  const onUpdateSuccess = () => {
+    history.push(`/song-items/${id}`)
   }
 
   const content =
     <SongItemForm
-      song={song}
+      song={songItem.song}
       songItem={songItem}
       setSongItem={setSongItem}
-      action={'/song-items'}
-      method='POST'
-      onSuccess={onCreateSuccess} />
+      action={`/song-items/${songItem.id}`}
+      method='PUT'
+      onSuccess={onUpdateSuccess} />
 
   return (
     <div className="song-item-page">
       <Page
         content={content}
-        title={<SongItemPageTitle song={song} title={title} />}
+        title={<SongItemPageTitle song={songItem.song} title={title} />}
       />
     </div>
   )
 }
 
-export { NewSongItem }
+export { EditSongItem }

@@ -12,10 +12,9 @@ const PageHeader = (props) => {
  * Props:
  * - title - string to be used as the page's title
  * - content - string/JSX to be used as the page's content
- * - nextLink - string to be used as the 'next' link. Can be undefined.
- * - hasBackButton - boolean, for navbar
- * - hasHomeButton - boolean, for navbar
  *
+ * Also includes all props offered by Navbar.
+ * @see Navbar
  * @param {*} props
  */
 const Page = (props) => {

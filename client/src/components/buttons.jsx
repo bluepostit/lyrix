@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap'
 import { Icon } from './icons'
 import { SongItemsModal } from './modals'
 
-const ToTopButton = (props) => {
+const ToTopButton = () => {
   const onClick = () => {
     window.scrollTo(0, 0)
   }
@@ -19,8 +19,7 @@ const ToTopButton = (props) => {
 /**
  * Menu button for small screen
  */
-const MenuButton = (props) => {
-  const action = props.action
+const MenuButton = ({ action, icon = <></> }) => {
   let title = action[0].toUpperCase() + action.slice(1)
   title = title.replace('-', ' ')
 
@@ -30,8 +29,6 @@ const MenuButton = (props) => {
     const url = `/${action}`
     history.push(url)
   }
-
-  const icon = props.icon || <></>
 
   const className = `btn btn-primary menu-button menu-button-${action}`
   return (
@@ -43,8 +40,7 @@ const MenuButton = (props) => {
   )
 }
 
-const SongItemsButton = (props) => {
-  const song = props.song
+const SongItemsButton = ({ song }) => {
   const items = song.songItems || []
   const [show, setShow] = useState(false)
 
@@ -67,5 +63,32 @@ const SongItemsButton = (props) => {
   )
 }
 
+const getIconEntity = (action) => {
+  switch (action) {
+    case 'next': return 'action-next'
+    case 'back': return 'action-prev'
+    case 'home': return 'home'
+    case 'new': return 'new'
+    case 'edit': return 'edit'
+    default: return ''
+  }
+}
 
-export { ToTopButton, MenuButton, SongItemsButton }
+const NavbarButton = ({
+  show = false,
+  action,
+  onClick
+}) => {
+  if (!show) {
+    return <></>
+  }
+  const iconEntity = getIconEntity(action)
+  return (
+    <button className="btn button-nav" onClick={onClick}>
+      <Icon entity={iconEntity} />
+    </button>
+  )
+}
+
+
+export { ToTopButton, MenuButton, NavbarButton, SongItemsButton }

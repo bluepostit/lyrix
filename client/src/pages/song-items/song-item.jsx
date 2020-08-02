@@ -16,12 +16,12 @@ const getSongItem = (songItemId) => {
     })
 }
 
-const PageContent = (props) => {
+const PageContent = ({ songItem }) => {
   return (
     <div>
       <div className="song-text">
         <div className="song-item-text-box">
-          {props.songItem.text}
+          {songItem.text}
         </div>
       </div>
       <ToTopButton />
@@ -33,6 +33,10 @@ const SongItem = () => {
   const { id } = useParams()
   const [songItem, setSongItem] = useState({ title: null, text: null, song: { title: null } })
   const history = useHistory()
+
+  const goToEdit = () => {
+    history.push(`/song-items/${songItem.id}/edit`)
+  }
 
   useEffect(() => {
     getSongItem(id)
@@ -51,6 +55,7 @@ const SongItem = () => {
       <Page
         content={<PageContent songItem={songItem} />}
         title={<SongItemPageTitle songItem={songItem} />}
+        onEditClick={goToEdit}
       />
     </div>
   )
