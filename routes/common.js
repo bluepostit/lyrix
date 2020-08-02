@@ -23,7 +23,17 @@ const ensureAdmin = async (req, res, next) => {
   }
 }
 
+const checkIsAdmin = async (req, res, next) => {
+  let isAdmin = false
+  if (req.user) {
+    isAdmin = req.user.admin
+  }
+  req.isAdmin = isAdmin
+  next()
+}
+
 module.exports = {
   StatusCodes,
-  ensureAdmin
+  ensureAdmin,
+  checkIsAdmin
 }

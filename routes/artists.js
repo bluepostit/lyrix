@@ -3,7 +3,7 @@ const router = express.Router()
 
 const { Artist } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
-const { StatusCodes, ensureAdmin } = require('./common')
+const { StatusCodes, checkIsAdmin, ensureAdmin } = require('./common')
 const songsRouter = require('./artist-songs.js')
 
 const ARTIST_ATTRIBUTES = ['artists.id', 'artists.name']
@@ -48,7 +48,7 @@ const sanitize = async (req, res, next) => {
   next()
 }
 
-router.get('/', async (req, res, next) => {
+router.get('/', checkIsAdmin, async (req, res, next) => {
   try {
     const artists = await Artist
       .query()
@@ -59,7 +59,8 @@ router.get('/', async (req, res, next) => {
       .groupBy('artists.id')
     res.json({
       error: false,
-      data: artists
+      data: artists,
+      userCanCreate: req.isAdmin
     })
   } catch (error) {
     console.log(error.stack)
