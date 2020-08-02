@@ -45,6 +45,7 @@ const EditSongItem = () => {
 
   const content =
     <SongItemForm
+      song={songItem.song}
       songItem={songItem}
       setSongItem={setSongItem}
       action={`/song-items/${songItem.id}`}

@@ -20,28 +20,46 @@ const NewSongItem = () => {
   const title = 'Add a Song Item'
   const history = useHistory()
   const [song, setSong] = useState({id: ''})
-
+  const [songItem, setSongItem] = useState({
+    id: '',
+    title: '',
+    text: '',
+    song: song,
+    songItemType: { id: '', name: '' }
+  })
   const { songId } = useParams()
 
   useEffect(() => {
     fetchSong(songId)
-      .then(song => setSong(song))
+      .then((song) => {
+        setSong(song)
+        // songItem.song = song
+      })
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
         history.push('/login')
       })
-  }, [history, songId]) // things to monitor for render
+  }, [history, songId, songItem.song]) // things to monitor for render
 
 
-  const onCreationSuccess = () => {
+  const onCreateSuccess = () => {
     history.push('/song-items')
   }
+
+  const content =
+    <SongItemForm
+      song={song}
+      songItem={songItem}
+      setSongItem={setSongItem}
+      action={'/song-items'}
+      method='POST'
+      onSuccess={onCreateSuccess} />
 
   return (
     <div className="song-item-page">
       <Page
-        content={<SongItemForm song={song} onSuccess={onCreationSuccess} />}
+        content={content}
         title={<SongItemPageTitle song={song} title={title} />}
       />
     </div>

@@ -6,6 +6,7 @@ import { FormError } from '../../components/forms'
 const SongItemForm = ({
   songItem,
   setSongItem,
+  song,
   action,
   method,
   onSuccess
@@ -16,9 +17,18 @@ const SongItemForm = ({
   const [validated, setValidated] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
+  const getItemType = (id) => {
+    return itemTypes.find(item => item.id === id)
+  }
+
   const handleChange = (event) => {
-    const songItemCopy = { ...songItem };
-    songItemCopy[event.target.name] = event.target.value;
+    const songItemCopy = { ...songItem }
+    const target = event.target
+    if (target.name === 'song_item_type_id') {
+      songItemCopy.songItemType = getItemType(parseInt(target.value))
+    } else {
+      songItemCopy[target.name] = target.value
+    }
     setSongItem(songItemCopy)
   }
 
@@ -80,7 +90,7 @@ const SongItemForm = ({
             action={action}>
         <input type="hidden"
                name="song_id"
-               value={songItem.song.id}
+               value={song.id}
                />
         <Form.Group controlId="songItemTitle">
           <Form.Label>Title</Form.Label>
