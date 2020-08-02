@@ -3,31 +3,56 @@ import { useHistory } from "react-router-dom"
 import { Navbar } from '../components/headers'
 
 // A single list item
-const Item = (props) => {
-  const item = props.item
-
+const Item = ({
+  item,
+  index,
+  onItemClick,
+  renderItemMultiLine = false,
+  renderItem = (item, index) => {}
+}) => {
   const handleClick = () => {
-    props.onItemClick(item)
+    onItemClick(item)
   }
 
   let className = "list-group-item lyrix-list-item"
-  if (props.renderItemMultiLine) {
+  if (renderItemMultiLine) {
     className += " multi-line"
   }
 
   return (
     <button key={item.id} className={className} onClick={handleClick} >
-        {props.renderItem(item, props.index)}
+        {renderItem(item, index)}
     </button>
   )
 }
 
 // A list of items
-const ItemListDiv = (props) => {
+const ItemListDiv = ({
+  items = [],
+  onItemClick,
+  show = true,
+  renderItemMultiLine = false,
+  renderItem = (item, index) => { }
+}) => {
+  if (items.length === 0) {
+    let className = 'beneath-nav lyrix-list empty ' + (show? '' : 'd-none')
+    return (
+      <div className={className}>
+        <h3>Nothing to show here, yet.</h3>
+      </div>
+    )
+  }
   return (
     <div className="list-group lyrix-list">
-      {props.items.map((item, index) =>
-        <Item key={index} index={index} item={item} {...props} />
+      {items.map((item, index) =>
+        <Item
+          key={index}
+          index={index}
+          item={item}
+          onItemClick={onItemClick}
+          renderItemMultiLine={renderItemMultiLine}
+          renderItem={renderItem}
+        />
       )}
     </div>
   )
@@ -61,11 +86,16 @@ const fetchItems = async (getItems) => {
  */
 const ItemListPage = (props) => {
   const [items, setItems] = useState([])
+  const [isLoading, setLoading] = useState(true)
   const history = useHistory()
 
   useEffect(() => {
+    setLoading(true)
     fetchItems(props.getItems)
-      .then(items => setItems(items))
+      .then((items) => {
+        setItems(items)
+        setLoading(false)
+      })
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
@@ -83,7 +113,7 @@ const ItemListPage = (props) => {
     <div className="page-content">
       <div className="list-page">
         {navbar}
-        <ItemListDiv items={items} {...props} />
+        <ItemListDiv items={items} show={!isLoading} {...props} />
       </div>
     </div>
   )
