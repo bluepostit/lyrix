@@ -185,6 +185,25 @@ router.put('/:id', ensureLoggedIn, parseIds, validateId,
       res.json(response)
     })
 
+// Trigger validation for the absent ID - will respond with error
 router.put('/', validateId)
+
+router.delete('/:id', ensureLoggedIn, validateId, async (req, res, next) => {
+  const response = {
+    status: StatusCodes.NO_CONTENT
+  }
+  try {
+    await SongItem
+      .query()
+      .deleteById(req.params.id)
+  } catch (error) {
+    response.status = StatusCodes.INTERNAL_SERVER_ERROR
+    response.error = "Couldn't delete the song item"
+  }
+  res.json(response)
+})
+
+// Trigger validation for the absent ID - will respond with error
+router.delete('/', validateId)
 
 module.exports = router
