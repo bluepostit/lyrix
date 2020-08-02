@@ -1,13 +1,23 @@
 import React, { useState } from 'react'
-import { Button, ListGroup, Modal, Alert } from 'react-bootstrap'
+import { Button, Form, ListGroup, Modal, Alert } from 'react-bootstrap'
 import { SongItem } from '../components/list-items'
 import { Icon } from '../components/icons'
 
-const SongItemsModal = (props) => {
-  const title = props.title || 'Song Items'
+const getFormData = (form) => {
+  const data = new URLSearchParams(new FormData(form))
+  return data.toString()
+}
+
+const SongItemsModal = ({
+  title = 'Song Items',
+  song,
+  songItems,
+  show,
+  handleClose
+}) => {
 
   return (
-    <Modal show={props.show} onHide={props.handleClose}
+    <Modal show={show} onHide={handleClose}
            className="song-items-modal"
            aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>
@@ -18,11 +28,11 @@ const SongItemsModal = (props) => {
           <ListGroup.Item
               action
               key={0}
-              href={`/songs/${props.song.id}/song-items/new`}>
+              href={`/songs/${song.id}/song-items/new`}>
             <Icon entity="new" /> Create new song item...
           </ListGroup.Item>
           {
-            props.songItems.map((item, index) =>
+            songItems.map((item, index) =>
               <ListGroup.Item action href={`/song-items/${item.id}`} key={index + 1}>
                 <SongItem songItem={item} />
               </ListGroup.Item>
@@ -31,9 +41,104 @@ const SongItemsModal = (props) => {
         </ListGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={props.handleClose}>
+        <Button variant="primary" onClick={handleClose}>
           Cancel
           </Button>
+      </Modal.Footer>
+    </Modal >
+  )
+}
+
+const ArtistModal = ({
+  artist = {},
+  setArtist,
+  action,
+  method,
+  title,
+  show,
+  setShow,
+  awaitingResponse = false,
+  error = '',
+  setError,
+  confirmText = 'Save',
+  dismissText = 'Cancel',
+  onSuccess
+}) => {
+
+  const handleClose = () => {
+    setShow(false)
+    setError('')
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    const form = document.getElementById('artist-form')
+
+    fetch(action, {
+      method,
+      body: getFormData(form),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      }
+    }).then(response => response.json())
+      .then((json) => {
+        if (json.error) {
+          setError(json.message)
+        } else {
+          onSuccess()
+        }
+      })
+  }
+
+  const handleChange = (event) => {
+    setError('')
+    const artistCopy = { ...artist }
+    const target = event.target
+    artistCopy[target.name] = target.value
+    setArtist(artistCopy)
+  }
+
+
+  return (
+    <Modal show={show} onHide={handleClose}
+      className="song-items-modal"
+      aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal.Header>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="container">
+          <Alert variant="danger" show={!!error}>{error}</Alert>
+          <Form noValidate
+            onSubmit={handleSubmit} method={method}
+            className="mt-2"
+            id="artist-form"
+            action={action}>
+            <Form.Group controlId="artistName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Counting Crows"
+                name="name"
+                value={artist.name}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Form>
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary"
+          disabled={awaitingResponse}
+          onClick={handleClose}>
+          {dismissText}
+        </Button>
+        <Button variant="primary"
+          className={error ? 'd-none' : ''}
+          disabled={awaitingResponse}
+          onClick={handleSubmit}>
+          {awaitingResponse ? 'Please wait...' : confirmText}
+        </Button>
       </Modal.Footer>
     </Modal >
   )
@@ -127,4 +232,4 @@ const Deleter = ({
 }
 
 
-export { Deleter, ConfirmModal, SongItemsModal }
+export { ArtistModal, Deleter, ConfirmModal, SongItemsModal }
