@@ -3,7 +3,7 @@ import { useHistory, useParams } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
 import { SongItemPageTitle } from '../../components/headers'
-import { ConfirmModal } from '../../components/modals'
+import { Deleter } from '../../components/modals'
 
 const getSongItem = (songItemId) => {
   let url = `/song-items/${songItemId}`
@@ -27,46 +27,6 @@ const PageContent = ({ songItem }) => {
       </div>
       <ToTopButton />
     </div>
-  )
-}
-
-const Deleter = ({
-  songItem,
-  show = false,
-  setShow,
-  onDelete
-}) => {
-  const [isLoading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  const handleDelete = () => {
-    console.log('time to delete the item!')
-    setLoading(true)
-    fetch(`/song-items/${songItem.id}`, {
-      method: 'DELETE'
-    })
-      .then(res => res.json())
-      .then((data) => {
-        setLoading(false)
-        if (data.error) {
-          setError(data.error)
-        } else {
-          setShow(false)
-          onDelete()
-        }
-      })
-  }
-
-  return (
-    <ConfirmModal
-      content="Are you sure you want to delete this song item?"
-      show={show}
-      setShow={setShow}
-      onConfirm={handleDelete}
-      awaitingResponse={isLoading}
-      error={error}
-      setError={setError}
-    />
   )
 }
 
@@ -109,7 +69,8 @@ const SongItem = () => {
         onDeleteClick={handleDeleteClick}
       />
       <Deleter
-        songItem={songItem}
+        entity={songItem}
+        noun="song-item"
         show={deleting}
         setShow={setDeleting}
         onDelete={onDelete}

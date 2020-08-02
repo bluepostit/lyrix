@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, ListGroup, Modal, Alert } from 'react-bootstrap'
 import { SongItem } from '../components/list-items'
 import { Icon } from '../components/icons'
@@ -83,7 +83,48 @@ const ConfirmModal = ({
       </Modal.Footer>
     </Modal >
   )
-
 }
 
-export { ConfirmModal, SongItemsModal }
+const Deleter = ({
+  entity,
+  noun,
+  show = false,
+  setShow,
+  onDelete
+}) => {
+  const [isLoading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const textNoun = noun.replace('-', ' ')
+
+  const handleDelete = () => {
+    setLoading(true)
+    fetch(`/${noun}s/${entity.id}`, {
+      method: 'DELETE'
+    })
+      .then(res => res.json())
+      .then((data) => {
+        setLoading(false)
+        if (data.error) {
+          setError(data.error)
+        } else {
+          setShow(false)
+          onDelete()
+        }
+      })
+  }
+
+  return (
+    <ConfirmModal
+      content={`Are you sure you want to delete this ${textNoun}?`}
+      show={show}
+      setShow={setShow}
+      onConfirm={handleDelete}
+      awaitingResponse={isLoading}
+      error={error}
+      setError={setError}
+    />
+  )
+}
+
+
+export { Deleter, ConfirmModal, SongItemsModal }
