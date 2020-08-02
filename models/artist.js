@@ -24,4 +24,20 @@ module.exports = class Artist extends Model {
       }
     }
   }
+
+  static get jsonSchema() {
+    return {
+      $schema: 'http://json-schema.org/schema#',
+      type: 'object',
+      required: ['name'],
+
+      properties: {
+        name: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 30
+        }
+      }
+    }
+  }
 }

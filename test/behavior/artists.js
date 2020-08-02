@@ -4,6 +4,7 @@ const expect = chai.expect
 const app = require('../../app')
 const { Artist } = require('../../models')
 const RecordManager = require('../record-manager')
+const SessionManager = require('../session-manager')
 
 chai.use(chaiHttp)
 
@@ -124,6 +125,56 @@ describe('/artists', () => {
           expect(artistSongs.length).to.eql(2)
           expect(artistSongs[1].text).to.eql(songs[1].text)
         })
+    })
+  })
+
+  describe('POST /artists', () => {
+    it('should return an error when not signed in', async() => {
+      const res = await chai.request(app).post('/artists')
+      expect(res.body).to.have.status(401)
+    })
+
+    it('should return an error when user is not an admin', async() => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post('/artists')
+        .send({})
+      expect(res.body).to.have.status(403)
+    })
+
+    it('should return an error when no name is given', async() => {
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post('/artists')
+        .send({})
+      expect(res.body).to.have.status(400)
+    })
+
+    it('should return an error when an artist with the same name exists',
+      async () => {
+        await RecordManager.loadFixture('artists')
+        const artist = await Artist.query().first()
+        const user = await RecordManager.insertUser({ admin: true })
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent
+          .post('/artists')
+          .send({ name: artist.name })
+        expect(res.body).to.have.status(400)
+      })
+
+    it('should create an artist with the given data', async () => {
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post('/artists')
+        .send({ name: 'Bobby Guitar' })
+      expect(res.body).to.have.status(201)
     })
   })
 })
