@@ -23,9 +23,8 @@ const renderArtist = (artist) => {
 
 const Artists = () => {
   const history = useHistory()
-  const [showModal, setShowModal] = useState(false)
   const [modalArtist, setModalArtist] = useState({ name: '' })
-  const [error, setError] = useState('')
+  const [showModal, setShowModal] = useState(false)
 
   const onArtistClick = (artist) => {
     history.push(`/artists/${artist.id}`)
@@ -50,13 +49,10 @@ const Artists = () => {
       <ArtistModal
         artist={modalArtist}
         setArtist={setModalArtist}
-        action="/artists"
-        method="POST"
+        role="create"
         title="Add an Artist"
         show={showModal}
         setShow={setShowModal}
-        error={error}
-        setError={setError}
         onSuccess={onSuccessfulCreate}
       />
     </>

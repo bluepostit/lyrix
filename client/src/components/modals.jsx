@@ -50,30 +50,39 @@ const SongItemsModal = ({
 }
 
 const ArtistModal = ({
-  artist = {},
+  artist = { name: '' },
   setArtist,
-  action,
-  method,
+  role,
   title,
   show,
   setShow,
-  awaitingResponse = false,
-  error = '',
-  setError,
   confirmText = 'Save',
   dismissText = 'Cancel',
   onSuccess
 }) => {
 
+  const [error, setError] = useState('')
+  const [isLoading, setLoading] = useState(false)
+
+  let action = '/artists'
+  let method = 'POST'
+  if (role === 'update') {
+    action = `/artists/${artist.id}`
+    method = 'UPDATE'
+  }
+
   const handleClose = () => {
     setShow(false)
+    setLoading(false)
     setError('')
+    setArtist({ name: '' })
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     const form = document.getElementById('artist-form')
 
+    setLoading(true)
     fetch(action, {
       method,
       body: getFormData(form),
@@ -85,6 +94,7 @@ const ArtistModal = ({
         if (json.error) {
           setError(json.message)
         } else {
+          setShow(false)
           onSuccess()
         }
       })
@@ -97,7 +107,6 @@ const ArtistModal = ({
     artistCopy[target.name] = target.value
     setArtist(artistCopy)
   }
-
 
   return (
     <Modal show={show} onHide={handleClose}
@@ -129,15 +138,15 @@ const ArtistModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary"
-          disabled={awaitingResponse}
+          disabled={isLoading}
           onClick={handleClose}>
           {dismissText}
         </Button>
         <Button variant="primary"
           className={error ? 'd-none' : ''}
-          disabled={awaitingResponse}
+          disabled={isLoading}
           onClick={handleSubmit}>
-          {awaitingResponse ? 'Please wait...' : confirmText}
+          {isLoading ? 'Please wait...' : confirmText}
         </Button>
       </Modal.Footer>
     </Modal >
