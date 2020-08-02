@@ -47,9 +47,29 @@ const validateId = async (req, res, next) => {
     return res.json({
       status: StatusCodes.BAD_REQUEST,
       error: 'Invalid input',
-      message: 'You must provide an id'
+      message: 'You must provide a valid id'
     })
   }
+
+  const songItem = await SongItem.query().findById(id)
+  if (!songItem) {
+    return res.json({
+      status: StatusCodes.NOT_FOUND,
+      error: 'Not found',
+      message: 'No song item found with that id'
+    })
+  }
+
+  if (songItem.user_id !== req.user.id) {
+    return res.json({
+      status: StatusCodes.FORBIDDEN,
+      error: 'Not your song item',
+      message: 'The song item you are trying to update does not belong to you'
+    })
+  }
+
+
+  next()
 }
 
 const parseIds = async (req, res, next) => {
@@ -134,12 +154,12 @@ router.post('/', ensureLoggedIn, parseIds,
       res.json(response)
   })
 
-router.patch('/:id', ensureLoggedIn, parseIds, validateId,
+router.put('/:id', ensureLoggedIn, parseIds, validateId,
   validateSongItemData,
     async (req, res, next) => {
       console.log(req.body)
 })
 
-router.patch('/', validateId)
+router.put('/', validateId)
 
 module.exports = router

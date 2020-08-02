@@ -151,9 +151,8 @@ describe('/song-items', async () => {
         const agent = await SessionManager.loginAsUser(app, user)
         const data = {
           text: 'This is the text we want',
-          userId: user.id,
-          songId: song.id,
-          songItemTypeId: songItemType.id
+          song_id: song.id,
+          song_item_type_id: songItemType.id
         }
 
         const res = await agent
@@ -173,9 +172,8 @@ describe('/song-items', async () => {
         const data = {
           title: item.title,
           text: item.text + ' la la la',
-          userId: item.user_id,
-          songId: item.song_id,
-          songItemTypeId: item.song_item_type_id
+          song_id: item.song_id,
+          song_item_type_id: item.song_item_type_id
         }
         const res = await agent
           .post('/song-items')
@@ -206,9 +204,9 @@ describe('/song-items', async () => {
     })
   })
 
-  describe('PATCH /:id', () => {
+  describe('PUT /:id', () => {
     it('should return an error when not signed in', async () => {
-      chai.request(app).patch('/song-items/1')
+      chai.request(app).put('/song-items/1')
         .send({ title: 'test' })
         .end((err, res) => {
           if (err) {
@@ -221,19 +219,63 @@ describe('/song-items', async () => {
     it('should return an error when no id is given', async () => {
       const user = await RecordManager.insertUser()
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.patch('/song-items')
+      const res = await agent.put('/song-items')
 
       const body = res.body
-      expect(res.body).to.have.status(400)
-      expect(res.body.error).to.not.be.empty
+      expect(body).to.have.status(400)
+      expect(body.error).to.not.be.empty
     })
 
-    it('should return an error when no song item can be found with the given id')
+    it('should return an error when no song item can be found with the given id',
+      async () => {
+        const user = await RecordManager.insertUser()
+        const agent = await SessionManager.loginAsUser(app, user)
+        const res = await agent
+          .put('/song-items/1')
+          .send({})
 
-    it("should return an error when the song item doesn't belong to the user")
+        const body = res.body
+        expect(body).to.have.status(404)
+      })
+
+    it("should return an error when the song item doesn't belong to the user",
+      async () => {
+        await RecordManager.loadFixture('song-items.only-other-user')
+        const user = await RecordManager.insertUser({ id: 1 })
+
+        const agent = await SessionManager.loginAsUser(app, user)
+        const item = await SongItem.query().first()
+
+        const res = await agent.put(`/song-items/${item.id}`)
+        agent.close()
+
+        const body = res.body
+        expect(body).to.have.status(403)
+      })
 
 
-    it('should return an error when text is too short')
+    it('should return an error when text is too short', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture(
+        'song-items.with-song-item-types.user-id-1')
+      const songItem = await SongItem.query().first()
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const data = {
+        title: songItem.title,
+        text: 'a',
+        song_id: songItem.song_id,
+        song_item_type_id: songItem.song_item_type_id
+      }
+
+      const res = await agent
+        .put(`/song-items/${songItem.id}`)
+        .send(data)
+      const body = res.body
+      expect(body).to.have.status(400)
+      expect(body.error).to.not.be.empty
+      expect(body.message).to.match(/text.*short/i)
+    })
 
     it('should update the song item with the given data')
   })
