@@ -177,4 +177,73 @@ describe('/artists', () => {
       expect(res.body).to.have.status(201)
     })
   })
+
+  describe('User Actions', () => {
+    it('should provide a visitor with a link to view an artist', async () => {
+      const res = await chai.request(app).get('/artists')
+      const body = res.body
+      expect(body.actions).to.be.an('object')
+      expect(body.actions).to.have.property('readOne')
+    })
+
+    it('should not provide a non-admin user with a link to create a new artist',
+      async () => {
+        const user = await RecordManager.insertUser()
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent.get('/artists')
+        const body = res.body
+        expect(body.actions).to.be.an('object')
+        expect(body.actions).not.to.have.property('create')
+      })
+
+    it('should provide an admin user with a link to create a new artist',
+      async () => {
+        const user = await RecordManager.insertUser({ admin: true })
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent.get('/artists')
+        const body = res.body
+        expect(body.actions).to.be.an('object')
+        expect(body.actions).to.have.property('create')
+      })
+
+    it('should not provide links to edit or delete an artist to a visitor', async () => {
+      await RecordManager.loadFixture('artists')
+      const artist = await Artist.query().first()
+
+      const res = await chai.request(app).get(`/artists/${artist.id}`)
+      const body = res.body
+      expect(body.actions).to.be.an('object')
+      expect(body.actions).not.to.have.property('edit')
+      expect(body.actions).not.to.have.property('delete')
+    })
+
+    it('should not provide links to edit or delete an artist to a non-admin user', async () => {
+      await RecordManager.loadFixture('artists')
+      const artist = await Artist.query().first()
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent.get(`/artists/${artist.id}`)
+      const body = res.body
+      expect(body.actions).to.be.an('object')
+      expect(body.actions).not.to.have.property('edit')
+      expect(body.actions).not.to.have.property('delete')
+    })
+
+    it('should provide links to edit or delete an artist to an admin user', async () => {
+      await RecordManager.loadFixture('artists')
+      const artist = await Artist.query().first()
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent.get('/artists')
+      const body = res.body
+      expect(body.actions).to.be.an('object')
+      expect(body.actions).to.have.property('edit')
+      expect(body.actions).to.have.property('delete')
+    })
+
+  })
 })
