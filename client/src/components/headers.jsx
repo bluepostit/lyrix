@@ -13,6 +13,7 @@ import { Icon } from '../components/icons'
  * - title - (any) content to be displayed in the center of the navbar
  * - onNewClick - function|null - if empty, won't show 'New' button
  * - onEditClick - function|null - if empty, won't show 'Edit' button
+ * - onDeleteClick - function|null - if empty, won't show 'Delete' button
  * - nextLink - string|null - if empty, won't show the link
  * - peeker - content to add peeking out of the edge of the navbar.
  */
@@ -23,6 +24,7 @@ const Navbar = ({
   title,
   onNewClick,
   onEditClick,
+  onDeleteClick,
   peeker = null
 }) => {
   const history = useHistory()
@@ -41,13 +43,14 @@ const Navbar = ({
   return (
     <nav className="navbar navbar-light mobile-header">
       <div className="button-group">
-        <Button action="back" onClick={goBack} show={hasBackButton} />
+        <Button action="previous" onClick={goBack} show={hasBackButton} />
         <Button action="home" onClick={goHome} show={hasHomeButton} />
       </div>
       <h1>{title}</h1>
       <div className="button-group">
         <Button action="new" onClick={onNewClick} show={onNewClick} />
         <Button action="edit" onClick={onEditClick} show={onEditClick} />
+        <Button action="delete" onClick={onDeleteClick} show={onDeleteClick} />
         <Button action="next" onClick={goNext} show={nextLink} />
       </div>
       {peeker}
@@ -73,7 +76,7 @@ const SongItemPageTitle = ({
   return (
     <div className="title">
       <div>
-        <Icon entity="song-item" />
+        <Icon entity="songItem" />
         <strong className="ml-2">{lines[0]}</strong>
       </div>
       <Link to={`/songs/${song.id}`}>

@@ -3,6 +3,7 @@ import { useHistory, useParams } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
 import { SongItemPageTitle } from '../../components/headers'
+import { ConfirmModal } from '../../components/modals'
 
 const getSongItem = (songItemId) => {
   let url = `/song-items/${songItemId}`
@@ -29,13 +30,62 @@ const PageContent = ({ songItem }) => {
   )
 }
 
+const Deleter = ({
+  songItem,
+  show = false,
+  setShow,
+  onDelete
+}) => {
+  const [isLoading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleDelete = () => {
+    console.log('time to delete the item!')
+    setLoading(true)
+    fetch(`/song-items/${songItem.id}`, {
+      method: 'DELETE'
+    })
+      .then(res => res.json())
+      .then((data) => {
+        setLoading(false)
+        if (data.error) {
+          setError(data.error)
+        } else {
+          setShow(false)
+          onDelete()
+        }
+      })
+  }
+
+  return (
+    <ConfirmModal
+      content="Are you sure you want to delete this song item?"
+      show={show}
+      setShow={setShow}
+      onConfirm={handleDelete}
+      awaitingResponse={isLoading}
+      error={error}
+      setError={setError}
+    />
+  )
+}
+
 const SongItem = () => {
   const { id } = useParams()
   const [songItem, setSongItem] = useState({ title: null, text: null, song: { title: null } })
+  const [deleting, setDeleting] = useState(false)
   const history = useHistory()
 
   const goToEdit = () => {
     history.push(`/song-items/${songItem.id}/edit`)
+  }
+
+  const handleDeleteClick = () => {
+    setDeleting(true)
+  }
+
+  const onDelete = () => {
+    history.replace('/song-items')
   }
 
   useEffect(() => {
@@ -56,6 +106,13 @@ const SongItem = () => {
         content={<PageContent songItem={songItem} />}
         title={<SongItemPageTitle songItem={songItem} />}
         onEditClick={goToEdit}
+        onDeleteClick={handleDeleteClick}
+      />
+      <Deleter
+        songItem={songItem}
+        show={deleting}
+        setShow={setDeleting}
+        onDelete={onDelete}
       />
     </div>
   )
