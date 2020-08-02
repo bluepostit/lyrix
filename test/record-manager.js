@@ -43,6 +43,7 @@ class RecordManager {
     data.email = data.email || DEFAULT_USER_DATA.email
     data.password = data.password || DEFAULT_USER_DATA.password
     const user = await User.createUser(data)
+    // For convenience in testing, remember the password:
     user.unencryptedPassword = data.password
     return user
   }

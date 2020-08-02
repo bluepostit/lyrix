@@ -140,7 +140,7 @@ router.get('/:id', ensureLoggedIn, async(req, res) => {
 })
 
 router.post('/', ensureLoggedIn, parseIds,
-  validateSongItemData, checkForDuplicates,
+  validateSongItemData, checkForDuplicates, sanitize,
     async (req, res, next) => {
       const response = {
         status: StatusCodes.CREATED
@@ -150,12 +150,7 @@ router.post('/', ensureLoggedIn, parseIds,
         const body = req.body
         const songItem = await req.user
           .$relatedQuery('songItems')
-          .insertGraph({
-            title: body.title,
-            text: body.text,
-            song_id: body.song_id,
-            song_item_type_id: body.song_item_type_id
-          })
+          .insertGraph(req.sanitizedBody)
           response.id = songItem.id
       } catch (error) {
         console.log(error)

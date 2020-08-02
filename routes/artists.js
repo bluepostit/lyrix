@@ -2,12 +2,53 @@ const express = require('express')
 const router = express.Router()
 
 const { Artist } = require('../models')
+const { ensureLoggedIn } = require('../authentication')
+const { StatusCodes, checkIsAdmin, ensureAdmin } = require('./common')
 const songsRouter = require('./artist-songs.js')
 
 const ARTIST_ATTRIBUTES = ['artists.id', 'artists.name']
 const SONG_ATTRIBUTES = ['id', 'title', 'text']
 
-router.get('/', async (req, res, next) => {
+const validateArtistData = async (req, res, next) => {
+  try {
+    // Trigger model class's validation rules
+    await Artist.fromJson(req.body)
+    await next()
+  } catch (e) {
+    return res.json({
+      status: StatusCodes.BAD_REQUEST,
+      error: 'Invalid input',
+      message: e.message
+    })
+  }
+}
+
+const checkForDuplicates = async (req, res, next) => {
+  const body = req.body
+  const duplicate = await Artist
+    .query()
+    .first()
+    .where('name', 'like', `%${body.name}%`)
+
+  if (duplicate) {
+    return res.json({
+      status: StatusCodes.BAD_REQUEST,
+      error: 'Invalid input',
+      message: `A similar artist (${duplicate.name}) already exists`
+    })
+  }
+  next()
+}
+
+const sanitize = async (req, res, next) => {
+  const body = req.body
+  req.sanitizedBody = {
+    name: body.name
+  }
+  next()
+}
+
+router.get('/', checkIsAdmin, async (req, res, next) => {
   try {
     const artists = await Artist
       .query()
@@ -18,7 +59,8 @@ router.get('/', async (req, res, next) => {
       .groupBy('artists.id')
     res.json({
       error: false,
-      data: artists
+      data: artists,
+      userCanCreate: req.isAdmin
     })
   } catch (error) {
     console.log(error.stack)
@@ -56,6 +98,28 @@ router.get('/:id', async (req, res, next) => {
   })
 })
 
+router.post('/', ensureLoggedIn, ensureAdmin, validateArtistData,
+  checkForDuplicates, sanitize,
+    async (req, res, next) => {
+      const response = {
+        status: StatusCodes.CREATED
+      }
+
+      try {
+        const body = req.body
+        const artist = await Artist.query()
+          .insert(req.sanitizedBody)
+        response.data = artist
+      } catch (error) {
+        console.log(error)
+        console.log(error.stack)
+        response.status = StatusCodes.INTERNAL_SERVER_ERROR
+        response.error = "Couldn't create the artist"
+      }
+      res.json(response)
+    })
+
 router.use('/:id/songs', songsRouter)
+
 
 module.exports = router

@@ -57,22 +57,36 @@ module.exports = class User extends Model {
         password: {
           type: 'string',
           minLength: 6
+        },
+        admin: {
+          type: 'boolean'
         }
       }
     }
   }
 
+  /**
+   * Creates a new user, storing only a hashed version of the password.
+   *
+   * NOTE: Will sanitize `data` to include ONLY these fields:
+   * - email
+   * - password
+   * - admin
+   *
+   * @param {object} data
+   */
   static async createUser (data) {
     const hashedPassword = await encrypt(data.password)
-    const cleanData = {
+    const cleanedData = {
       email: data.email,
-      password: hashedPassword
+      password: hashedPassword,
+      admin: data.admin || false
     }
     if (data.id) {
-      cleanData.id = data.id
+      cleanedData.id = data.id
     }
 
-    return User.query().insert(cleanData)
+    return User.query().insert(cleanedData)
   }
 
   async checkPassword (password) {

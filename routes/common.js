@@ -11,6 +11,29 @@ const StatusCodes = (() => {
   }
 })()
 
+const ensureAdmin = async (req, res, next) => {
+  if (req.user.admin) {
+    next()
+  } else {
+    res.json({
+      status: StatusCodes.FORBIDDEN,
+      error: 'Unauthorized',
+      message: 'You are not authorized to do this action'
+    })
+  }
+}
+
+const checkIsAdmin = async (req, res, next) => {
+  let isAdmin = false
+  if (req.user) {
+    isAdmin = req.user.admin
+  }
+  req.isAdmin = isAdmin
+  next()
+}
+
 module.exports = {
-  StatusCodes
+  StatusCodes,
+  ensureAdmin,
+  checkIsAdmin
 }

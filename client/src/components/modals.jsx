@@ -3,11 +3,16 @@ import { Button, ListGroup, Modal, Alert } from 'react-bootstrap'
 import { SongItem } from '../components/list-items'
 import { Icon } from '../components/icons'
 
-const SongItemsModal = (props) => {
-  const title = props.title || 'Song Items'
+const SongItemsModal = ({
+  title = 'Song Items',
+  song,
+  songItems,
+  show,
+  handleClose
+}) => {
 
   return (
-    <Modal show={props.show} onHide={props.handleClose}
+    <Modal show={show} onHide={handleClose}
            className="song-items-modal"
            aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header closeButton>
@@ -18,11 +23,11 @@ const SongItemsModal = (props) => {
           <ListGroup.Item
               action
               key={0}
-              href={`/songs/${props.song.id}/song-items/new`}>
+              href={`/songs/${song.id}/song-items/new`}>
             <Icon entity="new" /> Create new song item...
           </ListGroup.Item>
           {
-            props.songItems.map((item, index) =>
+            songItems.map((item, index) =>
               <ListGroup.Item action href={`/song-items/${item.id}`} key={index + 1}>
                 <SongItem songItem={item} />
               </ListGroup.Item>
@@ -31,7 +36,7 @@ const SongItemsModal = (props) => {
         </ListGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={props.handleClose}>
+        <Button variant="primary" onClick={handleClose}>
           Cancel
           </Button>
       </Modal.Footer>
