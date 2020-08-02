@@ -2,6 +2,8 @@ html {
   scroll-behavior: smooth;
 }
 
+:focus {outline:none !important;}
+
 .list-page, .text-page {
   background-color: $bg-beige;
   min-height: 100vh;

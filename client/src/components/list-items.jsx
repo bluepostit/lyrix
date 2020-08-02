@@ -16,7 +16,7 @@ const SongItem = (props) => {
 
         <div className="song-item-text content-multi-lines">
           <div>
-            <Icon entity="song-item" className="mt-3" />
+            <Icon entity="songItem" className="mt-3" />
             <span>{lines[0]}</span>
           </div>
           <div className="content-secondary">

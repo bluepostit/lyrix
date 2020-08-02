@@ -50,7 +50,7 @@ const SongItemsButton = ({ song }) => {
   return (
     <div className="song-items-container">
       <Button variant="outline-secondary" onClick={handleShow}>
-        <Icon entity="song-item" />
+        <Icon entity="songItem" />
         <strong> {items.length} </strong>
       </Button>
       <SongItemsModal title="Your Song Items"
@@ -63,17 +63,6 @@ const SongItemsButton = ({ song }) => {
   )
 }
 
-const getIconEntity = (action) => {
-  switch (action) {
-    case 'next': return 'action-next'
-    case 'back': return 'action-prev'
-    case 'home': return 'home'
-    case 'new': return 'new'
-    case 'edit': return 'edit'
-    default: return ''
-  }
-}
-
 const NavbarButton = ({
   show = false,
   action,
@@ -82,10 +71,10 @@ const NavbarButton = ({
   if (!show) {
     return <></>
   }
-  const iconEntity = getIconEntity(action)
+
   return (
     <button className="btn button-nav" onClick={onClick}>
-      <Icon entity={iconEntity} />
+      <Icon entity={action} />
     </button>
   )
 }

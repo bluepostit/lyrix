@@ -4,6 +4,14 @@
   font-family: 'Sanchez', serif;
 }
 
+.lyrix-list.empty {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  color: $border-gray;
+}
+
 .lyrix-list-item {
   i {
     color: $border-gray;
@@ -13,9 +21,21 @@
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  border-top: 1px solid $border-gray;
-  border-bottom: 1px solid $border-gray;
+  border-top: 1px solid $list-gray;
+  border-bottom: 1px solid $list-gray;
+  margin: 0 0.2rem;
   background-color: $bg-beige;
+}
+
+.lyrix-list-item.list-group-item {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+
+  &:active {
+    background-color: $primary;
+    color: #fff;
+  }
 }
 
 .lyrix-list-item.multi-line {
@@ -33,7 +53,7 @@
 }
 
 .lyrix-list-item .content-secondary {
-  color: $light-gray;
+  color: $border-gray;
   font-style: italic;
 }
 

@@ -3,6 +3,7 @@ import { useHistory, useParams } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
 import { SongItemPageTitle } from '../../components/headers'
+import { Deleter } from '../../components/modals'
 
 const getSongItem = (songItemId) => {
   let url = `/song-items/${songItemId}`
@@ -32,10 +33,19 @@ const PageContent = ({ songItem }) => {
 const SongItem = () => {
   const { id } = useParams()
   const [songItem, setSongItem] = useState({ title: null, text: null, song: { title: null } })
+  const [deleting, setDeleting] = useState(false)
   const history = useHistory()
 
   const goToEdit = () => {
     history.push(`/song-items/${songItem.id}/edit`)
+  }
+
+  const handleDeleteClick = () => {
+    setDeleting(true)
+  }
+
+  const onDelete = () => {
+    history.replace('/song-items')
   }
 
   useEffect(() => {
@@ -56,6 +66,14 @@ const SongItem = () => {
         content={<PageContent songItem={songItem} />}
         title={<SongItemPageTitle songItem={songItem} />}
         onEditClick={goToEdit}
+        onDeleteClick={handleDeleteClick}
+      />
+      <Deleter
+        entity={songItem}
+        noun="song-item"
+        show={deleting}
+        setShow={setDeleting}
+        onDelete={onDelete}
       />
     </div>
   )

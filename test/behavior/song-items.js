@@ -307,4 +307,69 @@ describe('/song-items', async () => {
     })
   })
 
+  describe('DELETE /song-items/:id', () => {
+    it('should return an error when not signed in', async () => {
+      chai.request(app).delete('/song-items/1')
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(401)
+        })
+    })
+
+    it('should return an error when no id is given', async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.delete('/song-items')
+
+      const body = res.body
+      expect(body).to.have.status(400)
+      expect(body.error).to.not.be.empty
+    })
+
+    it('should return an error when no song item can be found with the given id',
+      async () => {
+        const user = await RecordManager.insertUser()
+        const agent = await SessionManager.loginAsUser(app, user)
+        const res = await agent
+          .delete('/song-items/1')
+
+        const body = res.body
+        expect(body).to.have.status(404)
+      })
+
+    it("should return an error when the song item doesn't belong to the user",
+      async () => {
+        await RecordManager.loadFixture('song-items.only-other-user')
+        const user = await RecordManager.insertUser({ id: 1 })
+
+        const agent = await SessionManager.loginAsUser(app, user)
+        const item = await SongItem.query().first()
+
+        const res = await agent.delete(`/song-items/${item.id}`)
+        agent.close()
+
+        const body = res.body
+        expect(body).to.have.status(403)
+      })
+
+    it('should delete the song item with the given id', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture(
+        'song-items.with-song-item-types.user-id-1')
+      const songItems = await SongItem.query()
+      const songItem = songItems[0]
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent
+        .delete(`/song-items/${songItem.id}`)
+      const body = res.body
+
+      expect(body).to.have.status(204) // no content
+
+      const countAfter = await SongItem.query().resultSize()
+      expect(countAfter).to.eql(songItems.length - 1)
+    })
+  })
 })
