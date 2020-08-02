@@ -58,7 +58,7 @@ const ItemListDiv = ({
   )
 }
 
-const fetchItems = async (getItems) => {
+const fetchItems = async (getItems, setUserCanCreate) => {
   if (typeof getItems === 'function') {
     return await getItems()
   } else {
@@ -67,6 +67,9 @@ const fetchItems = async (getItems) => {
       .then((json) => {
         if (json.error) {
           throw json
+        }
+        if (json.hasOwnProperty('userCanCreate')) {
+          setUserCanCreate(json.userCanCreate)
         }
         return json.data
       })
@@ -84,15 +87,18 @@ const fetchItems = async (getItems) => {
  *
  * @param {*} props
  */
-const ItemListPage = (props) => {
+const ItemListPage = ({getItems, noHeader, ...props}) => {
   const [items, setItems] = useState([])
   const [isLoading, setLoading] = useState(true)
+  const [userCanCreate, setUserCanCreate] = useState(false)
   const history = useHistory()
 
   useEffect(() => {
     setLoading(true)
-    fetchItems(props.getItems)
+    fetchItems(getItems, setUserCanCreate)
       .then((items) => {
+        console.log('got items')
+        console.log(items)
         setItems(items)
         setLoading(false)
       })
@@ -101,12 +107,12 @@ const ItemListPage = (props) => {
         console.log(e)
         history.push('/login')
       })
-  }, [history, props, items.length]) // things to monitor for render
+  }, [history, getItems, items.length]) // things to monitor for render
   // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
   let navbar = <></>
-  if (!props.noHeader) {
-    navbar = <Navbar {...props} />
+  if (!noHeader) {
+    navbar = <Navbar userCanCreate={userCanCreate} {...props} />
   }
 
   return (
