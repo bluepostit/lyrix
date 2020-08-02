@@ -206,4 +206,36 @@ describe('/song-items', async () => {
     })
   })
 
+  describe('PATCH /:id', () => {
+    it('should return an error when not signed in', async () => {
+      chai.request(app).patch('/song-items/1')
+        .send({ title: 'test' })
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(401)
+        })
+    })
+
+    it('should return an error when no id is given', async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.patch('/song-items')
+
+      const body = res.body
+      expect(res.body).to.have.status(400)
+      expect(res.body.error).to.not.be.empty
+    })
+
+    it('should return an error when no song item can be found with the given id')
+
+    it("should return an error when the song item doesn't belong to the user")
+
+
+    it('should return an error when text is too short')
+
+    it('should update the song item with the given data')
+  })
+
 })
