@@ -68,8 +68,9 @@ const fetchItems = async (getItems, setUserCanCreate) => {
         if (json.error) {
           throw json
         }
-        if (json.hasOwnProperty('userCanCreate')) {
-          setUserCanCreate(json.userCanCreate)
+        const actions = json.actions
+        if (actions && actions.create) {
+          setUserCanCreate(actions.create)
         }
         return json.data
       })
