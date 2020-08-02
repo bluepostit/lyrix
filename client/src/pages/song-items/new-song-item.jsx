@@ -41,7 +41,7 @@ const NewSongItem = () => {
   return (
     <div className="song-item-page">
       <Page
-        content={<SongItemForm song={song} onCreate={onCreationSuccess} />}
+        content={<SongItemForm song={song} onSuccess={onCreationSuccess} />}
         title={<SongItemPageTitle song={song} title={title} />}
       />
     </div>

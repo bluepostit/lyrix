@@ -3,28 +3,23 @@ import { useHistory } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
 
-const SongItemForm = (props) => {
+const SongItemForm = ({
+  songItem,
+  setSongItem,
+  action,
+  method,
+  onSuccess
+}) => {
   const history = useHistory()
-  const item = props.songItem || {}
+
   const [itemTypes, setItemTypes] = useState([])
   const [validated, setValidated] = useState(false)
-  const [title, setTitle] = useState(item.title || '')
-  const [text, setText] = useState(item.title || '')
   const [errorMessage, setErrorMessage] = useState('')
 
-  const [songItemType, setSongItemType] =
-    useState(item.songItemTypeId || '')
-
-  const onTitleChange = (event) => {
-    setTitle(event.target.value)
-  }
-
-  const onTextChange = (event) => {
-    setText(event.target.value)
-  }
-
-  const onSongItemTypeChange = (event) => {
-    setSongItemType(event.target.value)
+  const handleChange = (event) => {
+    const songItemCopy = { ...songItem };
+    songItemCopy[event.target.name] = event.target.value;
+    setSongItem(songItemCopy)
   }
 
   const getFormData = (form) => {
@@ -36,14 +31,11 @@ const SongItemForm = (props) => {
     setErrorMessage('')
     event.preventDefault()
     const form = event.currentTarget
-    console.log(form)
     // setValidated(true)
-    const data = getFormData(form)
-    console.log(data)
 
-    fetch(event.target.action, {
-      method: 'POST',
-      body: data,
+    fetch(action, {
+      method,
+      body: getFormData(form),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       }
@@ -52,7 +44,7 @@ const SongItemForm = (props) => {
         if (json.error) {
           setErrorMessage(json.message)
         } else {
-          props.onCreate()
+          onSuccess()
         }
       })
   }
@@ -85,10 +77,10 @@ const SongItemForm = (props) => {
             onSubmit={handleSubmit} method="post"
             className="mt-2"
             id="song-item-form"
-            action="/song-items">
+            action={action}>
         <input type="hidden"
                name="song_id"
-               value={props.song.id}
+               value={songItem.song.id}
                />
         <Form.Group controlId="songItemTitle">
           <Form.Label>Title</Form.Label>
@@ -96,8 +88,8 @@ const SongItemForm = (props) => {
             type="text"
             placeholder="Chords in G#"
             name="title"
-            value={title}
-            onChange={onTitleChange}
+            value={songItem.title}
+            onChange={handleChange}
           />
         </Form.Group>
         <Form.Group controlId="songItemType">
@@ -105,8 +97,8 @@ const SongItemForm = (props) => {
           <Form.Control
             as="select"
             name="song_item_type_id"
-            value={songItemType}
-            onChange={onSongItemTypeChange} >
+            value={songItem.songItemType.id}
+            onChange={handleChange} >
               {
                 itemTypes.map((itemType, index) =>
                   <option value={itemType.id} key={index}>
@@ -123,10 +115,10 @@ const SongItemForm = (props) => {
             as="textarea"
             rows="5"
             name="text"
-            value={text}
+            value={songItem.text}
             className="song-item-text-box"
             placeholder="G#..."
-            onChange={onTextChange}
+            onChange={handleChange}
           />
         </Form.Group>
         <div className="d-flex justify-content-end">
