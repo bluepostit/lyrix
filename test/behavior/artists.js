@@ -244,6 +244,5 @@ describe('/artists', () => {
       expect(body.actions).to.have.property('edit')
       expect(body.actions).to.have.property('delete')
     })
-
   })
 })
