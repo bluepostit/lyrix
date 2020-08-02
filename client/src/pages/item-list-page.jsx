@@ -97,8 +97,6 @@ const ItemListPage = ({getItems, noHeader, ...props}) => {
     setLoading(true)
     fetchItems(getItems, setUserCanCreate)
       .then((items) => {
-        console.log('got items')
-        console.log(items)
         setItems(items)
         setLoading(false)
       })
