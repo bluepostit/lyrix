@@ -277,7 +277,34 @@ describe('/song-items', async () => {
       expect(body.message).to.match(/text.*short/i)
     })
 
-    it('should update the song item with the given data')
+    it('should update the song item with the given data', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture(
+        'song-items.with-song-item-types.user-id-1')
+      const songItems = await SongItem.query()
+      const songItem = songItems[0]
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const data = {
+        title: songItem.title + ' v2',
+        text: songItem.text,
+        song_id: songItem.song_id,
+        abc: 'asdf',
+        song_item_type_id: songItem.song_item_type_id
+      }
+
+      const res = await agent
+        .put(`/song-items/${songItem.id}`)
+        .send(data)
+      const body = res.body
+
+      expect(body).to.have.status(200)
+      expect(body.data).to.be.an('object')
+      expect(body.data.title).to.eql(data.title)
+
+      const countAfter = await SongItem.query().resultSize()
+      expect(countAfter).to.eql(songItems.length)
+    })
   })
 
 })

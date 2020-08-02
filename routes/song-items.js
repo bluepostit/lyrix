@@ -59,6 +59,8 @@ const validateId = async (req, res, next) => {
       message: 'No song item found with that id'
     })
   }
+  // Attach the SongItem instance to the request
+  req.songItem = songItem
 
   if (songItem.user_id !== req.user.id) {
     return res.json({
@@ -68,7 +70,17 @@ const validateId = async (req, res, next) => {
     })
   }
 
+  next()
+}
 
+const sanitize = async (req, res, next) => {
+  const body = req.body
+  req.sanitizedBody = {
+    title: body.title,
+    text: body.text,
+    song_id: body.song_id,
+    song_item_type_id: body.song_item_type_id
+  }
   next()
 }
 
@@ -155,10 +167,23 @@ router.post('/', ensureLoggedIn, parseIds,
   })
 
 router.put('/:id', ensureLoggedIn, parseIds, validateId,
-  validateSongItemData,
+  validateSongItemData, sanitize,
     async (req, res, next) => {
-      console.log(req.body)
-})
+      const response = {
+        status: StatusCodes.OK
+      }
+      try {
+        const songItem = await SongItem
+          .query()
+          .updateAndFetchById(req.params.id, req.sanitizedBody)
+          .withGraphFetched('[song.artist, songItemType]')
+        response.data = songItem
+      } catch (error) {
+        response.status = StatusCodes.INTERNAL_SERVER_ERROR
+        response.error = "Couldn't update the song item"
+      }
+      res.json(response)
+    })
 
 router.put('/', validateId)
 
