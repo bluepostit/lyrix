@@ -40,7 +40,7 @@ const EditSongItem = () => {
 
 
   const onUpdateSuccess = () => {
-    history.push('/song-items')
+    history.push(`/song-items/${id}`)
   }
 
   const content =

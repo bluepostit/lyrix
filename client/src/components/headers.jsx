@@ -1,48 +1,30 @@
 import React from 'react'
 import { useHistory, Link } from "react-router-dom"
+import { NavbarButton as Button } from '../components/buttons'
 import { Icon } from '../components/icons'
-
-
-const BaseButton = (props) => {
-  if (!props.show) {
-    return <></>
-  }
-  return (
-    <button className="btn button-nav" onClick={props.onClick}>
-      {props.icon}
-    </button>
-  )
-}
-
-const NextButton = (props) => {
-  const icon = <Icon entity="action-next" />
-  return <BaseButton icon={icon} {...props} />
-}
-
-const BackButton = (props) => {
-  const icon = <Icon entity="action-prev" />
-  return <BaseButton icon={icon} {...props} />
-}
-
-const HomeButton = (props) => {
-  const icon = <Icon entity="home" />
-  return <BaseButton icon={icon} {...props} />
-}
-
-const NewButton = (props) => {
-  const icon = <Icon entity="new" />
-  return <BaseButton icon={icon} {...props} />
-}
 
 /**
  *
  * @param {*} props object containing the following:
- * - title - (any) content to be displayed in the center of the navbar
  * - nextLink - (string) OPTIONAL link to navigate to when clicking 'next' (right arrow).
  *              If not provided, no right arrow will show.
- * -
+ * - hasBackButton - default true
+ * - hasHomeButton - default true
+ * - title - (any) content to be displayed in the center of the navbar
+ * - onNewClick - function|null - if empty, won't show 'New' button
+ * - onEditClick - function|null - if empty, won't show 'Edit' button
+ * - nextLink - string|null - if empty, won't show the link
+ * - peeker - content to add peeking out of the edge of the navbar.
  */
-const Navbar = (props) => {
+const Navbar = ({
+  nextLink = null,
+  hasBackButton = true,
+  hasHomeButton = true,
+  title,
+  onNewClick,
+  onEditClick,
+  peeker = null
+}) => {
   const history = useHistory()
   const goBack = () => {
     history.goBack()
@@ -52,47 +34,40 @@ const Navbar = (props) => {
     history.push('/')
   }
   const goNext = () => {
-    history.push(props.nextLink)
+    history.push(nextLink)
     window.scrollTo(0, 0)
-  }
-
-  let hasBackButton = true
-  if (props.hasOwnProperty('hasBackButton')) {
-    hasBackButton = props.hasBackButton
-  }
-
-  let hasHomeButton = true
-  if (props.hasOwnProperty('hasHomeButton')) {
-    hasHomeButton = props.hasHomeButton
   }
 
   return (
     <nav className="navbar navbar-light mobile-header">
       <div className="button-group">
-        <BackButton onClick={goBack} show={hasBackButton} />
-        <HomeButton onClick={goHome} show={hasHomeButton} />
+        <Button action="back" onClick={goBack} show={hasBackButton} />
+        <Button action="home" onClick={goHome} show={hasHomeButton} />
       </div>
-      <h1>{props.title}</h1>
+      <h1>{title}</h1>
       <div className="button-group">
-        <NewButton onClick={props.onNewClick} show={props.onNewClick} />
-        <NextButton onClick={goNext} show={props.nextLink} />
+        <Button action="new" onClick={onNewClick} show={onNewClick} />
+        <Button action="edit" onClick={onEditClick} show={onEditClick} />
+        <Button action="next" onClick={goNext} show={nextLink} />
       </div>
-      {props.peeker}
+      {peeker}
     </nav>
   )
 }
 
-const SongItemPageTitle = (props) => {
+const SongItemPageTitle = ({
+  songItem = null,
+  song = null,
+  title = 'Add a New Song Item'
+}) => {
   let lines = []
-  let song
-  if (props.songItem) {
-    lines[0] = props.songItem.title
-    lines[1] = props.songItem.song.title
-    song = props.songItem.song
-  } else if (props.song) {
-    lines[0] = props.title || 'Add a New Song Item'
-    lines[1] = props.song.title
-    song = props.song
+  if (songItem) {
+    lines[0] = songItem.title
+    lines[1] = songItem.song.title
+    song = songItem.song
+  } else if (song) {
+    lines[0] = title
+    lines[1] = song.title
   }
 
   return (
