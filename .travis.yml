@@ -5,8 +5,6 @@ node_js:
 dist: bionic
 addons:
   apt:
-    sources:
-      - ppa:chris-lea/redis-server
     packages:
     - redis-tools
     - redis-server
