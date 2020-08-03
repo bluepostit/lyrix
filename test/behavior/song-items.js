@@ -6,6 +6,7 @@ const app = require('../../app')
 const { Song, SongItem, SongItemType } = require('../../models')
 const RecordManager = require('../record-manager')
 const SessionManager = require('../session-manager')
+const { dbRefProp } = require('../../models/song')
 
 describe('/song-items', async () => {
   const cleanUp = async () => {
@@ -38,12 +39,23 @@ describe('/song-items', async () => {
     })
 
     it('should not return song items belonging to other users', async () => {
+      console.log('about to load fixture')
       await RecordManager.loadFixture('song-items.only-other-user')
+      console.log('loaded fixture')
 
       const allItemsCount = await SongItem.query().resultSize()
+      console.log(`there are ${allItemsCount} song items`)
       expect(allItemsCount).to.be.greaterThan(0)
 
+      console.log('about to insert a user')
+      // DEBUG
+      const users = await User.query()
+      console.log('all users so far:')
+      console.log(users)
+
+      console.log('about to insert a user')
       const user = await RecordManager.insertUser()
+      console.log('done')
       const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent.get('/song-items')
       agent.close()
