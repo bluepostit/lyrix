@@ -1,23 +1,26 @@
 # Lyrix
-A Song Lyric collection app, containing both **Node** server and **React** client:
+Lyrix is a song collection app which helps you keep track of the songs you like to play or sing, along with your own notes, lyrics, or chords. It consists of a **Node.js** server and a **React** client:
 * In *development*, the **client** is accessed via the web. It proxies external URLs to the **server**.
 * In *production*, the **server** is accessed via the web. It routes clients to a static build of the React **client**.
 
 [![Build Status](https://travis-ci.org/bluepostit/lyrix.svg?branch=master)](https://travis-ci.org/bluepostit/lyrix)
 
 **Server technologies:**
-- [Node.js](https://nodejs.org/en/)
-- [Yarn package manager](https://yarnpkg.com/lang/en/)
-- [Express framework](https://expressjs.com/)
-- [PostgreSQL database](https://www.postgresql.org/)
-- [Knex.js query builder](https://knexjs.org/)
-- [Ojection.js ORM](https://vincit.github.io/objection.js/)
-- [Redis](https://redis.io/) and [connect-redis](https://github.com/tj/connect-redis)
+- The server is a REST API service written in [Node.js](https://nodejs.org/en/). 
+- It's built and run with the [Yarn](https://yarnpkg.com/lang/en/) package manager.
+- It uses [Express](https://expressjs.com/) to structure its request-response system and for routing.
+- Database access is via [Ojection.js ORM](https://vincit.github.io/objection.js/) on top of [Knex.js query builder](https://knexjs.org/).
+- Database implementation is [PostgreSQL database](https://www.postgresql.org/)
+- For sessions, it uses [Redis](https://redis.io/) and [connect-redis](https://github.com/tj/connect-redis)
+- For authentication, it uses [Passport](http://www.passportjs.org/).
+
+**Server testing:**
+- Good coverage of both system and unit testing with the [Mocha](https://mochajs.org/) test framework and the [Chai](https://www.chaijs.com/) assertion library
+- Fixtures for Knex using [simple-knex-fixtures](https://github.com/viglucci/simple-knex-fixtures)
 
 **Client technologies:**
-- [React](https://reactjs.org/)
-- [React Router](https://reacttraining.com/react-router/)
-- [Formik](https://jaredpalmer.com/formik)
+- The client is a [React](https://reactjs.org/) app, using [React Router](https://reacttraining.com/react-router/) for routing.
+- It uses [Bootstrap](https://getbootstrap.com/) (both stand-alone and through [React Bootstrap](https://react-bootstrap.github.io/)) and [FontAwesome](https://fontawesome.com/) for graphical goodness.
 
 ## Build
 1. Install requirements by running `yarn`
