@@ -178,6 +178,56 @@ describe('/artists', () => {
     })
   })
 
+  describe('DELETE /artists/:id', () => {
+    it('should return an error to a visitor', async () => {
+      chai.request(app).delete('/artists/1')
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(401)
+        })
+    })
+
+    it('should return an error to a non-admin user', async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .delete('/artists/1')
+      expect(res.body).to.have.status(403)
+    })
+
+    it('should return an error when no artist id is given', async () => {
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .delete('/artists/')
+      expect(res.body).to.have.status(400)
+    })
+
+    it('should fail if there are songs for the artist', async () => {
+      await RecordManager.loadFixture('artist.with-songs')
+      const artist = await Artist.query().first()
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent.delete(`/artists/${artist.id}`)
+      expect(res.body).to.have.status(400)
+    })
+
+    it('should delete an artist with no songs for an admin user', async () => {
+      await RecordManager.loadFixture('artists')
+      const artist = await Artist.query().first()
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent.delete(`/artists/${artist.id}`)
+      expect(res.body).to.have.status(204)
+    })
+  })
+
   describe('User Actions', () => {
     it('should provide a visitor with a link to view an artist', async () => {
       const res = await chai.request(app).get('/artists')
