@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useHistory } from "react-router-dom"
 
 const ListDataset = ({
   url,
@@ -7,13 +8,14 @@ const ListDataset = ({
   onLoadingComplete
 }) => {
   const [data, setData] = useState([])
+  const [error, setError] = useState('')
 
   const fetchData = () => {
     fetch(url)
       .then(res => res.json())
       .then((json) => {
         if (json.error) {
-          throw json
+          setError(json)
         }
         setData(json)
         setLoading(false)
@@ -25,7 +27,22 @@ const ListDataset = ({
     fetchData()
   }, [loading, data.length])
 
-  return null
+  return (
+    <>
+      <ErrorHandler error={error} />
+    </>
+  )
+}
+
+const ErrorHandler = ({
+  error,
+}) => {
+  const history = useHistory()
+  if (error) {
+    console.log(error)
+    history.push('/login')
+  }
+  return <></>
 }
 
 export { ListDataset }
