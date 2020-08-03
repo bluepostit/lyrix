@@ -40,15 +40,11 @@ describe('/song-items', async () => {
     })
 
     it('should not return song items belonging to other users', async () => {
-      console.log('about to load fixture')
       await RecordManager.loadFixture('song-items.only-other-user')
-      console.log('loaded fixture')
 
       const allItemsCount = await SongItem.query().resultSize()
-      console.log(`there are ${allItemsCount} song items`)
       expect(allItemsCount).to.be.greaterThan(0)
 
-      console.log('about to insert a user')
       // DEBUG
       const users = await User.query()
       console.log('all users so far:')
