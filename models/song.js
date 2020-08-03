@@ -50,7 +50,7 @@ module.exports = class Song extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['title', 'text', 'artist_id'],
+      required: ['title', 'text'],
 
       properties: {
         title: {
