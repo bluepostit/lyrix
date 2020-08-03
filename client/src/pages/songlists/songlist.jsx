@@ -1,65 +1,61 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
+import { ListDataset } from '../../components/data'
 import { ItemListPage } from '../item-list-page'
 
-const getSongList = (songlistId) => {
-  return fetch(`/songlists/${songlistId}`)
-    .then(response => response.json())
-    .then((json) => {
-      if (json.error) {
-        throw json
-      }
-      return json.data
-    })
+const renderSong = (song, index) => {
+  return (
+    <div className="d-flex w-100 align-items-center">
+      <div className="numbered-disc-bullet">{index + 1}</div>
+      <div className="content-multi-lines">
+        <div>{song.title}</div>
+        <div className="content-secondary">{song.artist.name}</div>
+      </div>
+    </div>
+  )
 }
 
 const Songlist = () => {
   const { id } = useParams()
-  const [songlist, setSonglist] = useState({ title: null, songs: [] })
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState({
+    title: '',
+    songs: [],
+    actions: []
+  })
   const history = useHistory()
 
-  useEffect(() => {
-    getSongList(id)
-      .then(songlist => setSonglist(songlist))
-      .catch((e) => {
-        console.log('Something went wrong!')
-        console.log(e)
-      })
-  }, [history, id, songlist.songs.length, songlist.title]) // things to monitor for render
-    // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
-
-  const getSongs = async () => {
-    return songlist.songs
-  }
-
   const onSongClick = (song) => {
-    history.push(`/songlists/${songlist.id}/songs/${song.id}`)
+    history.push(`/songlists/${id}/songs/${song.id}`)
   }
 
   const onNewClick = () => {
     history.push('/songs/new')
   }
 
-  const renderSong = (song, index) => {
-    return (
-      <div className="d-flex w-100 align-items-center">
-        <div className="numbered-disc-bullet">{index + 1}</div>
-        <div className="content-multi-lines">
-          <div>{song.title}</div>
-          <div className="content-secondary">{song.artist.name}</div>
-        </div>
-      </div>
-    )
+  const onLoadingComplete = (data) => {
+    setData(data)
   }
 
   return (
-    <ItemListPage title={songlist.title}
-      getItems={getSongs}
-      onNewClick={onNewClick}
-      onItemClick={onSongClick}
-      renderItem={renderSong}
-      renderItemMultiLine={true}
-    />
+    <>
+      <ListDataset
+        url={`/songlists/${id}`}
+        loading={loading}
+        setLoading={setLoading}
+        onLoadingComplete={onLoadingComplete}
+      />
+      <ItemListPage
+        title={data.title}
+        items={data.songs}
+        actions={data.actions}
+        loading={loading}
+        onNewClick={onNewClick}
+        onItemClick={onSongClick}
+        renderItem={renderSong}
+        renderItemMultiLine={true}
+      />
+    </>
   )
 }
 
