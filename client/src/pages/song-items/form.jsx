@@ -96,7 +96,7 @@ const SongItemForm = ({
           <Form.Label>Title</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Chords in G#"
+            placeholder="Write your title here"
             name="title"
             value={songItem.title}
             onChange={handleChange}
@@ -127,7 +127,7 @@ const SongItemForm = ({
             name="text"
             value={songItem.text}
             className="song-item-text-box"
-            placeholder="G#..."
+            placeholder="Write your notes here"
             onChange={handleChange}
           />
         </Form.Group>
