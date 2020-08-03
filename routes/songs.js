@@ -84,6 +84,36 @@ const getNextSong = async (song, context, contextId) => {
   return nextSong
 }
 
+const checkForDuplicates = async (req, res, next) => {
+  const body = req.body
+  const duplicate = await Song
+    .query()
+    .first()
+    .where({
+      title: body.title,
+      artist_id: body.artist_id
+    })
+
+  if (duplicate) {
+    return res.json({
+      status: StatusCodes.BAD_REQUEST,
+      error: 'Invalid input',
+      message: `A similar song by that artist already exists`
+    })
+  }
+  next()
+}
+
+const sanitize = async (req, res, next) => {
+  const body = req.body
+  req.sanitizedBody = {
+    title: body.title,
+    text: body.text,
+    artist_id: body.artist_id
+  }
+  next()
+}
+
 const validateId = validateIdForEntity(Song)
 const validateSongData = validateDataForEntity(Song)
 
@@ -127,8 +157,23 @@ router.get('/:id', validateId, setSong, setSongContext,
   })
 
 router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
-  async (req, res, next) => {
+  checkForDuplicates, sanitize,
+    async (req, res) => {
+      const response = {
+        status: StatusCodes.CREATED
+      }
 
-  })
+      try {
+        const song = await Song.query()
+          .insert(req.sanitizedBody)
+        response.data = song
+      } catch (error) {
+        console.log(error)
+        console.log(error.stack)
+        response.status = StatusCodes.INTERNAL_SERVER_ERROR
+        response.error = "Couldn't create the song"
+      }
+      res.json(response)
+    })
 
 module.exports = router

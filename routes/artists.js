@@ -20,7 +20,7 @@ const checkForDuplicates = async (req, res, next) => {
   const duplicate = await Artist
   .query()
   .first()
-  .where('name', 'like', `%${body.name}%`)
+  .where({ name: body.name })
 
   if (duplicate) {
     return res.json({

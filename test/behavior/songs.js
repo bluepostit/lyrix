@@ -300,7 +300,7 @@ describe('/songs', () => {
             artist_id: song.artist_id
           })
         expect(res.body).to.have.status(400)
-        console.log(res.body)
+        expect(res.body.message).to.match(/exists/)
       })
 
     it('should create a song with the given data', async () => {
@@ -308,6 +308,8 @@ describe('/songs', () => {
       const artist = await Artist.query().first()
       const user = await RecordManager.insertUser({ admin: true })
       const agent = await SessionManager.loginAsUser(app, user)
+      let songCount = await Song.query().resultSize()
+      expect(songCount).to.eql(0)
 
       const res = await agent
         .post('/songs')
@@ -317,6 +319,8 @@ describe('/songs', () => {
           artist_id: artist.id
         })
       expect(res.body).to.have.status(201)
+      songCount = await Song.query().resultSize()
+      expect(songCount).to.eql(1)
     })
 
   })
