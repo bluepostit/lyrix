@@ -85,7 +85,7 @@ const ArtistModal = ({
               <Form.Label>Name</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Counting Crows"
+                placeholder="Type the artist's name here"
                 name="name"
                 value={artist.name}
                 onChange={handleChange}
