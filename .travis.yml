@@ -16,7 +16,7 @@ services:
   - redis
 
 env:
-  - DB_HOST=localhost DB_TEST_NAME=travis_ci_test DB_TEST_USERNAME=postgres DB_TEST_PASSWORD='' NODE_ENV=test DEBUG=true
+  - DB_HOST=localhost DB_TEST_NAME=travis_ci_test DB_TEST_USERNAME=postgres DB_TEST_PASSWORD='' NODE_ENV=test DEBUG=1
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
