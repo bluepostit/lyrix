@@ -78,7 +78,6 @@ router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     // console.log(user, err, info)
     if (!user) {
-      console.log('no user found or incorrect credentials')
       return res.json({
         redirect: '/user/login',
         status: 401,
