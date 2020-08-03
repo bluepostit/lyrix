@@ -51,7 +51,10 @@ const validateId = async (req, res, next) => {
     })
   }
 
-  const songItem = await SongItem.query().findById(id)
+  const songItem = await SongItem
+    .query()
+    .select(['id', 'user_id'])
+    .findById(id)
   if (!songItem) {
     return res.json({
       status: StatusCodes.NOT_FOUND,
@@ -59,8 +62,6 @@ const validateId = async (req, res, next) => {
       message: 'No song item found with that id'
     })
   }
-  // Attach the SongItem instance to the request
-  req.songItem = songItem
 
   if (songItem.user_id !== req.user.id) {
     return res.json({
@@ -69,7 +70,6 @@ const validateId = async (req, res, next) => {
       message: 'The song item you are trying to update does not belong to you'
     })
   }
-
   next()
 }
 
@@ -96,47 +96,55 @@ const parseIds = async (req, res, next) => {
   next()
 }
 
-router.get('/', ensureLoggedIn, async(req, res) => {
-  const songItems = await req.user
-    .$relatedQuery('songItems')
-    .joinRelated('song')
-    .withGraphFetched('[song, songItemType]')
-    .orderBy(['song.title', 'title'])
+const addUserActions = (req, res, next) => {
+  const actions = {
+    readOne: '/song-items/:id',
+    readAll: '/song-items',
+    edit: '/song-items/:id/edit',
+    delete: '/song-items/:id'
+  }
+  req.userActions = actions
+  next()
+}
 
-    res.json({
-      error: false,
-      data: songItems
-  })
+router.get('/', ensureLoggedIn, addUserActions,
+  async(req, res) => {
+    const songItems = await req.user
+      .$relatedQuery('songItems')
+      .joinRelated('song')
+      .withGraphFetched('[song, songItemType]')
+      .orderBy(['song.title', 'title'])
+
+      res.json({
+        error: false,
+        data: songItems,
+        actions: req.userActions
+    })
 })
 
-router.get('/:id', ensureLoggedIn, async(req, res) => {
-  res.type('json')
-  let response = {
-    status: StatusCodes.OK
-  }
+router.get('/:id', ensureLoggedIn, validateId,
+  addUserActions,
+    async(req, res) => {
+      res.type('json')
+      let response = {
+        status: StatusCodes.OK,
+        actions: req.userActions
+      }
 
-  try {
-    const songItem = await SongItem
-      .query()
-      .findById(req.params.id)
-      .withGraphFetched('[song.artist, songItemType]')
+      try {
+        const songItem = await SongItem
+          .query()
+          .findById(req.params.id)
+          .withGraphFetched('[song.artist, songItemType]')
 
-    if (!songItem) {
-      response.error = 'SongItem not found'
-      response.status = StatusCodes.NOT_FOUND
-    } else if (songItem.user_id != req.user.id) {
-      response.error = 'Not authorized'
-      response.status = StatusCodes.UNAUTHORIZED
-    } else {
-      response.data = songItem
-    }
-  } catch (err) {
-    console.log(err.stack)
-    error = "Something went wrong"
-    response.status = StatusCodes.INTERNAL_SERVER_ERROR
-  }
+        response.data = songItem
+      } catch (err) {
+        console.log(err.stack)
+        error = "Something went wrong"
+        response.status = StatusCodes.INTERNAL_SERVER_ERROR
+      }
 
-  res.json(response)
+      res.json(response)
 })
 
 router.post('/', ensureLoggedIn, parseIds,
