@@ -9,7 +9,7 @@ const SongItems = ({
 }) => {
   const history = useHistory()
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState({ actions: {} })
+  const [data, setData] = useState({ data: [], actions: {} })
 
   const onSongItemClick = (songItem) => {
     history.push(`/song-items/${songItem.id}`)
@@ -33,7 +33,7 @@ const SongItems = ({
       />
       <ItemListPage
         title={title}
-        items={data}
+        items={data.data}
         actions={data.actions}
         loading={loading}
         onItemClick={onSongItemClick}

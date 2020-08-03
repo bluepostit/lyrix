@@ -55,7 +55,7 @@ const Artists = () => {
         onLoadingComplete={onLoadingComplete}
       />
       <ItemListPage title="Artists"
-        items={data}
+        items={data.data}
         actions={data.actions}
         loading={loading}
         onNewClick={onNewClick}

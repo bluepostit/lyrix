@@ -19,8 +19,10 @@ const Songlist = () => {
   const { id } = useParams()
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState({
-    title: '',
-    songs: [],
+    data: {
+      title: '',
+      songs: []
+    },
     actions: []
   })
   const history = useHistory()
@@ -46,8 +48,8 @@ const Songlist = () => {
         onLoadingComplete={onLoadingComplete}
       />
       <ItemListPage
-        title={data.title}
-        items={data.songs}
+        title={data.data.title}
+        items={data.data.songs}
         actions={data.actions}
         loading={loading}
         onNewClick={onNewClick}

@@ -15,9 +15,9 @@ const ListDataset = ({
         if (json.error) {
           throw json
         }
-        setData(json.data)
+        setData(json)
         setLoading(false)
-        onLoadingComplete(json.data)
+        onLoadingComplete(json)
       })
   }
 

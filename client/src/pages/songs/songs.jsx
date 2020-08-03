@@ -22,7 +22,7 @@ const renderSong = (song) => {
 const Songs = (props) => {
   const history = useHistory()
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState({ actions: {} })
+  const [data, setData] = useState({ data: [], actions: {} })
 
   let title = props.title || "Songs"
 
@@ -47,7 +47,7 @@ const Songs = (props) => {
         onLoadingComplete={onLoadingComplete}
       />
       <ItemListPage title={title}
-        items={data}
+        items={data.data}
         actions={data.actions}
         loading={loading}
         onNewClick={onNewClick}
