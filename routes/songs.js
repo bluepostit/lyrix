@@ -2,8 +2,15 @@ const express = require('express')
 const router = express.Router()
 
 const { Song } = require('../models')
+const { ensureLoggedIn } = require('../authentication')
 const { SongsHelper } = require('../helpers/songs')
-const { StatusCodes, checkIsAdmin, ensureAdmin } = require('./common')
+const {
+  StatusCodes,
+  checkIsAdmin,
+  ensureAdmin,
+  validateIdForEntity,
+  validateDataForEntity
+} = require('./common')
 
 const SONG_ATTRIBUTES = [
   'songs.id', 'title', 'text'
@@ -24,6 +31,61 @@ const addUserActions = (req, res, next) => {
   req.userActions = actions
   next()
 }
+
+const setSong = async (req, res, next) => {
+  const songId = req.params.id
+  const user = req.user
+  let query = Song
+    .query()
+    .findById(songId)
+    .withGraphFetched('artist')
+
+  if (user && user.id) {
+    query = query
+      .withGraphFetched('[songItems.songItemType]')
+      .leftJoinRelated('songItems')
+      .modifyGraph('songItems', builder => {
+        builder.orderBy('title').where({ user_id: user.id })
+      })
+  }
+  const song = await query
+  req.song = song
+  next()
+}
+
+const setSongContext = async (req, res, next) => {
+  const context = req.query.context
+  const contextId = req.query.contextId
+  let nextSong
+
+  switch (context) {
+    case 'artist':
+      nextSong = await getNextSong(song, context)
+      break
+    case 'songlist':
+      nextSong = await getNextSong(song, context, contextId)
+      break
+  }
+
+  if (nextSong) {
+    req.song.nextSongId = nextSong.id
+  }
+  next()
+}
+
+const getNextSong = async (song, context, contextId) => {
+  let nextSong
+
+  if (context === 'artist') {
+    nextSong = await SongsHelper.getNextSongByArtist(song, context)
+  } else if (context === 'songlist') {
+    nextSong = await SongsHelper.getNextSongBySonglist(song, contextId)
+  }
+  return nextSong
+}
+
+const validateId = validateIdForEntity(Song)
+const validateSongData = validateDataForEntity(Song)
 
 router.use([checkIsAdmin, addUserActions])
 
@@ -55,72 +117,19 @@ router.get('/count', async (req, res, next) => {
   })
 })
 
-const getPlainSong = async (req) => {
-  const songId = req.params.id
-  const user = req.user
-  let query = Song
-    .query()
-    .findById(songId)
-    .withGraphFetched('artist')
-
-  if (user && user.id) {
-    query = query
-      .withGraphFetched('[songItems.songItemType]')
-      .leftJoinRelated('songItems')
-      .modifyGraph('songItems', builder => {
-        builder.orderBy('title').where({user_id: user.id})
-      })
-  }
-  return await query
-}
-
-const getNextSong = async (song, context, contextId) => {
-  let nextSong
-
-  if (context === 'artist') {
-    nextSong = await SongsHelper.getNextSongByArtist(song, context)
-  } else if (context === 'songlist') {
-    nextSong = await SongsHelper.getNextSongBySonglist(song, contextId)
-  }
-  return nextSong
-}
-
-router.get('/:id', async (req, res, next) => {
-  res.type('json')
-  let song = await getPlainSong(req)
-  let nextSong
-  if (song) {
-    song.nextSongId = null
-  }
-
-  const context = req.query.context
-  const contextId = req.query.contextId
-
-  switch(context) {
-    case 'artist':
-      nextSong = await getNextSong(song, context)
-    break
-    case 'songlist':
-      nextSong = await getNextSong(song, context, contextId)
-    break
-  }
-
-  if (song && nextSong) {
-    song.nextSongId = nextSong.id
-  }
-
-  let status = 200
-  let error = false
-  if (song === undefined) {
-    error = 'Song not found'
-    status = 404
-  }
-  res.json({
-    error: error,
-    status: status,
-    data: song,
-    actions: req.userActions
+router.get('/:id', validateId, setSong, setSongContext,
+  async (req, res) => {
+    res.json({
+      error: error,
+      status: StatusCodes.OK,
+      data: song,
+      actions: req.userActions
+    })
   })
-})
+
+router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
+  async (req, res, next) => {
+
+  })
 
 module.exports = router
