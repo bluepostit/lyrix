@@ -207,9 +207,25 @@ describe('/artists', () => {
       expect(res.body).to.have.status(400)
     })
 
-    it('should fail if there are songs for the artist')
+    it('should fail if there are songs for the artist', async () => {
+      await RecordManager.loadFixture('artist.with-songs')
+      const artist = await Artist.query().first()
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
 
-    it('should delete an artist with no songs for an admin user')
+      const res = await agent.delete(`/artists/${artist.id}`)
+      expect(res.body).to.have.status(400)
+    })
+
+    it('should delete an artist with no songs for an admin user', async () => {
+      await RecordManager.loadFixture('artists')
+      const artist = await Artist.query().first()
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent.delete(`/artists/${artist.id}`)
+      expect(res.body).to.have.status(204)
+    })
   })
 
   describe('User Actions', () => {

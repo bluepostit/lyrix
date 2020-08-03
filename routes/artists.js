@@ -143,7 +143,33 @@ router.post('/', ensureLoggedIn, ensureAdmin, validateArtistData,
       res.json(response)
     })
 
-router.delete('/:id', ensureLoggedIn, ensureAdmin, validateId)
+router.delete('/:id', ensureLoggedIn, ensureAdmin, validateId,
+  async (req, res, next) => {
+    const songsCount = await req.entity
+      .$relatedQuery('songs')
+      .resultSize()
+    if (songsCount > 0) {
+      return res.json({
+        status: StatusCodes.BAD_REQUEST,
+        error: "Can't delete this artist",
+        message: "There are songs associated with this artist"
+      })
+    }
+    // Try to delete the artist
+    const response = {
+      status: StatusCodes.NO_CONTENT
+    }
+    try {
+      await Artist
+        .query()
+        .deleteById(req.params.id)
+    } catch (error) {
+      response.status = StatusCodes.INTERNAL_SERVER_ERROR
+      response.error = "Couldn't delete the artist"
+    }
+    res.json(response)
+  })
+
 router.delete('/', validateId)
 
 router.use('/:id/songs', songsRouter)
