@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const ListDataset = ({
   url,
@@ -8,7 +8,7 @@ const ListDataset = ({
 }) => {
   const [data, setData] = useState([])
 
-  const fetchData = async () => {
+  const fetchData = () => {
     fetch(url)
       .then(res => res.json())
       .then((json) => {
