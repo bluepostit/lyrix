@@ -80,7 +80,7 @@ describe('SongList', () => {
 
       const songList = await SongList
         .query()
-        .eager('songs')
+        .withGraphFetched('songs')
         .first()
 
       expect(songList.songs.length).to.eql(0)
@@ -91,7 +91,7 @@ describe('SongList', () => {
 
       const songList = await SongList
         .query()
-        .eager('songs')
+        .withGraphFetched('songs')
         .first()
 
       expect(songList.songs.length).to.eql(3)
@@ -107,7 +107,7 @@ describe('SongList', () => {
 
       const songList = await SongList
         .query()
-        .eager('items')
+        .withGraphFetched('items')
         .first()
 
       expect(songList.items.length).to.eql(0)
@@ -118,7 +118,7 @@ describe('SongList', () => {
 
       const songList = await SongList
         .query()
-        .eager('items .song')
+        .withGraphFetched('items .song')
         .first()
 
       expect(songList.items.length).to.eql(3)
