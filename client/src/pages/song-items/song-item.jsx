@@ -13,7 +13,7 @@ const getSongItem = (songItemId) => {
       if (json.error) {
         throw json
       }
-      return json.data
+      return json
     })
 }
 
@@ -32,12 +32,17 @@ const PageContent = ({ songItem }) => {
 
 const SongItem = () => {
   const { id } = useParams()
-  const [songItem, setSongItem] = useState({ title: null, text: null, song: { title: null } })
+  const [data, setData] = useState({
+    title: null,
+    text: null,
+    data: { song: { title: '' } },
+    actions: {}
+  })
   const [deleting, setDeleting] = useState(false)
   const history = useHistory()
 
   const goToEdit = () => {
-    history.push(`/song-items/${songItem.id}/edit`)
+    history.push(`/song-items/${data.data.id}/edit`)
   }
 
   const handleDeleteClick = () => {
@@ -50,8 +55,8 @@ const SongItem = () => {
 
   useEffect(() => {
     getSongItem(id)
-      .then((songItem) => {
-        setSongItem(songItem)
+      .then((data) => {
+        setData(data)
       })
       .catch((e) => {
         console.log('Something went wrong!')
@@ -63,13 +68,14 @@ const SongItem = () => {
   return (
     <div className="song-item-page">
       <Page
-        content={<PageContent songItem={songItem} />}
-        title={<SongItemPageTitle songItem={songItem} />}
+        content={<PageContent songItem={data.data} />}
+        actions={data.actions}
+        title={<SongItemPageTitle songItem={data.data} />}
         onEditClick={goToEdit}
         onDeleteClick={handleDeleteClick}
       />
       <Deleter
-        entity={songItem}
+        entity={data.data}
         noun="song-item"
         show={deleting}
         setShow={setDeleting}
