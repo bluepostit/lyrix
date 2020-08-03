@@ -6,7 +6,8 @@ const app = require('../../app')
 const { Song, SongItem, SongItemType } = require('../../models')
 const RecordManager = require('../record-manager')
 const SessionManager = require('../session-manager')
-const { dbRefProp } = require('../../models/song')
+
+const { User } = require('../../models')
 
 describe('/song-items', async () => {
   const cleanUp = async () => {
