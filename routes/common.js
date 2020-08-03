@@ -32,8 +32,44 @@ const checkIsAdmin = async (req, res, next) => {
   next()
 }
 
+/**
+ * Returns a middleware function to be used to validate the request.
+ * Ensures that the request has an ID in its parameters.
+ * If `entityClass` is provided (as an Objection Model class),
+ * this function will check if an entity of that type, with the given id,
+ * exists.
+ * @param {class} entityClass
+ */
+const validateIdForEntity = (entityClass = null) => {
+  return async (req, res, next) => {
+    const id = req.params.id
+    if (!id) {
+      return res.json({
+        status: StatusCodes.BAD_REQUEST,
+        error: 'Invalid input',
+        message: 'You must provide a valid id'
+      })
+    }
+    if (entityClass) {
+      const entity = await entityClass
+        .query()
+        .findById(id)
+      if (!entity) {
+        return res.json({
+          status: StatusCodes.NOT_FOUND,
+          error: 'Not found',
+          message: 'No entity found with that id'
+        })
+      }
+      req.entity = entity
+    }
+    next()
+  }
+}
+
 module.exports = {
   StatusCodes,
   ensureAdmin,
-  checkIsAdmin
+  checkIsAdmin,
+  validateIdForEntity
 }

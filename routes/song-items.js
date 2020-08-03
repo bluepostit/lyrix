@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { StatusCodes } = require('./common')
+const { StatusCodes, validateIdForEntity } = require('./common')
 const { SongItem } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 
@@ -41,28 +41,10 @@ const validateSongItemData = async (req, res, next) => {
   }
 }
 
-const validateId = async (req, res, next) => {
-  const id = req.params.id
-  if (!id) {
-    return res.json({
-      status: StatusCodes.BAD_REQUEST,
-      error: 'Invalid input',
-      message: 'You must provide a valid id'
-    })
-  }
+const validateId = validateIdForEntity(SongItem)
 
-  const songItem = await SongItem
-    .query()
-    .select(['id', 'user_id'])
-    .findById(id)
-  if (!songItem) {
-    return res.json({
-      status: StatusCodes.NOT_FOUND,
-      error: 'Not found',
-      message: 'No song item found with that id'
-    })
-  }
-
+const ensureOwnership = async (req, res, next) => {
+  const songItem = req.entity
   if (songItem.user_id !== req.user.id) {
     return res.json({
       status: StatusCodes.FORBIDDEN,
@@ -122,7 +104,7 @@ router.get('/', ensureLoggedIn, addUserActions,
     })
 })
 
-router.get('/:id', ensureLoggedIn, validateId,
+router.get('/:id', ensureLoggedIn, validateId, ensureOwnership,
   addUserActions,
     async(req, res) => {
       res.type('json')
@@ -169,7 +151,7 @@ router.post('/', ensureLoggedIn, parseIds,
       res.json(response)
   })
 
-router.put('/:id', ensureLoggedIn, parseIds, validateId,
+router.put('/:id', ensureLoggedIn, parseIds, validateId, ensureOwnership,
   validateSongItemData, sanitize,
     async (req, res, next) => {
       const response = {
@@ -191,19 +173,20 @@ router.put('/:id', ensureLoggedIn, parseIds, validateId,
 // Trigger validation for the absent ID - will respond with error
 router.put('/', validateId)
 
-router.delete('/:id', ensureLoggedIn, validateId, async (req, res, next) => {
-  const response = {
-    status: StatusCodes.NO_CONTENT
-  }
-  try {
-    await SongItem
-      .query()
-      .deleteById(req.params.id)
-  } catch (error) {
-    response.status = StatusCodes.INTERNAL_SERVER_ERROR
-    response.error = "Couldn't delete the song item"
-  }
-  res.json(response)
+router.delete('/:id', ensureLoggedIn, validateId, ensureOwnership,
+  async (req, res, next) => {
+    const response = {
+      status: StatusCodes.NO_CONTENT
+    }
+    try {
+      await SongItem
+        .query()
+        .deleteById(req.params.id)
+    } catch (error) {
+      response.status = StatusCodes.INTERNAL_SERVER_ERROR
+      response.error = "Couldn't delete the song item"
+    }
+    res.json(response)
 })
 
 // Trigger validation for the absent ID - will respond with error
