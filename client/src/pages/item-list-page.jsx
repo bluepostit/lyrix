@@ -26,6 +26,17 @@ const Item = ({
   )
 }
 
+const EmptyMessage = ({
+  show
+}) => {
+  let className = 'beneath-nav lyrix-list empty ' + (show ? '' : 'd-none')
+  return (
+    <div className={className}>
+      <h3>Nothing to show here, yet.</h3>
+    </div>
+  )
+}
+
 // A list of items
 const ItemListDiv = ({
   items = [],
@@ -34,14 +45,6 @@ const ItemListDiv = ({
   renderItemMultiLine = false,
   renderItem = (item, index) => { }
 }) => {
-  if (items.length === 0) {
-    let className = 'beneath-nav lyrix-list empty ' + (show? '' : 'd-none')
-    return (
-      <div className={className}>
-        <h3>Nothing to show here, yet.</h3>
-      </div>
-    )
-  }
   return (
     <div className="list-group lyrix-list">
       {items.map((item, index) =>
@@ -58,25 +61,6 @@ const ItemListDiv = ({
   )
 }
 
-const fetchItems = async (getItems, setUserCanCreate) => {
-  if (typeof getItems === 'function') {
-    return await getItems()
-  } else {
-    return fetch(getItems)
-      .then(response => response.json())
-      .then((json) => {
-        if (json.error) {
-          throw json
-        }
-        const actions = json.actions
-        if (actions && actions.create) {
-          setUserCanCreate(actions.create)
-        }
-        return json.data
-      })
-  }
-}
-
 /**
  * Uses the following props:
  * - title - string to be used at the top of the page
@@ -88,37 +72,30 @@ const fetchItems = async (getItems, setUserCanCreate) => {
  *
  * @param {*} props
  */
-const ItemListPage = ({getItems, noHeader, ...props}) => {
-  const [items, setItems] = useState([])
-  const [isLoading, setLoading] = useState(true)
-  const [userCanCreate, setUserCanCreate] = useState(false)
+const ItemListPage = ({
+  items,
+  actions,
+  loading,
+  noHeader,
+   ...props
+}) => {
   const history = useHistory()
-
-  useEffect(() => {
-    setLoading(true)
-    fetchItems(getItems, setUserCanCreate)
-      .then((items) => {
-        setItems(items)
-        setLoading(false)
-      })
-      .catch((e) => {
-        console.log('Something went wrong!')
-        console.log(e)
-        history.push('/login')
-      })
-  }, [history, getItems, items.length]) // things to monitor for render
-  // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
   let navbar = <></>
   if (!noHeader) {
-    navbar = <Navbar userCanCreate={userCanCreate} {...props} />
+    navbar = <Navbar actions={actions} {...props} />
+  }
+
+  let contents = <EmptyMessage show={!loading} />
+  if (items.length > 0) {
+    contents = <ItemListDiv items={items} show={!loading} {...props} />
   }
 
   return (
     <div className="page-content">
       <div className="list-page">
         {navbar}
-        <ItemListDiv items={items} show={!isLoading} {...props} />
+        {contents}
       </div>
     </div>
   )

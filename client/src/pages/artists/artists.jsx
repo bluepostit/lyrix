@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom"
 import { ItemListPage } from '../item-list-page'
 import { Icon } from '../../components/icons'
 import { ArtistModal } from './modal'
+import { ListDataset } from '../../components/data'
 
 // A single artist list item
 const renderArtist = (artist) => {
@@ -25,7 +26,12 @@ const Artists = () => {
   const history = useHistory()
   const [modalArtist, setModalArtist] = useState({ name: '' })
   const [showModal, setShowModal] = useState(false)
-  const [items, setItems] = useState('/artists')
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState({ items: [], actions: {} })
+
+  const onLoadingComplete = (data) => {
+    setData(data)
+  }
 
   const onArtistClick = (artist) => {
     history.push(`/artists/${artist.id}`)
@@ -37,13 +43,21 @@ const Artists = () => {
 
   const onSuccessfulCreate = () => {
     // Need to reload items!
-    setItems(items + ' ')
+    setLoading(true)
   }
 
   return (
     <>
+      <ListDataset
+        url="/artists"
+        loading={loading}
+        setLoading={setLoading}
+        onLoadingComplete={onLoadingComplete}
+      />
       <ItemListPage title="Artists"
-        getItems={items}
+        items={data.items}
+        actions={data.actions}
+        loading={loading}
         onNewClick={onNewClick}
         onItemClick={onArtistClick}
         renderItem={renderArtist}
