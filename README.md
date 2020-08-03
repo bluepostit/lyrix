@@ -3,6 +3,8 @@ A Song Lyric collection app, containing both **Node** server and **React** clien
 * In *development*, the **client** is accessed via the web. It proxies external URLs to the **server**.
 * In *production*, the **server** is accessed via the web. It routes clients to a static build of the React **client**.
 
+[![Build Status](https://travis-ci.org/bluepostit/lyrix.svg?branch=master)](https://travis-ci.org/bluepostit/lyrix)
+
 **Server technologies:**
 - [Node.js](https://nodejs.org/en/)
 - [Yarn package manager](https://yarnpkg.com/lang/en/)
