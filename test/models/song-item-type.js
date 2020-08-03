@@ -3,8 +3,6 @@
 const expect = require('chai').expect
 const SongItemType = require('../../models/song-item-type')
 
-console.log(SongItemType)
-
 describe('SongItemType', () => {
   const clearData = async () => {
     await SongItemType.query().delete()
