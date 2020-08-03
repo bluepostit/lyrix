@@ -50,7 +50,6 @@ describe('/artists', () => {
           if (err) {
             console.log(err.stack)
           }
-          console.log(res)
           expect(res).to.have.status(200)
           expect(res.body).to.be.an('object')
 
