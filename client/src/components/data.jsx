@@ -6,29 +6,24 @@ const ListDataset = ({
   setLoading,
   onLoadingComplete
 }) => {
-  const [items, setItems] = useState([])
-  const [actions, setActions] = useState([])
+  const [data, setData] = useState([])
 
-  const fetchItems = async () => {
+  const fetchData = async () => {
     fetch(url)
       .then(res => res.json())
       .then((json) => {
         if (json.error) {
           throw json
         }
-        setActions(json.actions)
-        setItems(json.data)
+        setData(json.data)
         setLoading(false)
-        onLoadingComplete({
-          items: items,
-          actions: actions
-        })
+        onLoadingComplete(json.data)
       })
   }
 
   useEffect(() => {
-    fetchItems()
-  }, [loading, items.length])
+    fetchData()
+  }, [loading, data.length])
 
   return null
 }

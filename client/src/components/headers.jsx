@@ -25,7 +25,7 @@ const Navbar = ({
   onNewClick,
   onEditClick,
   onDeleteClick,
-  userCanCreate = true,
+  actions = {},
   peeker = null
 }) => {
   const history = useHistory()
@@ -49,9 +49,21 @@ const Navbar = ({
       </div>
       <h1>{title}</h1>
       <div className="button-group">
-        <Button action="new" onClick={onNewClick} show={onNewClick && userCanCreate} />
-        <Button action="edit" onClick={onEditClick} show={onEditClick} />
-        <Button action="delete" onClick={onDeleteClick} show={onDeleteClick} />
+        <Button
+          action="new"
+          onClick={onNewClick}
+          show={onNewClick && actions.create}
+        />
+        <Button
+          action="edit"
+          onClick={onEditClick}
+          show={onEditClick && actions.edit}
+        />
+        <Button
+          action="delete"
+          onClick={onDeleteClick}
+          show={onDeleteClick && actions.delete}
+        />
         <Button action="next" onClick={goNext} show={nextLink} />
       </div>
       {peeker}

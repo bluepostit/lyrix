@@ -27,7 +27,7 @@ const Artists = () => {
   const [modalArtist, setModalArtist] = useState({ name: '' })
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState({ items: [], actions: {} })
+  const [data, setData] = useState({ data: [], actions: {} })
 
   const onLoadingComplete = (data) => {
     setData(data)
@@ -55,7 +55,7 @@ const Artists = () => {
         onLoadingComplete={onLoadingComplete}
       />
       <ItemListPage title="Artists"
-        items={data.items}
+        items={data}
         actions={data.actions}
         loading={loading}
         onNewClick={onNewClick}

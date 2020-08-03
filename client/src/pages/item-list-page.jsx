@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { useHistory } from "react-router-dom"
+import React from 'react'
 import { Navbar } from '../components/headers'
 
 // A single list item
@@ -79,8 +78,6 @@ const ItemListPage = ({
   noHeader,
    ...props
 }) => {
-  const history = useHistory()
-
   let navbar = <></>
   if (!noHeader) {
     navbar = <Navbar actions={actions} {...props} />

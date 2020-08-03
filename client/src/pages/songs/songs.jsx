@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory } from "react-router-dom"
+import { ListDataset } from '../../components/data'
 import { ItemListPage } from '../item-list-page'
 import { Icon } from '../../components/icons'
 
@@ -20,6 +21,9 @@ const renderSong = (song) => {
 
 const Songs = (props) => {
   const history = useHistory()
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState({ items: [], actions: {} })
+
   let title = props.title || "Songs"
 
   const onSongClick = (song) => {
@@ -30,13 +34,27 @@ const Songs = (props) => {
     history.push('/songs/new')
   }
 
+  const onLoadingComplete = (data) => {
+    setData(data)
+  }
+
   return (
-    <ItemListPage title={title}
-      getItems='/songs'
-      onNewClick={onNewClick}
-      onItemClick={onSongClick}
-      renderItem={renderSong}
-    />
+    <>
+      <ListDataset
+        url="/songs"
+        loading={loading}
+        setLoading={setLoading}
+        onLoadingComplete={onLoadingComplete}
+      />
+      <ItemListPage title={title}
+        items={data.items}
+        actions={data.actions}
+        loading={loading}
+        onNewClick={onNewClick}
+        onItemClick={onSongClick}
+        renderItem={renderSong}
+      />
+    </>
   )
 }
 
