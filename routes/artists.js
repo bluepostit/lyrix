@@ -7,33 +7,20 @@ const {
   StatusCodes,
   checkIsAdmin,
   ensureAdmin,
-  validateIdForEntity
+  validateIdForEntity,
+  validateDataForEntity
 } = require('./common')
 const songsRouter = require('./artist-songs.js')
 
 const ARTIST_ATTRIBUTES = ['artists.id', 'artists.name']
 const SONG_ATTRIBUTES = ['id', 'title', 'text']
 
-const validateArtistData = async (req, res, next) => {
-  try {
-    // Trigger model class's validation rules
-    await Artist.fromJson(req.body)
-    await next()
-  } catch (e) {
-    return res.json({
-      status: StatusCodes.BAD_REQUEST,
-      error: 'Invalid input',
-      message: e.message
-    })
-  }
-}
-
 const checkForDuplicates = async (req, res, next) => {
   const body = req.body
   const duplicate = await Artist
-    .query()
-    .first()
-    .where('name', 'like', `%${body.name}%`)
+  .query()
+  .first()
+  .where({ name: body.name })
 
   if (duplicate) {
     return res.json({
@@ -68,6 +55,7 @@ const addUserActions = (req, res, next) => {
 }
 
 const validateId = validateIdForEntity(Artist)
+const validateArtistData = validateDataForEntity(Artist)
 
 router.use([checkIsAdmin, addUserActions])
 

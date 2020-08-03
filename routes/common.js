@@ -67,9 +67,27 @@ const validateIdForEntity = (entityClass = null) => {
   }
 }
 
+const validateDataForEntity = (entityClass) => {
+  return async (req, res, next) => {
+    try {
+      // Trigger model class's validation rules
+      await entityClass.fromJson(req.body)
+      await next()
+    } catch (e) {
+      return res.json({
+        status: StatusCodes.BAD_REQUEST,
+        error: 'Invalid input',
+        message: e.message
+      })
+    }
+  }
+}
+
+
 module.exports = {
   StatusCodes,
   ensureAdmin,
   checkIsAdmin,
-  validateIdForEntity
+  validateIdForEntity,
+  validateDataForEntity
 }
