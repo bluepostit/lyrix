@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import { ListDataset } from '../../components/data'
 import { ItemListPage } from '../item-list-page'
 import { SongItem } from '../../components/list-items'
 
-const SongItems = () => {
+const SongItems = ({
+  title = 'My Song Items'
+}) => {
   const history = useHistory()
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState({ data: [], actions: {} })
+
   const onSongItemClick = (songItem) => {
     history.push(`/song-items/${songItem.id}`)
   }
@@ -13,12 +19,27 @@ const SongItems = () => {
     return <SongItem songItem={songItem} />
   }
 
+  const onLoadingComplete = (data) => {
+    setData(data)
+  }
+
   return (
-    <ItemListPage title="My song items"
-              getItems='/song-items'
-              onItemClick={onSongItemClick}
-              renderItem={renderSongItem}
-    />
+    <>
+      <ListDataset
+        url="/song-items"
+        loading={loading}
+        setLoading={setLoading}
+        onLoadingComplete={onLoadingComplete}
+      />
+      <ItemListPage
+        title={title}
+        items={data.data}
+        actions={data.actions}
+        loading={loading}
+        onItemClick={onSongItemClick}
+        renderItem={renderSongItem}
+      />
+    </>
   )
 }
 

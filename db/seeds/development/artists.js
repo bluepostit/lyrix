@@ -24,6 +24,7 @@ const artists = [
 exports.seed = async function (knex) {
   console.log('Seed: artists')
   // Deletes ALL existing entries
+  await knex('song_items').del()
   await knex('song_list_songs').del()
   await knex('song_lists').del()
   await knex('songs').del()

@@ -258,4 +258,39 @@ describe('/songs', () => {
       }
     })
   })
+
+  describe('User Actions', () => {
+    it('should provide a visitor with a link to view a song', async () => {
+      const res = await chai.request(app).get('/songs')
+      const body = res.body
+      expect(body.actions).to.be.an('object')
+      expect(body.actions).to.have.property('readOne')
+    })
+
+    it('should not provide a non-admin user with destructive links',
+      async () => {
+        const user = await RecordManager.insertUser()
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent.get('/songs')
+        const body = res.body
+        expect(body.actions).to.be.an('object')
+        expect(body.actions).not.to.have.property('create')
+        expect(body.actions).not.to.have.property('edit')
+        expect(body.actions).not.to.have.property('delete')
+      })
+
+    it('should provide an admin user with destructive links',
+      async () => {
+        const user = await RecordManager.insertUser({ admin: true })
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent.get('/artists')
+        const body = res.body
+        expect(body.actions).to.be.an('object')
+        expect(body.actions).to.have.property('create')
+        expect(body.actions).to.have.property('edit')
+        expect(body.actions).to.have.property('delete')
+      })
+  })
 })

@@ -1,13 +1,31 @@
 const express = require('express')
+const router = express.Router()
+
 const { Song } = require('../models')
 const { SongsHelper } = require('../helpers/songs')
-const router = express.Router()
+const { StatusCodes, checkIsAdmin, ensureAdmin } = require('./common')
 
 const SONG_ATTRIBUTES = [
   'songs.id', 'title', 'text'
 ]
 
 const ARTIST_ATTRIBUTES = ['artist.id as artist_id', 'artist.name']
+
+const addUserActions = (req, res, next) => {
+  const actions = {
+    readOne: "/songs/:id",
+    readAll: "/songs"
+  }
+  if (req.isAdmin) {
+    actions.create = "/songs"
+    actions.edit = '/songs/:id'
+    actions.delete = '/songs'
+  }
+  req.userActions = actions
+  next()
+}
+
+router.use([checkIsAdmin, addUserActions])
 
 router.get('/', async (req, res, next) => {
   const songs = await Song
@@ -19,7 +37,8 @@ router.get('/', async (req, res, next) => {
 
   res.json({
     error: false,
-    data: songs
+    data: songs,
+    actions: req.userActions
   })
 })
 
@@ -99,7 +118,8 @@ router.get('/:id', async (req, res, next) => {
   res.json({
     error: error,
     status: status,
-    data: song
+    data: song,
+    actions: req.userActions
   })
 })
 

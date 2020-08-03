@@ -96,7 +96,7 @@ describe('/song-items', async () => {
 
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
-      expect(res.body).to.have.status(401)
+      expect(res.body).to.have.status(403)
       expect(res.body.error).to.not.be.empty
       expect(res.body.data).to.be.undefined
     })
@@ -371,5 +371,22 @@ describe('/song-items', async () => {
       const countAfter = await SongItem.query().resultSize()
       expect(countAfter).to.eql(songItems.length - 1)
     })
+  })
+
+  describe('User Actions', () => {
+    it('should provide a user with a link to edit or delete her song item',
+      async () => {
+        const user = await RecordManager.insertUser({ id: 1 })
+        await RecordManager.loadFixture(
+          'song-items.with-song-item-types.user-id-1')
+        const songItem = await SongItem.query().first()
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent.get(`/song-items/${songItem.id}`)
+        const body = res.body
+        expect(body.actions).to.be.an('object')
+        expect(body.actions).to.have.property('edit')
+        expect(body.actions).to.have.property('delete')
+      })
   })
 })

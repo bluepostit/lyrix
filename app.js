@@ -21,6 +21,16 @@ types.setTypeParser(20, function (val) {
 
 // Routes
 
+// Debug request info if we're running tests and DEBUG env variable is set.
+if (process.env.NODE_ENV === 'test' && process.env.DEBUG) {
+  app.use((req, res, next) => {
+    console.log("\n=== REQUEST ===")
+    console.log(`${req.method} ${req.url}`)
+    console.log(req.headers)
+    next()
+  })
+}
+
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')))
 

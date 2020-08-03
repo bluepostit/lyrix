@@ -48,7 +48,23 @@ const sanitize = async (req, res, next) => {
   next()
 }
 
-router.get('/', checkIsAdmin, async (req, res, next) => {
+const addUserActions = (req, res, next) => {
+  const actions = {
+    readOne: "/artists/:id",
+    readAll: "/artists"
+  }
+  if (req.isAdmin) {
+    actions.create = "/artists"
+    actions.edit = '/artists/:id'
+    actions.delete = '/artists'
+  }
+  req.userActions = actions
+  next()
+}
+
+router.use([checkIsAdmin, addUserActions])
+
+router.get('/', async (req, res, next) => {
   try {
     const artists = await Artist
       .query()
@@ -60,7 +76,7 @@ router.get('/', checkIsAdmin, async (req, res, next) => {
     res.json({
       error: false,
       data: artists,
-      userCanCreate: req.isAdmin
+      actions: req.userActions
     })
   } catch (error) {
     console.log(error.stack)
@@ -94,7 +110,8 @@ router.get('/:id', async (req, res, next) => {
   res.json({
     error,
     status,
-    data
+    data,
+    actions: req.userActions
   })
 })
 
