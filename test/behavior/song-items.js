@@ -7,8 +7,6 @@ const { Song, SongItem, SongItemType } = require('../../models')
 const RecordManager = require('../record-manager')
 const SessionManager = require('../session-manager')
 
-const { User } = require('../../models')
-
 describe('/song-items', async () => {
   const cleanUp = async () => {
     await RecordManager.deleteAll()
@@ -45,14 +43,7 @@ describe('/song-items', async () => {
       const allItemsCount = await SongItem.query().resultSize()
       expect(allItemsCount).to.be.greaterThan(0)
 
-      // DEBUG
-      const users = await User.query()
-      console.log('all users so far:')
-      console.log(users)
-
-      console.log('about to insert a user')
       const user = await RecordManager.insertUser()
-      console.log('done')
       const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent.get('/song-items')
       agent.close()
