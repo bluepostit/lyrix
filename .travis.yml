@@ -1,0 +1,26 @@
+language: node_js
+node_js:
+  - 12
+
+dist: bionic
+addons:
+  apt:
+    packages:
+    - redis-tools
+    - redis-server
+
+services:
+  - postgresql
+  - redis
+
+env: >
+  DB_HOST=localhost
+  DB_TEST_NAME=travis_ci_test
+  DB_TEST_USERNAME=postgres
+  DB_TEST_PASSWORD=''
+  SESSION_SECRET='please launch this green mannequin'
+  NODE_ENV=test
+
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+
