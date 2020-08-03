@@ -60,10 +60,10 @@ const setSongContext = async (req, res, next) => {
 
   switch (context) {
     case 'artist':
-      nextSong = await getNextSong(song, context)
+      nextSong = await getNextSong(req.song, context)
       break
     case 'songlist':
-      nextSong = await getNextSong(song, context, contextId)
+      nextSong = await getNextSong(req.song, context, contextId)
       break
   }
 
@@ -120,9 +120,8 @@ router.get('/count', async (req, res, next) => {
 router.get('/:id', validateId, setSong, setSongContext,
   async (req, res) => {
     res.json({
-      error: error,
       status: StatusCodes.OK,
-      data: song,
+      data: req.song,
       actions: req.userActions
     })
   })

@@ -161,7 +161,7 @@ describe('/songs', () => {
       const data = response.body.data
       expect(data).to.be.an('object')
       expect(data.id).to.eql(song1.id)
-      expect(data.nextSongId).to.eql(null)
+      expect(data).not.to.haveOwnProperty('nextSongId')
     })
   })
 
@@ -196,7 +196,7 @@ describe('/songs', () => {
       const data = response.body.data
       expect(data).to.be.an('object')
       expect(data.id).to.eql(songs[1].id)
-      expect(data.nextSongId).to.eql(null)
+      expect(data).not.to.haveOwnProperty('nextSongId')
     })
   })
 
@@ -227,7 +227,7 @@ describe('/songs', () => {
       const data = response.body.data
       expect(data).to.be.an('object')
       expect(data.id).to.eql(lastSong.id)
-      expect(data.nextSongId).to.eql(null)
+      expect(data).not.to.haveOwnProperty('nextSongId')
     })
   })
 
@@ -257,6 +257,68 @@ describe('/songs', () => {
         console.log(err)
       }
     })
+  })
+
+  describe('POST /songs', () => {
+    it('should return an error when not signed in', async () => {
+      const res = await chai.request(app).post('/songs')
+      expect(res.body).to.have.status(401)
+    })
+
+    it('should return an error when user is not an admin', async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post('/songs')
+        .send({})
+      expect(res.body).to.have.status(403)
+    })
+
+    it('should return an error when no title is given', async () => {
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post('/songs')
+        .send({})
+      expect(res.body).to.have.status(400)
+    })
+
+    it('should return an error when a song with the same title exists',
+      async () => {
+        await RecordManager.loadFixture('songs')
+        const song = await Song.query().first()
+        const user = await RecordManager.insertUser({ admin: true })
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent
+          .post('/songs')
+          .send({
+            title: song.title,
+            text: 'This is some text. It is different',
+            artist_id: song.artist_id
+          })
+        expect(res.body).to.have.status(400)
+        console.log(res.body)
+      })
+
+    it('should create a song with the given data', async () => {
+      await RecordManager.loadFixture('artists')
+      const artist = await Artist.query().first()
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post('/songs')
+        .send({
+          title: 'This is a song title',
+          text: 'This is some text. It is different',
+          artist_id: artist.id
+        })
+      expect(res.body).to.have.status(201)
+    })
+
   })
 
   describe('User Actions', () => {

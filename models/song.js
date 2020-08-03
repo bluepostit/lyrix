@@ -47,6 +47,26 @@ module.exports = class Song extends Model {
     }
   }
 
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['title', 'text', 'artist_id'],
+
+      properties: {
+        title: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 50
+        },
+        text: {
+          type: 'string',
+          minLength: 5,
+          maxLength: 3000
+        }
+      }
+    }
+  }
+
   static get modifiers() {
     return {
       onlyId(builder) {
