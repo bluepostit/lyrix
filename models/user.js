@@ -51,7 +51,7 @@ module.exports = class User extends Model {
         email: {
           type: 'string',
           minLength: 6,
-          maxLength: 24,
+          maxLength: 255,
           format: 'email'
         },
         password: {
