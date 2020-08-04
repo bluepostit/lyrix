@@ -7,7 +7,6 @@ const {
 const { errorHandler } = require('../helpers/errors')
 const { ensureLoggedIn } = require('../authentication')
 const Artist = require('../models/artist')
-const { json } = require('express')
 
 const validateQueryArtist = async (req, res, next) => {
   let error, statusCode
