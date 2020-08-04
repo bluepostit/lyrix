@@ -9,6 +9,7 @@ const SessionManager = require('../session-manager')
 chai.use(chaiHttp)
 
 const BASE_URL = '/api/lyrics'
+const REQUEST_TIMEOUT = 10000 // milliseconds
 
 describe(BASE_URL, function() {
   beforeEach(async () => {
@@ -18,7 +19,7 @@ describe(BASE_URL, function() {
     await RecordManager.deleteAll()
   })
 
-  this.timeout(5000)
+  this.timeout(REQUEST_TIMEOUT)
 
   describe('GET /', () => {
     it('should return an error if not signed in', async () => {

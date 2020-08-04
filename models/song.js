@@ -61,7 +61,7 @@ module.exports = class Song extends Model {
         text: {
           type: 'string',
           minLength: 5,
-          maxLength: 3000
+          maxLength: 20000
         }
       }
     }
