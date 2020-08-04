@@ -162,6 +162,25 @@ router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
       res.json(response)
     })
 
+router.put('/:id', ensureLoggedIn, ensureAdmin, validateId, validateSongData,
+  sanitize,
+    async (req, res, next) => {
+      try {
+        const song = await Song
+          .query()
+          .updateAndFetchById(req.params.id, req.sanitizedBody)
+        res.json({
+          status: StatusCodes.OK,
+          data: song
+        })
+      } catch (err) {
+        err.userMessage = "Couldn't update the song"
+        next(err)
+      }
+    })
+
+router.put('/', validateId)
+
 router.delete('/:id', ensureLoggedIn, ensureAdmin, validateId,
   async (req, res, next) => {
     try {

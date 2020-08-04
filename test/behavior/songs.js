@@ -339,6 +339,102 @@ describe('/songs', () => {
 
   })
 
+  describe('PUT /:id', () => {
+    it('should return an error when not signed in', async () => {
+      chai.request(app).put('/songs/1')
+        .send({ title: 'test' })
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(401)
+        })
+    })
+
+    it("should return an error when the user is not an admin",
+      async () => {
+        await RecordManager.loadFixture('songs')
+        const song = await Song.query().first()
+        const user = await RecordManager.insertUser()
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent.put(`/songs/${song.id}`)
+        agent.close()
+
+        const body = res.body
+        expect(body).to.have.status(403)
+      })
+
+    it('should return an error when no id is given', async () => {
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.put('/songs')
+
+      const body = res.body
+      expect(body).to.have.status(400)
+      expect(body.error).to.not.be.empty
+    })
+
+    it('should return an error when no song can be found with the given id',
+      async () => {
+        const user = await RecordManager.insertUser({ admin: true })
+        const agent = await SessionManager.loginAsUser(app, user)
+        const res = await agent
+          .put('/songs/1')
+          .send({})
+
+        const body = res.body
+        expect(body).to.have.status(404)
+      })
+
+    it('should return an error when text is too short', async () => {
+      const user = await RecordManager.insertUser({ admin: true })
+      await RecordManager.loadFixture('songs')
+      const song = await Song.query().first()
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const data = {
+        title: song.title,
+        text: 'a',
+        artist_id: song.artist_id
+      }
+
+      const res = await agent
+        .put(`/songs/${song.id}`)
+        .send(data)
+      const body = res.body
+      expect(body).to.have.status(400)
+      expect(body.error).to.not.be.empty
+      expect(body.message).to.match(/text.*short/i)
+    })
+
+    it('should update the song with the given data', async () => {
+      const user = await RecordManager.insertUser({ admin: true })
+      await RecordManager.loadFixture('songs')
+      const songs = await Song.query()
+      const song = songs[0]
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const data = {
+        title: song.title + ' v2',
+        text: song.text,
+        artist_id: song.artist_id
+      }
+
+      const res = await agent
+        .put(`/songs/${song.id}`)
+        .send(data)
+      const body = res.body
+
+      expect(body).to.have.status(200)
+      expect(body.data).to.be.an('object')
+      expect(body.data.title).to.eql(data.title)
+
+      const countAfter = await Song.query().resultSize()
+      expect(countAfter).to.eql(songs.length)
+    })
+  })
+
   describe('DELETE /songs/:id', () => {
     it('should return an error when not signed in', async () => {
       chai.request(app).delete('/songs/1')

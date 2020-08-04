@@ -48,6 +48,10 @@ const Song = (props) => {
   const history = useHistory()
   const location = useLocation()
 
+  const goToEdit = () => {
+    history.push(`/songs/${data.data.id}/edit`)
+  }
+
   const handleDeleteClick = () => {
     setDeleting(true)
   }
@@ -83,6 +87,7 @@ const Song = (props) => {
         title={data.data.title}
         actions={data.actions}
         nextLink={nextLink}
+        onEditClick={goToEdit}
         onDeleteClick={handleDeleteClick}
         peeker={peeker}
       />
