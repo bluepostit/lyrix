@@ -10,6 +10,7 @@ const {
   validateIdForEntity,
   validateDataForEntity
 } = require('./common')
+const { errorHandler } = require('../helpers/errors')
 const songsRouter = require('./artist-songs.js')
 
 const ARTIST_ATTRIBUTES = ['artists.id', 'artists.name']
@@ -18,15 +19,14 @@ const SONG_ATTRIBUTES = ['id', 'title', 'text']
 const checkForDuplicates = async (req, res, next) => {
   const body = req.body
   const duplicate = await Artist
-  .query()
-  .first()
-  .where({ name: body.name })
+    .query()
+    .first()
+    .where({ name: body.name })
 
   if (duplicate) {
-    return res.json({
-      status: StatusCodes.BAD_REQUEST,
-      error: 'Invalid input',
-      message: `A similar artist (${duplicate.name}) already exists`
+    return next({
+      type: 'UniqueViolationError',
+      userMessage: `A similar artist (${duplicate.name}) already exists`
     })
   }
   next()
@@ -69,21 +69,16 @@ router.get('/', async (req, res, next) => {
       .orderBy('name')
       .groupBy('artists.id')
     res.json({
-      error: false,
+      status: StatusCodes.OK,
       data: artists,
       actions: req.userActions
     })
   } catch (error) {
-    console.log(error.stack)
+    next(error)
   }
 })
 
-router.get('/:id', async (req, res, next) => {
-  res.type('json')
-  let status = 200
-  let error = null
-  let data = null
-
+router.get('/:id', validateId, async (req, res, next) => {
   try {
     const artist = await Artist
       .query()
@@ -91,44 +86,34 @@ router.get('/:id', async (req, res, next) => {
       .withGraphFetched('songs')
 
     if (artist == null) {
-      error = 'Artist not found'
-      status = 404
-    } else {
-      data = artist
+      return next({
+        type: StatusCodes.NOT_FOUND
+      })
     }
+    res.json({
+      status: StatusCodes.OK,
+      actions: req.userActions,
+      data: artist
+    })
   } catch (err) {
-    console.log(err.stack)
-    error = "Something went wrong"
-    status = 500
+    return next(err)
   }
-
-  res.json({
-    error,
-    status,
-    data,
-    actions: req.userActions
-  })
 })
 
 router.post('/', ensureLoggedIn, ensureAdmin, validateArtistData,
   checkForDuplicates, sanitize,
     async (req, res, next) => {
-      const response = {
-        status: StatusCodes.CREATED
-      }
-
       try {
-        const body = req.body
         const artist = await Artist.query()
           .insert(req.sanitizedBody)
-        response.data = artist
+        res.json({
+          status: StatusCodes.CREATED,
+          data: artist
+        })
       } catch (error) {
-        console.log(error)
-        console.log(error.stack)
-        response.status = StatusCodes.INTERNAL_SERVER_ERROR
-        response.error = "Couldn't create the artist"
+        error.userMessage = "Couldn't create the artist"
+        return next(error)
       }
-      res.json(response)
     })
 
 router.delete('/:id', ensureLoggedIn, ensureAdmin, validateId,
@@ -137,30 +122,32 @@ router.delete('/:id', ensureLoggedIn, ensureAdmin, validateId,
       .$relatedQuery('songs')
       .resultSize()
     if (songsCount > 0) {
-      return res.json({
-        status: StatusCodes.BAD_REQUEST,
-        error: "Can't delete this artist",
-        message: "There are songs associated with this artist"
+      return next({
+        type: 'ForeignKeyViolationError',
+        userMessage: "Can't delete this artist: still has songs"
       })
     }
     // Try to delete the artist
-    const response = {
-      status: StatusCodes.NO_CONTENT
-    }
     try {
       await Artist
         .query()
         .deleteById(req.params.id)
+      res.json({
+        status: StatusCodes.NO_CONTENT
+      })
     } catch (error) {
-      response.status = StatusCodes.INTERNAL_SERVER_ERROR
-      response.error = "Couldn't delete the artist"
+      return next({
+        error: error,
+        type: 'ForeignKeyViolationError',
+        userMessage: "Couldn't delete the artist"
+      })
     }
-    res.json(response)
   })
 
 router.delete('/', validateId)
 
 router.use('/:id/songs', songsRouter)
 
+router.use(errorHandler('artist'))
 
 module.exports = router

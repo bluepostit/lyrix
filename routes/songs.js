@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const { UniqueViolationError } = require('objection')
 
 const { Song } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
@@ -98,7 +97,7 @@ const checkForDuplicates = async (req, res, next) => {
 
   if (duplicate) {
     return next({
-      type: UniqueViolationError,
+      type: 'UniqueViolationError',
       userMessage: 'A similar song by that artist already exists'
     })
   }

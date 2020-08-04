@@ -8,11 +8,11 @@ const {
 const { StatusCodes } = require('../routes/common')
 
 const getStatus = (err) => {
-  // console.log(err)
   if (err.statusCode) {
     return err.statusCode
   }
-  if (err instanceof ForeignKeyViolationError) {
+  if (err instanceof ForeignKeyViolationError
+    || err.type === 'ForeignKeyViolationError') {
     return StatusCodes.BAD_REQUEST
   }
   if (err instanceof ConstraintViolationError
@@ -20,9 +20,10 @@ const getStatus = (err) => {
       return StatusCodes.BAD_REQUEST
   }
   if (err instanceof UniqueViolationError
-    || err.type === UniqueViolationError) {
+    || err.type === 'UniqueViolationError') {
       return StatusCodes.BAD_REQUEST
   }
+  return StatusCodes.INTERNAL_SERVER_ERROR
 }
 
 const errorHandler = (entityName) => {
