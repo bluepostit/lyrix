@@ -41,6 +41,7 @@ app.use(express.static(path.join(__dirname, 'client/build')))
 
 // Serve routes with server routers
 app.use('/api/artists', require('./routes/artists'))
+app.use('/api/lyrics', require('./routes/lyrics'))
 app.use('/api/songs', require('./routes/songs'))
 app.use('/api/songlists', require('./routes/song-lists'))
 app.use('/api/song-items', require('./routes/song-items'))

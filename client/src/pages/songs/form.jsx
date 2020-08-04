@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
+import { LoadingModal } from '../../components/modals'
 
 const fetchArtists = async () => {
   return fetch('/api/artists')
@@ -31,20 +32,53 @@ const SongForm = ({
   const [artists, setArtists] = useState([])
   const [validated, setValidated] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const getArtist = (id) => {
     return artists.find(item => item.id === id)
   }
 
-  const handleChange = (event) => {
+  const updateSong = (changes) => {
     const songCopy = { ...song }
-    const target = event.target
-    if (target.name === 'artist_id') {
-      songCopy.artist = getArtist(parseInt(target.value))
-    } else {
-      songCopy[target.name] = target.value
+    for (const key in changes) {
+      if (changes.hasOwnProperty(key)) {
+        const value = changes[key]
+        songCopy[key] = value
+      }
     }
     setSong(songCopy)
+  }
+
+  const handleChange = (event) => {
+    let key = event.target.name
+    let value = event.target.value
+    if (key === 'artist_id') {
+      key = 'artist'
+      value = getArtist(parseInt(event.target.value))
+    }
+    updateSong({ [key]: value })
+  }
+
+  const searchLyrics = async () => {
+    setIsLoading(true)
+    const query = new URLSearchParams({
+      artist_id: song.artist.id,
+      title: song.title
+    })
+    const url = `/api/lyrics?${query.toString()}`
+    fetch(url)
+      .then(res => res.json())
+      .then((json) => {
+        if (json.error) {
+          setErrorMessage(json.message)
+        } else {
+          updateSong({
+            title: json.data.title,
+            text: json.data.lyrics
+          })
+        }
+        setIsLoading(false)
+      })
   }
 
   const handleSubmit = async (event) => {
@@ -70,8 +104,12 @@ const SongForm = ({
   }
 
   useEffect(() => {
+    setIsLoading(true)
     fetchArtists()
-      .then(artists => setArtists(artists))
+      .then((artists) => {
+        setArtists(artists)
+        setIsLoading(false)
+      })
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
@@ -115,7 +153,10 @@ const SongForm = ({
         </Form.Group>
 
         <Form.Group controlId="songText">
-          <Form.Label>Lyrics</Form.Label>
+          <div>
+            <Form.Label>Lyrics</Form.Label>
+            <Button variant="secondary" size="sm" className="ml-2" onClick={searchLyrics}>Search!</Button>
+          </div>
           <Form.Control
             as="textarea"
             rows="5"
@@ -132,6 +173,10 @@ const SongForm = ({
           </Button>
         </div>
       </Form>
+      <LoadingModal
+        loading={isLoading}
+        content="Content is loading; please wait"
+      />
     </div>
   )
 }
