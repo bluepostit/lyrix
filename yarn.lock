@@ -833,6 +833,13 @@
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.11.tgz#d3614d6c5f500142358e6ed24e1bf16657536c50"
   integrity sha512-t7uW6eFafjO+qJ3BIV2gGUyZs27egcNRkUdalkud+Qa3+kg//f129iuOFivHDXQ+vnU3fDXuwgv0cqMCbcE8sw==
 
+"@types/cheerio@^0.22.18":
+  version "0.22.21"
+  resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.21.tgz#5e37887de309ba11b2e19a6e14cad7874b31a8a3"
+  integrity sha512-aGI3DfswwqgKPiEOTaiHV2ZPC9KEhprpgEbJnv0fZl3SGX0cGgEva1126dGrMC6AJM6v/aihlUgJn9M5DbDZ/Q==
+  dependencies:
+    "@types/node" "*"
+
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
@@ -2385,6 +2392,15 @@ gaze@^1.0.0:
   integrity sha512-BRdNm8hbWzFzWHERTrejLqwHDfS4GibPoq5wjTPIoJHoBtKGPg3xAFfxmM+9ztbXelxcf2hwQcaz1PtmFeue8g==
   dependencies:
     globule "^1.0.0"
+
+genius-lyrics@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/genius-lyrics/-/genius-lyrics-3.0.0.tgz#69384608a16852683c83e3cbbc2cd7b1d7270b14"
+  integrity sha512-B2Um1u6G0rjf5R09ht31zguG7AFn7eFWBoMVxzITz533gnxtWVdIxrvRLFRQJ0em2Oonj7hTeRog0yanzUpqfQ==
+  dependencies:
+    "@types/cheerio" "^0.22.18"
+    axios "^0.19.2"
+    cheerio "^1.0.0-rc.3"
 
 gensync@^1.0.0-beta.1:
   version "1.0.0-beta.1"

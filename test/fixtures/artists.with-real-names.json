@@ -1,0 +1,23 @@
+[
+  {
+    "table": "artists",
+    "data": {
+      "id": 1,
+      "name": "Coldplay"
+    }
+  },
+  {
+    "table": "artists",
+    "data": {
+      "id": 2,
+      "name": "Madonna"
+    }
+  },
+  {
+    "table": "artists",
+    "data": {
+      "id": 3,
+      "name": "Van Morrison"
+    }
+  }
+]
