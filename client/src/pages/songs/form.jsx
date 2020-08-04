@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
 
 const fetchArtists = async () => {
-  return fetch('/artists')
+  return fetch('/api/artists')
     .then(response => response.json())
     .then((json) => {
       if (json.error) {

@@ -5,7 +5,7 @@ import { SongItemForm } from './form'
 import { SongItemPageTitle } from '../../components/headers'
 
 const fetchSongItem = async (id) => {
-  let url = `/song-items/${id}`
+  let url = `/api/song-items/${id}`
   return fetch(url)
     .then(response => response.json())
     .then((json) => {
@@ -48,7 +48,7 @@ const EditSongItem = () => {
       song={songItem.song}
       songItem={songItem}
       setSongItem={setSongItem}
-      action={`/song-items/${songItem.id}`}
+      action={`/api/song-items/${songItem.id}`}
       method='PUT'
       onSuccess={onUpdateSuccess} />
 

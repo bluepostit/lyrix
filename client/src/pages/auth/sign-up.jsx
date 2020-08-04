@@ -51,7 +51,7 @@ const SignUp = () => {
       <div className="container text-page">
         <div className="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 pt-2">
           <h1>Sign Up</h1>
-          <form action="/user/sign-up" method="post" onSubmit={onSubmit}>
+          <form action="/api/user/sign-up" method="post" onSubmit={onSubmit}>
             <FormError error={error} />
             <div className="form-group">
               <label htmlFor="email">User name</label>

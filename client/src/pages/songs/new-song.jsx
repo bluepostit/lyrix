@@ -35,7 +35,7 @@ const NewSong = () => {
     <SongForm
       song={song}
       setSong={setSong}
-      action={'/songs'}
+      action={'/api/songs'}
       method='POST'
       onSuccess={onCreateSuccess} />
 

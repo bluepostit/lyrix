@@ -21,10 +21,10 @@ const ArtistModal = ({
   const [error, setError] = useState('')
   const [isLoading, setLoading] = useState(false)
 
-  let action = '/artists'
+  let action = '/api/artists'
   let method = 'POST'
   if (role === 'update') {
-    action = `/artists/${artist.id}`
+    action = `/api/artists/${artist.id}`
     method = 'UPDATE'
   }
 

@@ -40,7 +40,7 @@ const Songlists = () => {
   return (
     <>
       <ListDataset
-        url="/songlists"
+        url="/api/songlists"
         loading={loading}
         setLoading={setLoading}
         onLoadingComplete={onLoadingComplete}

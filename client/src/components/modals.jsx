@@ -103,7 +103,7 @@ const Deleter = ({
 
   const handleDelete = () => {
     setLoading(true)
-    fetch(`/${noun}s/${entity.id}`, {
+    fetch(`/api/${noun}s/${entity.id}`, {
       method: 'DELETE'
     })
       .then(res => res.json())

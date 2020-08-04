@@ -38,7 +38,7 @@ const SonglistForm = (props) => {
   return (
     <div className="container">
       <div className="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-        <form action="/songlists" method="post" onSubmit={onSubmit}>
+        <form action="/api/songlists" method="post" onSubmit={onSubmit}>
           <FormError error={error} />
           <div className="form-group">
             <label htmlFor="title">Title</label>

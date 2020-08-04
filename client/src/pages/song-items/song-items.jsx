@@ -26,7 +26,7 @@ const SongItems = ({
   return (
     <>
       <ListDataset
-        url="/song-items"
+        url="/api/song-items"
         loading={loading}
         setLoading={setLoading}
         onLoadingComplete={onLoadingComplete}
