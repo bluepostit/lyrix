@@ -20,7 +20,7 @@ const getSongItem = (songItemId) => {
 const PageContent = ({ songItem }) => {
   return (
     <div>
-      <div className="song-text">
+      <div className="song-item-text-display">
         <div className="song-item-text-box">
           {songItem.text}
         </div>

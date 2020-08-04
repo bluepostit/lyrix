@@ -8,7 +8,7 @@
   background-color: $fg-prominent;
   margin-top: 1.3em;
   color: $fg-colorful;
-  font-family: 'Sanchez', serif;
+  font-family: $font-title;
   font-style: italic;
   text-shadow: 1px 0 1px $darker-gray;
   font-size: 2rem;
@@ -38,7 +38,7 @@
 }
 
 .menu-button {
-  font-family: 'Sanchez', serif;
+  font-family: $font-title;
 }
 
 .menu-button-arrange {
