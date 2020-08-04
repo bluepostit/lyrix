@@ -1,59 +1,23 @@
 const express = require('express')
 const router = express.Router()
-const { StatusCodes, validateIdForEntity } = require('./common')
+const {
+  StatusCodes,
+  checkForDuplicatesForEntity,
+  ensureOwnershipForEntity,
+  validateIdForEntity,
+  validateDataForEntity
+} = require('./common')
+const { errorHandler } = require('../helpers/errors')
 const { SongItem } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 
-const checkForDuplicates = async (req, res, next) => {
-  const body = req.body
-  const duplicate = await SongItem
-    .query()
-    .first()
-    .where({
-      title: body.title,
-      song_id: body.song_id,
-      user_id: req.user.id
-    })
-
-    if (duplicate) {
-    return res.json({
-      status: StatusCodes.BAD_REQUEST,
-      error: 'Invalid input',
-      message: 'A similar song item already exists'
-    })
-  }
-  next()
-}
-
-const validateSongItemData = async (req, res, next) => {
-  const body = req.body
-  body.userId = req.user.id
-  try {
-    // Trigger model class's validation rules
-    await SongItem.fromJson(body)
-    await next()
-  } catch (e) {
-    return res.json({
-      status: StatusCodes.BAD_REQUEST,
-      error: 'Invalid input',
-      message: e.message
-    })
-  }
-}
-
+const checkForDuplicates = checkForDuplicatesForEntity({
+  entityClass: SongItem,
+  fields: ['title', 'song_id']
+})
+const validateSongItemData = validateDataForEntity(SongItem)
 const validateId = validateIdForEntity(SongItem)
-
-const ensureOwnership = async (req, res, next) => {
-  const songItem = req.entity
-  if (songItem.user_id !== req.user.id) {
-    return res.json({
-      status: StatusCodes.FORBIDDEN,
-      error: 'Not your song item',
-      message: 'The song item you are trying to update does not belong to you'
-    })
-  }
-  next()
-}
+const ensureOwnership = ensureOwnershipForEntity('song item')
 
 const sanitize = async (req, res, next) => {
   const body = req.body
@@ -98,7 +62,6 @@ router.get('/', ensureLoggedIn, addUserActions,
       .orderBy(['song.title', 'title'])
 
       res.json({
-        error: false,
         data: songItems,
         actions: req.userActions
     })
@@ -107,67 +70,56 @@ router.get('/', ensureLoggedIn, addUserActions,
 router.get('/:id', ensureLoggedIn, validateId, ensureOwnership,
   addUserActions,
     async(req, res) => {
-      res.type('json')
-      let response = {
-        status: StatusCodes.OK,
-        actions: req.userActions
-      }
-
       try {
         const songItem = await SongItem
           .query()
           .findById(req.params.id)
           .withGraphFetched('[song.artist, songItemType]')
 
-        response.data = songItem
+        res.json({
+          status: StatusCodes.OK,
+          data: songItem,
+          actions: req.userActions
+        })
       } catch (err) {
-        console.log(err.stack)
-        error = "Something went wrong"
-        response.status = StatusCodes.INTERNAL_SERVER_ERROR
+        return next(err)
       }
-
-      res.json(response)
 })
 
 router.post('/', ensureLoggedIn, parseIds,
   validateSongItemData, checkForDuplicates, sanitize,
     async (req, res, next) => {
-      const response = {
-        status: StatusCodes.CREATED
-      }
-
       try {
-        const body = req.body
         const songItem = await req.user
           .$relatedQuery('songItems')
           .insertGraph(req.sanitizedBody)
-          response.id = songItem.id
+
+        res.json({
+          status: StatusCodes.CREATED,
+          id: songItem.id
+        })
       } catch (error) {
-        console.log(error)
-        console.log(error.stack)
-        response.status = StatusCodes.INTERNAL_SERVER_ERROR
-        response.error = "Couldn't create the song item"
+        error.userMessage = "Couldn't create the song item"
+        return next(error)
       }
-      res.json(response)
   })
 
 router.put('/:id', ensureLoggedIn, parseIds, validateId, ensureOwnership,
   validateSongItemData, sanitize,
     async (req, res, next) => {
-      const response = {
-        status: StatusCodes.OK
-      }
       try {
         const songItem = await SongItem
           .query()
           .updateAndFetchById(req.params.id, req.sanitizedBody)
           .withGraphFetched('[song.artist, songItemType]')
-        response.data = songItem
+        res.json({
+          status: StatusCodes.OK,
+          data: songItem
+        })
       } catch (error) {
-        response.status = StatusCodes.INTERNAL_SERVER_ERROR
-        response.error = "Couldn't update the song item"
+        error.userMessage = "Couldn't update the song item"
+        return next(error)
       }
-      res.json(response)
     })
 
 // Trigger validation for the absent ID - will respond with error
@@ -175,21 +127,22 @@ router.put('/', validateId)
 
 router.delete('/:id', ensureLoggedIn, validateId, ensureOwnership,
   async (req, res, next) => {
-    const response = {
-      status: StatusCodes.NO_CONTENT
-    }
     try {
       await SongItem
         .query()
         .deleteById(req.params.id)
+      res.json({
+        status: StatusCodes.NO_CONTENT
+      })
     } catch (error) {
-      response.status = StatusCodes.INTERNAL_SERVER_ERROR
-      response.error = "Couldn't delete the song item"
+      error.userMessage = "Couldn't delete the song item"
+      return next(error)
     }
-    res.json(response)
 })
 
 // Trigger validation for the absent ID - will respond with error
 router.delete('/', validateId)
+
+router.use(errorHandler('song'))
 
 module.exports = router

@@ -47,4 +47,20 @@ module.exports = class SongList extends Model {
       }
     }
   }
+
+  static get jsonSchema() {
+    return {
+      $schema: 'http://json-schema.org/schema#',
+      type: 'object',
+      required: ['title'],
+
+      properties: {
+        name: {
+          type: 'title',
+          minLength: 1,
+          maxLength: 30
+        }
+      }
+    }
+  }
 }

@@ -4,12 +4,14 @@ const router = express.Router()
 const { Song } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 const { SongsHelper } = require('../helpers/songs')
+const { errorHandler } = require('../helpers/errors')
 const {
   StatusCodes,
   checkIsAdmin,
   ensureAdmin,
   validateIdForEntity,
-  validateDataForEntity
+  validateDataForEntity,
+  checkForDuplicatesForEntity
 } = require('./common')
 
 const SONG_ATTRIBUTES = [
@@ -84,25 +86,12 @@ const getNextSong = async (song, context, contextId) => {
   return nextSong
 }
 
-const checkForDuplicates = async (req, res, next) => {
-  const body = req.body
-  const duplicate = await Song
-    .query()
-    .first()
-    .where({
-      title: body.title,
-      artist_id: body.artist_id
-    })
-
-  if (duplicate) {
-    return res.json({
-      status: StatusCodes.BAD_REQUEST,
-      error: 'Invalid input',
-      message: `A similar song by that artist already exists`
-    })
-  }
-  next()
-}
+const checkForDuplicates = checkForDuplicatesForEntity({
+  entityClass: Song,
+  fields: ['title', 'artist_id'],
+  forUser: false,
+  message: 'A similar song by that artist already exists'
+})
 
 const sanitize = async (req, res, next) => {
   const body = req.body
@@ -158,7 +147,7 @@ router.get('/:id', validateId, setSong, setSongContext,
 
 router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
   checkForDuplicates, sanitize,
-    async (req, res) => {
+    async (req, res, next) => {
       const response = {
         status: StatusCodes.CREATED
       }
@@ -168,12 +157,11 @@ router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
           .insert(req.sanitizedBody)
         response.data = song
       } catch (error) {
-        console.log(error)
-        console.log(error.stack)
-        response.status = StatusCodes.INTERNAL_SERVER_ERROR
-        response.error = "Couldn't create the song"
+        return next(error)
       }
       res.json(response)
     })
+
+router.use(errorHandler('song'))
 
 module.exports = router

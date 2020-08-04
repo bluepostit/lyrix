@@ -15,10 +15,9 @@ const ensureAdmin = async (req, res, next) => {
   if (req.user.admin) {
     next()
   } else {
-    res.json({
-      status: StatusCodes.FORBIDDEN,
-      error: 'Unauthorized',
-      message: 'You are not authorized to do this action'
+    next({
+      statusCode: StatusCodes.FORBIDDEN,
+      userMessage: 'You are not authorized to do this action'
     })
   }
 }
@@ -44,10 +43,9 @@ const validateIdForEntity = (entityClass = null) => {
   return async (req, res, next) => {
     const id = req.params.id
     if (!id) {
-      return res.json({
-        status: StatusCodes.BAD_REQUEST,
-        error: 'Invalid input',
-        message: 'You must provide a valid id'
+      return next({
+        statusCode: StatusCodes.BAD_REQUEST,
+        userMessage: 'You must provide a valid id'
       })
     }
     if (entityClass) {
@@ -55,10 +53,9 @@ const validateIdForEntity = (entityClass = null) => {
         .query()
         .findById(id)
       if (!entity) {
-        return res.json({
-          status: StatusCodes.NOT_FOUND,
-          error: 'Not found',
-          message: 'No entity found with that id'
+        return next({
+          statusCode: StatusCodes.NOT_FOUND,
+          userMessage: 'No entity found with that id'
         })
       }
       req.entity = entity
@@ -74,20 +71,64 @@ const validateDataForEntity = (entityClass) => {
       await entityClass.fromJson(req.body)
       await next()
     } catch (e) {
-      return res.json({
-        status: StatusCodes.BAD_REQUEST,
-        error: 'Invalid input',
-        message: e.message
-      })
+      return next(e)
     }
   }
 }
 
+const ensureOwnershipForEntity = (entityName, userField = 'user_id') => {
+  return async (req, res, next) => {
+    const entity = req.entity
+    const entityUserId = entity[userField]
+    if (!entityUserId || (req.user.id != entityUserId)) {
+      return next({
+        statusCode: StatusCodes.FORBIDDEN,
+        userMessage: `This ${entityName} does not belong to you`
+      })
+    }
+    next()
+  }
+}
+
+const checkForDuplicatesForEntity = ({
+  entityClass,
+  fields,
+  forUser = true,
+  userField = 'user_id',
+  message = 'A similar entity already exists'
+}) => {
+  return async (req, res, next) => {
+    const entity = req.entity
+    const body = req.body
+
+    const where = {}
+    fields.forEach(field => where[field] = body[field])
+    const query = entityClass
+      .query()
+      .first()
+      .where(where)
+
+    if (forUser && userField) {
+      query.where({ [userField]: req.user.id })
+    }
+    // console.log(query.toKnexQuery().toSQL().toNative())
+    const duplicate = await query
+    if (duplicate) {
+      return next({
+        type: 'UniqueViolationError',
+        userMessage: message
+      })
+    }
+    next()
+  }
+}
 
 module.exports = {
   StatusCodes,
   ensureAdmin,
   checkIsAdmin,
+  ensureOwnershipForEntity,
+  checkForDuplicatesForEntity,
   validateIdForEntity,
   validateDataForEntity
 }
