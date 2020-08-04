@@ -7,7 +7,9 @@ const { Song, SongItem, SongItemType } = require('../../models')
 const RecordManager = require('../record-manager')
 const SessionManager = require('../session-manager')
 
-describe('/song-items', async () => {
+const BASE_URL = '/api/song-items'
+
+describe(BASE_URL, async () => {
   const cleanUp = async () => {
     await RecordManager.deleteAll()
   }
@@ -18,7 +20,7 @@ describe('/song-items', async () => {
   describe('GET /', () => {
 
     it('should return an error when not logged in', async () => {
-      const res = await chai.request(app).get('/song-items')
+      const res = await chai.request(app).get(BASE_URL)
 
       expect(res).to.have.status(200)
       expect(res.body).to.have.status(401)
@@ -28,7 +30,7 @@ describe('/song-items', async () => {
     it('should return empty when the user has no song items', async () => {
       const user = await RecordManager.insertUser()
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.get('/song-items')
+      const res = await agent.get(BASE_URL)
       agent.close()
 
       expect(res).to.have.status(200)
@@ -45,7 +47,7 @@ describe('/song-items', async () => {
 
       const user = await RecordManager.insertUser()
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.get('/song-items')
+      const res = await agent.get(BASE_URL)
       agent.close()
 
       expect(res).to.have.status(200)
@@ -62,7 +64,7 @@ describe('/song-items', async () => {
         .orderBy(['song.title', 'title'])
 
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.get('/song-items')
+      const res = await agent.get(BASE_URL)
       agent.close()
 
       expect(res).to.have.status(200)
@@ -78,7 +80,7 @@ describe('/song-items', async () => {
 
   describe('GET /:id', () => {
     it('should return an error when not logged in', async () => {
-      const res = await chai.request(app).get('/song-items/2')
+      const res = await chai.request(app).get(`${BASE_URL}/2`)
 
       expect(res).to.have.status(200)
       expect(res.body).to.have.status(401)
@@ -91,7 +93,7 @@ describe('/song-items', async () => {
 
       const user = await RecordManager.insertUser()
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.get(`/song-items/${item.id}`)
+      const res = await agent.get(`${BASE_URL}/${item.id}`)
       agent.close()
 
       expect(res).to.have.status(200)
@@ -104,7 +106,7 @@ describe('/song-items', async () => {
     it('should return an error when no matching song item can be found', async () => {
       const user = await RecordManager.insertUser()
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.get('/song-items/23')
+      const res = await agent.get(`${BASE_URL}/23`)
       expect(res.body).to.have.status(404)
       expect(res.body).to.be.an('object')
       expect(res.body).to.haveOwnProperty('error')
@@ -117,7 +119,7 @@ describe('/song-items', async () => {
         .query().first().withGraphFetched('song')
 
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.get(`/song-items/${item.id}`)
+      const res = await agent.get(`${BASE_URL}/${item.id}`)
       agent.close()
 
       expect(res.body).to.have.status(200)
@@ -131,7 +133,7 @@ describe('/song-items', async () => {
 
   describe('POST /', () => {
     it('should return an error when not signed in', async () => {
-      chai.request(app).post('/song-items')
+      chai.request(app).post(BASE_URL)
         .send({ title: 'test' })
         .end((err, res) => {
           if (err) {
@@ -156,7 +158,7 @@ describe('/song-items', async () => {
         }
 
         const res = await agent
-          .post('/song-items')
+          .post(BASE_URL)
           .send(data)
         expect(res.body).to.have.status(400)
         expect(res.body.error).to.not.be.empty
@@ -176,7 +178,7 @@ describe('/song-items', async () => {
           song_item_type_id: item.song_item_type_id
         }
         const res = await agent
-          .post('/song-items')
+          .post(BASE_URL)
           .send(data)
         expect(res.body).to.have.status(400)
       })
@@ -195,7 +197,7 @@ describe('/song-items', async () => {
         song_item_type_id: songItemType.id
       }
 
-      const res = await agent.post('/song-items').send(data)
+      const res = await agent.post(BASE_URL).send(data)
 
       const body = res.body
       expect(body).to.have.status(201) // Created
@@ -206,7 +208,7 @@ describe('/song-items', async () => {
 
   describe('PUT /:id', () => {
     it('should return an error when not signed in', async () => {
-      chai.request(app).put('/song-items/1')
+      chai.request(app).put(`${BASE_URL}/1`)
         .send({ title: 'test' })
         .end((err, res) => {
           if (err) {
@@ -219,7 +221,7 @@ describe('/song-items', async () => {
     it('should return an error when no id is given', async () => {
       const user = await RecordManager.insertUser()
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.put('/song-items')
+      const res = await agent.put(BASE_URL)
 
       const body = res.body
       expect(body).to.have.status(400)
@@ -231,7 +233,7 @@ describe('/song-items', async () => {
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
         const res = await agent
-          .put('/song-items/1')
+          .put(`${BASE_URL}/1`)
           .send({})
 
         const body = res.body
@@ -246,7 +248,7 @@ describe('/song-items', async () => {
         const agent = await SessionManager.loginAsUser(app, user)
         const item = await SongItem.query().first()
 
-        const res = await agent.put(`/song-items/${item.id}`)
+        const res = await agent.put(`${BASE_URL}/${item.id}`)
         agent.close()
 
         const body = res.body
@@ -269,7 +271,7 @@ describe('/song-items', async () => {
       }
 
       const res = await agent
-        .put(`/song-items/${songItem.id}`)
+        .put(`${BASE_URL}/${songItem.id}`)
         .send(data)
       const body = res.body
       expect(body).to.have.status(400)
@@ -294,7 +296,7 @@ describe('/song-items', async () => {
       }
 
       const res = await agent
-        .put(`/song-items/${songItem.id}`)
+        .put(`${BASE_URL}/${songItem.id}`)
         .send(data)
       const body = res.body
 
@@ -309,7 +311,7 @@ describe('/song-items', async () => {
 
   describe('DELETE /song-items/:id', () => {
     it('should return an error when not signed in', async () => {
-      chai.request(app).delete('/song-items/1')
+      chai.request(app).delete(`${BASE_URL}/1`)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -321,7 +323,7 @@ describe('/song-items', async () => {
     it('should return an error when no id is given', async () => {
       const user = await RecordManager.insertUser()
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.delete('/song-items')
+      const res = await agent.delete(BASE_URL)
 
       const body = res.body
       expect(body).to.have.status(400)
@@ -333,7 +335,7 @@ describe('/song-items', async () => {
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
         const res = await agent
-          .delete('/song-items/1')
+          .delete(`${BASE_URL}/1`)
 
         const body = res.body
         expect(body).to.have.status(404)
@@ -347,7 +349,7 @@ describe('/song-items', async () => {
         const agent = await SessionManager.loginAsUser(app, user)
         const item = await SongItem.query().first()
 
-        const res = await agent.delete(`/song-items/${item.id}`)
+        const res = await agent.delete(`${BASE_URL}/${item.id}`)
         agent.close()
 
         const body = res.body
@@ -363,7 +365,7 @@ describe('/song-items', async () => {
 
       const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent
-        .delete(`/song-items/${songItem.id}`)
+        .delete(`${BASE_URL}/${songItem.id}`)
       const body = res.body
 
       expect(body).to.have.status(204) // no content
@@ -382,7 +384,7 @@ describe('/song-items', async () => {
         const songItem = await SongItem.query().first()
         const agent = await SessionManager.loginAsUser(app, user)
 
-        const res = await agent.get(`/song-items/${songItem.id}`)
+        const res = await agent.get(`${BASE_URL}/${songItem.id}`)
         const body = res.body
         expect(body.actions).to.be.an('object')
         expect(body.actions).to.have.property('edit')

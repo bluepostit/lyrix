@@ -2,6 +2,8 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 chai.use(chaiHttp)
 
+const LOGIN_URL = '/api/user/login'
+
 module.exports = class SessionManager {
   /**
   * Logs in with the given user.
@@ -16,7 +18,7 @@ module.exports = class SessionManager {
     const agent = chai.request.agent(app)
     const password = user.unencryptedPassword || user.password
     await agent
-      .post('/user/login')
+      .post(LOGIN_URL)
       .send({
         username: user.email,
         password: password

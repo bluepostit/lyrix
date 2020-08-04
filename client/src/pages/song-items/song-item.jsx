@@ -6,7 +6,7 @@ import { SongItemPageTitle } from '../../components/headers'
 import { Deleter } from '../../components/modals'
 
 const getSongItem = (songItemId) => {
-  let url = `/song-items/${songItemId}`
+  let url = `/api/song-items/${songItemId}`
   return fetch(url)
     .then(response => response.json())
     .then((json) => {

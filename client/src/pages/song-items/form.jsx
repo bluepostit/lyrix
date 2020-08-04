@@ -60,7 +60,7 @@ const SongItemForm = ({
   }
 
   const fetchSongItemTypes = async () => {
-    return fetch('/song-item-types')
+    return fetch('/api/song-item-types')
       .then(response => response.json())
       .then((json) => {
         if (json.error) {

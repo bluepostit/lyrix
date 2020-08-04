@@ -8,7 +8,10 @@ const SessionManager = require('../session-manager')
 
 chai.use(chaiHttp)
 
-describe('/artists', () => {
+const BASE_URL = '/api/artists'
+
+describe(BASE_URL, () => {
+
   beforeEach(async () => {
     await RecordManager.deleteAll()
   })
@@ -16,14 +19,14 @@ describe('/artists', () => {
     await RecordManager.deleteAll()
   })
 
-  describe('GET /artists', () => {
+  describe('GET /', () => {
     it('should return a list of all artists in the database ordered by name', async () => {
       await RecordManager.loadFixture('artists')
       const artists = await Artist.query().orderBy('name')
 
       try {
         const res = await chai.request(app)
-          .get('/artists')
+          .get(BASE_URL)
         expect(res).to.have.status(200)
         expect(res.body).to.be.an('object')
 
@@ -45,7 +48,7 @@ describe('/artists', () => {
         .for(1)
 
       chai.request(app)
-        .get('/artists')
+        .get(BASE_URL)
         .end((err, res) => {
           if (err) {
             console.log(err.stack)
@@ -64,7 +67,7 @@ describe('/artists', () => {
 
     it('should return empty when there are no artists', () => {
       chai.request(app)
-        .get('/artists')
+        .get(BASE_URL)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -76,10 +79,10 @@ describe('/artists', () => {
     })
   })
 
-  describe('GET /artists/:id', () => {
+  describe(`GET /:id`, () => {
     it('should return an error when no matching artist can be found', () => {
       chai.request(app)
-        .get('/artists/23')
+        .get(`${BASE_URL}/23`)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -93,7 +96,7 @@ describe('/artists', () => {
     it('should return the artist with the given id when found', async () => {
       const artist = await Artist.query().insert({ name: 'Brian' })
       chai.request(app)
-        .get(`/artists/${artist.id}`)
+        .get(`${BASE_URL}/${artist.id}`)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -110,7 +113,7 @@ describe('/artists', () => {
         .for(1)
 
       chai.request(app)
-        .get('/artists/1')
+        .get(`${BASE_URL}/1`)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -128,9 +131,9 @@ describe('/artists', () => {
     })
   })
 
-  describe('POST /artists', () => {
+  describe('POST /', () => {
     it('should return an error when not signed in', async() => {
-      const res = await chai.request(app).post('/artists')
+      const res = await chai.request(app).post(BASE_URL)
       expect(res.body).to.have.status(401)
     })
 
@@ -139,7 +142,7 @@ describe('/artists', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .post('/artists')
+        .post(BASE_URL)
         .send({})
       expect(res.body).to.have.status(403)
     })
@@ -149,7 +152,7 @@ describe('/artists', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .post('/artists')
+        .post(BASE_URL)
         .send({})
       expect(res.body).to.have.status(400)
     })
@@ -162,7 +165,7 @@ describe('/artists', () => {
         const agent = await SessionManager.loginAsUser(app, user)
 
         const res = await agent
-          .post('/artists')
+          .post(BASE_URL)
           .send({ name: artist.name })
         expect(res.body).to.have.status(400)
       })
@@ -172,15 +175,15 @@ describe('/artists', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .post('/artists')
+        .post(BASE_URL)
         .send({ name: 'Bobby Guitar' })
       expect(res.body).to.have.status(201)
     })
   })
 
-  describe('DELETE /artists/:id', () => {
+  describe('DELETE /:id', () => {
     it('should return an error to a visitor', async () => {
-      chai.request(app).delete('/artists/1')
+      chai.request(app).delete(`${BASE_URL}/1`)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -194,7 +197,7 @@ describe('/artists', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .delete('/artists/1')
+        .delete(`${BASE_URL}/1`)
       expect(res.body).to.have.status(403)
     })
 
@@ -203,7 +206,7 @@ describe('/artists', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .delete('/artists/')
+        .delete(BASE_URL)
       expect(res.body).to.have.status(400)
     })
 
@@ -213,7 +216,7 @@ describe('/artists', () => {
       const user = await RecordManager.insertUser({ admin: true })
       const agent = await SessionManager.loginAsUser(app, user)
 
-      const res = await agent.delete(`/artists/${artist.id}`)
+      const res = await agent.delete(`${BASE_URL}/${artist.id}`)
       expect(res.body).to.have.status(400)
     })
 
@@ -223,14 +226,14 @@ describe('/artists', () => {
       const user = await RecordManager.insertUser({ admin: true })
       const agent = await SessionManager.loginAsUser(app, user)
 
-      const res = await agent.delete(`/artists/${artist.id}`)
+      const res = await agent.delete(`${BASE_URL}/${artist.id}`)
       expect(res.body).to.have.status(204)
     })
   })
 
   describe('User Actions', () => {
     it('should provide a visitor with a link to view an artist', async () => {
-      const res = await chai.request(app).get('/artists')
+      const res = await chai.request(app).get(BASE_URL)
       const body = res.body
       expect(body.actions).to.be.an('object')
       expect(body.actions).to.have.property('readOne')
@@ -241,7 +244,7 @@ describe('/artists', () => {
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
 
-        const res = await agent.get('/artists')
+        const res = await agent.get(BASE_URL)
         const body = res.body
         expect(body.actions).to.be.an('object')
         expect(body.actions).not.to.have.property('create')
@@ -252,7 +255,7 @@ describe('/artists', () => {
         const user = await RecordManager.insertUser({ admin: true })
         const agent = await SessionManager.loginAsUser(app, user)
 
-        const res = await agent.get('/artists')
+        const res = await agent.get(BASE_URL)
         const body = res.body
         expect(body.actions).to.be.an('object')
         expect(body.actions).to.have.property('create')
@@ -262,7 +265,7 @@ describe('/artists', () => {
       await RecordManager.loadFixture('artists')
       const artist = await Artist.query().first()
 
-      const res = await chai.request(app).get(`/artists/${artist.id}`)
+      const res = await chai.request(app).get(`${BASE_URL}/${artist.id}`)
       const body = res.body
       expect(body.actions).to.be.an('object')
       expect(body.actions).not.to.have.property('edit')
@@ -275,7 +278,7 @@ describe('/artists', () => {
       const user = await RecordManager.insertUser()
       const agent = await SessionManager.loginAsUser(app, user)
 
-      const res = await agent.get(`/artists/${artist.id}`)
+      const res = await agent.get(`${BASE_URL}/${artist.id}`)
       const body = res.body
       expect(body.actions).to.be.an('object')
       expect(body.actions).not.to.have.property('edit')
@@ -288,7 +291,7 @@ describe('/artists', () => {
       const user = await RecordManager.insertUser({ admin: true })
       const agent = await SessionManager.loginAsUser(app, user)
 
-      const res = await agent.get('/artists')
+      const res = await agent.get(BASE_URL)
       const body = res.body
       expect(body.actions).to.be.an('object')
       expect(body.actions).to.have.property('edit')

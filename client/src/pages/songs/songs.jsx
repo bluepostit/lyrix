@@ -41,7 +41,7 @@ const Songs = (props) => {
   return (
     <>
       <ListDataset
-        url="/songs"
+        url="/api/songs"
         loading={loading}
         setLoading={setLoading}
         onLoadingComplete={onLoadingComplete}

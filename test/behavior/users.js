@@ -7,7 +7,9 @@ const RecordManager = require('../record-manager')
 
 chai.use(chaiHttp)
 
-describe('/user', () => {
+const BASE_URL = '/api/user'
+
+describe(BASE_URL, () => {
   beforeEach(async () => {
     await RecordManager.deleteAll()
   })
@@ -36,7 +38,7 @@ describe('/user', () => {
       await User.createUser(TEST_USER_DATA)
       try {
         chai.request(app)
-          .post('/user/login')
+          .post(`${BASE_URL}/login`)
           .send({
             username: TEST_USER_DATA.email,
             password: ''
@@ -61,7 +63,7 @@ describe('/user', () => {
       async () => {
         try {
           chai.request(app)
-            .post('/user/login')
+            .post(`${BASE_URL}/login`)
             .send({
               username: TEST_USER_DATA.email,
               password: ''
@@ -87,7 +89,7 @@ describe('/user', () => {
         await User.createUser(TEST_USER_DATA)
         try {
           const res = await chai.request(app)
-            .post('/user/login')
+            .post(`${BASE_URL}/login`)
             .send({
               username: TEST_USER_DATA.email,
               password: TEST_USER_DATA.password
@@ -119,7 +121,7 @@ describe('/user', () => {
           ])
         try {
           const res = await chai.request(app)
-            .post('/user/login')
+            .post(`${BASE_URL}/login`)
             .send({
               username: TEST_USER_DATA.email,
               password: TEST_USER_DATA.password
@@ -149,7 +151,7 @@ describe('/user', () => {
         const agent = chai.request.agent(app)
 
         await agent
-          .post('/user/login')
+          .post(`${BASE_URL}/login`)
           .send({
             username: LOGGED_IN_USER_DATA.email,
             password: LOGGED_IN_USER_DATA.password
@@ -157,7 +159,7 @@ describe('/user', () => {
 
         // Now try to sign up as a different user
         const res = await agent
-          .post('/user/sign-up')
+          .post(`${BASE_URL}/sign-up`)
           .send(GOOD_SIGN_UP_DATA)
 
         expect(res.body).to.have.status(403) // forbidden
@@ -176,7 +178,7 @@ describe('/user', () => {
 
         // Empty password
         let res = await agent
-          .post('/user/sign-up')
+          .post(`${BASE_URL}/sign-up`)
           .send({
             email: GOOD_SIGN_UP_DATA.email,
             password: '',
@@ -185,7 +187,7 @@ describe('/user', () => {
         expect(res.body).to.have.status(400) // bad request
         // Empty email
         res = await agent
-          .post('/user/sign-up')
+          .post(`${BASE_URL}/sign-up`)
           .send({
             email: '',
             password: GOOD_SIGN_UP_DATA.password,
@@ -194,7 +196,7 @@ describe('/user', () => {
         expect(res.body).to.have.status(400) // bad request
         // Missing password2
         res = await agent
-          .post('/user/sign-up')
+          .post(`${BASE_URL}/sign-up`)
           .send({
             email: GOOD_SIGN_UP_DATA.email,
             password: ''
@@ -215,7 +217,7 @@ describe('/user', () => {
         const agent = chai.request.agent(app)
 
         const res = await agent
-          .post('/user/sign-up')
+          .post(`${BASE_URL}/sign-up`)
           .send(GOOD_SIGN_UP_DATA)
 
         expect(res.body).to.have.status(400) // forbidden
@@ -231,7 +233,7 @@ describe('/user', () => {
 
         // Empty password
         const res = await agent
-          .post('/user/sign-up')
+          .post(`${BASE_URL}/sign-up`)
           .send({
             email: 'not-an-email.address',
             password: GOOD_SIGN_UP_DATA.password,
@@ -250,7 +252,7 @@ describe('/user', () => {
 
         // Empty password
         const res = await agent
-          .post('/user/sign-up')
+          .post(`${BASE_URL}/sign-up`)
           .send({
             email: GOOD_SIGN_UP_DATA.email,
             password: '123',
@@ -268,7 +270,7 @@ describe('/user', () => {
 
         // Empty password
         const res = await agent
-          .post('/user/sign-up')
+          .post(`${BASE_URL}/sign-up`)
           .send({
             email: GOOD_SIGN_UP_DATA.email,
             password: GOOD_SIGN_UP_DATA.password,

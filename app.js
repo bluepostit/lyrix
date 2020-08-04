@@ -35,12 +35,12 @@ if (process.env.NODE_ENV === 'test' && process.env.DEBUG) {
 app.use(express.static(path.join(__dirname, 'client/build')))
 
 // Serve routes with server routers
-app.use('/artists', require('./routes/artists'))
-app.use('/songs', require('./routes/songs'))
-app.use('/songlists', require('./routes/song-lists'))
-app.use('/song-items', require('./routes/song-items'))
-app.use('/song-item-types', require('./routes/song-item-types'))
-app.use('/user', require('./routes/authentication'))
+app.use('/api/artists', require('./routes/artists'))
+app.use('/api/songs', require('./routes/songs'))
+app.use('/api/songlists', require('./routes/song-lists'))
+app.use('/api/song-items', require('./routes/song-items'))
+app.use('/api/song-item-types', require('./routes/song-item-types'))
+app.use('/api/user', require('./routes/authentication'))
 
 // Fallback routing: respond with the React app's index page.
 app.get('*', (req, res) => {

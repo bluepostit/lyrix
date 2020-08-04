@@ -5,7 +5,7 @@ import { ToTopButton, SongItemsButton } from '../../components'
 import { Deleter } from '../../components/modals'
 
 const getSongData = (songId, songlistId, artistId) => {
-  let url = `/songs/${songId}`
+  let url = `/api/songs/${songId}`
   if (songlistId) {
     url += `?context=songlist&contextId=${songlistId}`
   } else if (artistId) {
