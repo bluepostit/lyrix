@@ -44,6 +44,33 @@ const SongItemsModal = ({
   )
 }
 
+const LoadingModal = ({
+  title = 'Loading...',
+  loading = false,
+  content
+}) => {
+  return (
+    <Modal show={loading}
+      className="lyrix-modal"
+      aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal.Header>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div>{content}</div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="primary"
+          show={false}
+          disabled={loading}
+          onClick={null}>
+          Cancel
+        </Button>
+      </Modal.Footer>
+    </Modal >
+  )
+}
+
 const ConfirmModal = ({
   title = 'Are you sure?',
   show,
@@ -132,4 +159,4 @@ const Deleter = ({
 }
 
 
-export { Deleter, ConfirmModal, SongItemsModal }
+export { Deleter, ConfirmModal, LoadingModal, SongItemsModal }

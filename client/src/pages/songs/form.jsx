@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
+import { LoadingModal } from '../../components/modals'
 
 const fetchArtists = async () => {
   return fetch('/api/artists')
@@ -31,6 +32,7 @@ const SongForm = ({
   const [artists, setArtists] = useState([])
   const [validated, setValidated] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const getArtist = (id) => {
     return artists.find(item => item.id === id)
@@ -58,6 +60,7 @@ const SongForm = ({
   }
 
   const searchLyrics = async () => {
+    setIsLoading(true)
     const query = new URLSearchParams({
       artist_id: song.artist.id,
       title: song.title
@@ -74,6 +77,7 @@ const SongForm = ({
             text: json.data.lyrics
           })
         }
+        setIsLoading(false)
       })
   }
 
@@ -100,8 +104,12 @@ const SongForm = ({
   }
 
   useEffect(() => {
+    setIsLoading(true)
     fetchArtists()
-      .then(artists => setArtists(artists))
+      .then((artists) => {
+        setArtists(artists)
+        setIsLoading(false)
+      })
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
@@ -165,6 +173,10 @@ const SongForm = ({
           </Button>
         </div>
       </Form>
+      <LoadingModal
+        loading={isLoading}
+        content="Content is loading; please wait"
+      />
     </div>
   )
 }
