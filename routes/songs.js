@@ -162,6 +162,20 @@ router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
       res.json(response)
     })
 
+router.delete('/:id', ensureLoggedIn, ensureAdmin, validateId,
+  async (req, res, next) => {
+    try {
+      await Song.query().deleteById(req.params.id)
+      res.json({
+        status: StatusCodes.NO_CONTENT
+      })
+    } catch (error) {
+      return next(error)
+    }
+  })
+
+router.delete('/', validateId)
+
 router.use(errorHandler('song'))
 
 module.exports = router
