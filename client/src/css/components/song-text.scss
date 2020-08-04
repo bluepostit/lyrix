@@ -3,11 +3,18 @@
   hyphens: auto;
   margin: 0.5rem 0.5rem 0 0.5rem;
   padding-bottom: 50%;
-  font-family: 'Sanchez', serif;
+  font-family: $font-text;
+}
+
+.song-item-text-display {
+  font-size: 1.2rem;
+  font-family: $font-monospace;
+  white-space: pre;
+  padding: 0.5rem;
 }
 
 textarea.song-item-text-box {
   font-size: 1.2rem;
-  font-family: 'Ubuntu Mono', monospace;
-  height: 50vh !important;
+  font-family: $font-monospace;
+  height: 40vh !important;
 }
