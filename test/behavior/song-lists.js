@@ -8,7 +8,9 @@ const { SongList } = require('../../models')
 const RecordManager = require('../record-manager.js')
 const SessionManager = require('../session-manager')
 
-describe('/songlists', async () => {
+const BASE_URL = '/api/songlists'
+
+describe(BASE_URL, async () => {
   beforeEach(async () => {
     await RecordManager.deleteAll()
   })
@@ -16,10 +18,10 @@ describe('/songlists', async () => {
     await RecordManager.deleteAll()
   })
 
-  describe('GET /songlists', () => {
+  describe('GET /', () => {
     it('should return an error when not logged in', async () => {
       const res = await chai.request(app)
-        .get('/songlists')
+        .get(BASE_URL)
 
       expect(res).to.have.status(200)
       expect(res.body).to.have.status(401)
@@ -35,7 +37,7 @@ describe('/songlists', async () => {
 
       const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent
-        .get('/songlists')
+        .get(BASE_URL)
       agent.close()
 
       expect(res).to.have.status(200)
@@ -49,13 +51,13 @@ describe('/songlists', async () => {
     })
   })
 
-  describe('GET /songlists/:id', () => {
+  describe('GET /:id', () => {
     it('should return an error when no matching songlist can be found',
       async () => {
         const user = await RecordManager.insertUser({ id: 1 })
         const agent = await SessionManager.loginAsUser(app, user)
 
-        agent.get('/songlists/999999999')
+        agent.get(`${BASE_URL}/999999999`)
           .end((err, res) => {
             if (err) {
               console.log(err)
@@ -76,7 +78,7 @@ describe('/songlists', async () => {
         .orderBy('title')
       const agent = await SessionManager.loginAsUser(app, user)
 
-      await agent.get(`/songlists/${lists[0].id}`)
+      await agent.get(`${BASE_URL}/${lists[0].id}`)
         .then(res => {
           expect(res.body).to.have.status(200)
           const data = res.body.data
@@ -95,9 +97,9 @@ describe('/songlists', async () => {
     })
   })
 
-  describe('POST /songlists', () => {
+  describe('POST /', () => {
     it('should return an error when not signed in', async () => {
-      chai.request(app).post('/songlists')
+      chai.request(app).post(BASE_URL)
         .send({ name: 'test songlist' })
         .end((err, res) => {
           if (err) {
@@ -112,7 +114,7 @@ describe('/songlists', async () => {
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
 
-        agent.post('/songlists')
+        agent.post(BASE_URL)
           .end((err, res) => {
             if (err) {
               console.log(err)
@@ -129,7 +131,7 @@ describe('/songlists', async () => {
         const list = await SongList.query().first()
 
         const agent = await SessionManager.loginAsUser(app, user)
-        agent.post('/songlists')
+        agent.post(BASE_URL)
           .send({ title: list.title })
           .end((err, res) => {
             if (err) {
@@ -143,7 +145,7 @@ describe('/songlists', async () => {
       const user = await RecordManager.insertUser({ id: 1 })
       const agent = await SessionManager.loginAsUser(app, user)
 
-      const res = await agent.post('/songlists')
+      const res = await agent.post(BASE_URL)
         .send({ title: 'a new songlist title' })
       const body = res.body
       expect(body).to.have.status(201) // Created
