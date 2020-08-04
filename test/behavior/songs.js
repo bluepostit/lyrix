@@ -9,8 +9,9 @@ const SessionManager = require('../session-manager')
 
 chai.use(chaiHttp)
 
+const BASE_URL = '/api/songs'
 
-describe('/songs', () => {
+describe(BASE_URL, () => {
   beforeEach(async () => {
     await RecordManager.deleteAll()
   })
@@ -18,7 +19,7 @@ describe('/songs', () => {
     await RecordManager.deleteAll()
   })
 
-  describe('GET /songs', () => {
+  describe('GET /', () => {
     it('should return a list of all songs in the database', async () => {
       await RecordManager.loadFixture('songs')
       const songs = await Song
@@ -27,7 +28,7 @@ describe('/songs', () => {
         .withGraphFetched('artist')
         .orderBy(['title', 'artist.name'])
 
-      const res = await chai.request(app).get('/songs')
+      const res = await chai.request(app).get(BASE_URL)
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
       const data = res.body.data
@@ -41,7 +42,7 @@ describe('/songs', () => {
 
     it('should return empty when there are no songs', async () => {
       chai.request(app)
-        .get('/songs')
+        .get(BASE_URL)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -53,10 +54,10 @@ describe('/songs', () => {
     })
   })
 
-  describe('GET /songs/:id', () => {
+  describe('GET /:id', () => {
     it('should return an error when no matching song can be found', async () => {
       chai.request(app)
-        .get('/songs/23')
+        .get(`${BASE_URL}/23`)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -72,7 +73,7 @@ describe('/songs', () => {
       const song = await Song.query().findById(1)
 
       chai.request(app)
-        .get(`/songs/${song.id}`)
+        .get(`${BASE_URL}/${song.id}`)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -96,7 +97,7 @@ describe('/songs', () => {
         .orderBy(['song.title', 'title'])
 
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.get(`/songs/${songId}`)
+      const res = await agent.get(`${BASE_URL}/${songId}`)
       agent.close()
 
       expect(res.body).to.have.status(200)
@@ -120,7 +121,7 @@ describe('/songs', () => {
       expect(items.length).to.eql(0)
 
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.get(`/songs/${songId}`)
+      const res = await agent.get(`${BASE_URL}/${songId}`)
       agent.close()
 
       expect(res.body).to.have.status(200)
@@ -131,7 +132,7 @@ describe('/songs', () => {
     })
   })
 
-  describe('GET /songs/:id?context=artist', () => {
+  describe('GET /:id?context=artist', () => {
     let artist
     beforeEach(async () => {
       await RecordManager.loadFixture('artist.with-songs')
@@ -145,7 +146,7 @@ describe('/songs', () => {
       const song0 = artist.songs[0]
       const song1 = artist.songs[1]
       const response = await chai.request(app)
-        .get(`/songs/${song0.id}?context=artist`)
+        .get(`${BASE_URL}/${song0.id}?context=artist`)
 
       const data = response.body.data
       expect(data).to.be.an('object')
@@ -156,7 +157,7 @@ describe('/songs', () => {
     it("should return the song with no link to a next song if this is the artist's last song", async () => {
       const song1 = artist.songs[1]
       const response = await chai.request(app)
-        .get(`/songs/${song1.id}?context=artist`)
+        .get(`${BASE_URL}/${song1.id}?context=artist`)
 
       const data = response.body.data
       expect(data).to.be.an('object')
@@ -165,7 +166,7 @@ describe('/songs', () => {
     })
   })
 
-  describe('GET /songs/:id?context=songlist&contextId=:songlistId', () => {
+  describe('GET /:id?context=songlist&contextId=:songlistId', () => {
     let list
     let songs
     beforeEach(async () => {
@@ -183,7 +184,7 @@ describe('/songs', () => {
 
     it("should return the song with a link to the next song from the given songlist", async () => {
       const response = await chai.request(app)
-        .get(`/songs/${songs[0].id}?context=songlist&contextId=${list.id}`)
+        .get(`${BASE_URL}/${songs[0].id}?context=songlist&contextId=${list.id}`)
       const data = response.body.data
       expect(data).to.be.an('object')
       expect(data.id).to.eql(songs[0].id)
@@ -192,7 +193,7 @@ describe('/songs', () => {
 
     it("should return the song with no link to a next song if this is the last song in the songlist", async () => {
       const response = await chai.request(app)
-        .get(`/songs/${songs[1].id}?context=songlist&contextId=${list.id}`)
+        .get(`${BASE_URL}/${songs[1].id}?context=songlist&contextId=${list.id}`)
       const data = response.body.data
       expect(data).to.be.an('object')
       expect(data.id).to.eql(songs[1].id)
@@ -200,7 +201,7 @@ describe('/songs', () => {
     })
   })
 
-  describe('GET /songs/:id?context=songlist', () => {
+  describe('GET /:id?context=songlist', () => {
     let songs
     beforeEach(async () => {
       await RecordManager.loadFixture('songs')
@@ -212,7 +213,7 @@ describe('/songs', () => {
 
     it("should return the song with a link to the next song from the list of all songs", async () => {
       const response = await chai.request(app)
-        .get(`/songs/${songs[0].id}?context=songlist`)
+        .get(`${BASE_URL}/${songs[0].id}?context=songlist`)
       const data = response.body.data
       expect(data).to.be.an('object')
       expect(data.id).to.eql(songs[0].id)
@@ -223,7 +224,7 @@ describe('/songs', () => {
       const lastSong = songs.slice(-1)[0]
 
       const response = await chai.request(app)
-        .get(`/songs/${lastSong.id}?context=songlist`)
+        .get(`${BASE_URL}/${lastSong.id}?context=songlist`)
       const data = response.body.data
       expect(data).to.be.an('object')
       expect(data.id).to.eql(lastSong.id)
@@ -232,10 +233,10 @@ describe('/songs', () => {
   })
 
 
-  describe('GET /songs/count', () => {
+  describe('GET /count', () => {
     const expectSongCount = (count) => {
       chai.request(app)
-        .get('/songs/count')
+        .get(`${BASE_URL}/count`)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -259,9 +260,9 @@ describe('/songs', () => {
     })
   })
 
-  describe('POST /songs', () => {
+  describe('POST /', () => {
     it('should return an error when not signed in', async () => {
-      const res = await chai.request(app).post('/songs')
+      const res = await chai.request(app).post(BASE_URL)
       expect(res.body).to.have.status(401)
     })
 
@@ -270,7 +271,7 @@ describe('/songs', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .post('/songs')
+        .post(BASE_URL)
         .send({})
       expect(res.body).to.have.status(403)
     })
@@ -280,7 +281,7 @@ describe('/songs', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .post('/songs')
+        .post(BASE_URL)
         .send({})
       expect(res.body).to.have.status(400)
     })
@@ -290,7 +291,7 @@ describe('/songs', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .post('/songs')
+        .post(BASE_URL)
         .send({
           title: 'This is a song',
           text: 'This is some text. It is different',
@@ -307,7 +308,7 @@ describe('/songs', () => {
         const agent = await SessionManager.loginAsUser(app, user)
 
         const res = await agent
-          .post('/songs')
+          .post(BASE_URL)
           .send({
             title: song.title,
             text: 'This is some text. It is different',
@@ -326,7 +327,7 @@ describe('/songs', () => {
       expect(songCount).to.eql(0)
 
       const res = await agent
-        .post('/songs')
+        .post(BASE_URL)
         .send({
           title: 'This is a song title',
           text: 'This is some text. It is different',
@@ -341,7 +342,7 @@ describe('/songs', () => {
 
   describe('PUT /:id', () => {
     it('should return an error when not signed in', async () => {
-      chai.request(app).put('/songs/1')
+      chai.request(app).put(`${BASE_URL}/1`)
         .send({ title: 'test' })
         .end((err, res) => {
           if (err) {
@@ -358,7 +359,7 @@ describe('/songs', () => {
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
 
-        const res = await agent.put(`/songs/${song.id}`)
+        const res = await agent.put(`${BASE_URL}/${song.id}`)
         agent.close()
 
         const body = res.body
@@ -368,7 +369,7 @@ describe('/songs', () => {
     it('should return an error when no id is given', async () => {
       const user = await RecordManager.insertUser({ admin: true })
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.put('/songs')
+      const res = await agent.put(BASE_URL)
 
       const body = res.body
       expect(body).to.have.status(400)
@@ -380,7 +381,7 @@ describe('/songs', () => {
         const user = await RecordManager.insertUser({ admin: true })
         const agent = await SessionManager.loginAsUser(app, user)
         const res = await agent
-          .put('/songs/1')
+          .put(`${BASE_URL}/1`)
           .send({})
 
         const body = res.body
@@ -400,7 +401,7 @@ describe('/songs', () => {
       }
 
       const res = await agent
-        .put(`/songs/${song.id}`)
+        .put(`${BASE_URL}/${song.id}`)
         .send(data)
       const body = res.body
       expect(body).to.have.status(400)
@@ -422,7 +423,7 @@ describe('/songs', () => {
       }
 
       const res = await agent
-        .put(`/songs/${song.id}`)
+        .put(`${BASE_URL}/${song.id}`)
         .send(data)
       const body = res.body
 
@@ -435,9 +436,9 @@ describe('/songs', () => {
     })
   })
 
-  describe('DELETE /songs/:id', () => {
+  describe('DELETE /:id', () => {
     it('should return an error when not signed in', async () => {
-      chai.request(app).delete('/songs/1')
+      chai.request(app).delete(`${BASE_URL}/1`)
         .end((err, res) => {
           if (err) {
             console.log(err)
@@ -449,7 +450,7 @@ describe('/songs', () => {
     it('should return an error when no id is given', async () => {
       const user = await RecordManager.insertUser()
       const agent = await SessionManager.loginAsUser(app, user)
-      const res = await agent.delete('/songs')
+      const res = await agent.delete(BASE_URL)
 
       const body = res.body
       expect(body).to.have.status(400)
@@ -463,7 +464,7 @@ describe('/songs', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .delete(`/songs/${song.id}`)
+        .delete(`${BASE_URL}/${song.id}`)
       expect(res.body).to.have.status(403)
     })
 
@@ -472,7 +473,7 @@ describe('/songs', () => {
         const user = await RecordManager.insertUser({ admin: true })
         const agent = await SessionManager.loginAsUser(app, user)
         const res = await agent
-          .delete('/songs/1')
+          .delete(`${BASE_URL}/1`)
 
         const body = res.body
         expect(body).to.have.status(404)
@@ -485,7 +486,7 @@ describe('/songs', () => {
       const agent = await SessionManager.loginAsUser(app, user)
 
       const res = await agent
-        .delete(`/songs/${songs[0].id}`)
+        .delete(`${BASE_URL}/${songs[0].id}`)
       const body = res.body
 
       expect(body).to.have.status(204) // no content
@@ -497,7 +498,7 @@ describe('/songs', () => {
 
   describe('User Actions', () => {
     it('should provide a visitor with a link to view a song', async () => {
-      const res = await chai.request(app).get('/songs')
+      const res = await chai.request(app).get(BASE_URL)
       const body = res.body
       expect(body.actions).to.be.an('object')
       expect(body.actions).to.have.property('readOne')
@@ -508,7 +509,7 @@ describe('/songs', () => {
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
 
-        const res = await agent.get('/songs')
+        const res = await agent.get(BASE_URL)
         const body = res.body
         expect(body.actions).to.be.an('object')
         expect(body.actions).not.to.have.property('create')
@@ -521,7 +522,7 @@ describe('/songs', () => {
         const user = await RecordManager.insertUser({ admin: true })
         const agent = await SessionManager.loginAsUser(app, user)
 
-        const res = await agent.get('/artists')
+        const res = await agent.get(BASE_URL)
         const body = res.body
         expect(body.actions).to.be.an('object')
         expect(body.actions).to.have.property('create')
