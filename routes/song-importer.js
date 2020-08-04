@@ -24,7 +24,7 @@ const validateSongId = async (req, res, next) => {
   const songId = req.query.sid
   if (songId) {
     req.query.sid = parseInt(songId.trim(), 10)
-    if (req.importer.hasCachedSong(req.query.sid)) {
+    if (req.importer.getCachedSong(req.query.sid)) {
       return next()
     }
     return next({
@@ -49,7 +49,7 @@ const setImporter = async (req, res, next) => {
 router.get('/search', ensureLoggedIn, validateSearchParam,
   setImporter,
     async (req, res, next) => {
-      const songs = await req.importer.search(req.query.q)
+      const songs = await req.importer.search(req)
       res.json({
         status: StatusCodes.OK,
         data: {
@@ -60,10 +60,19 @@ router.get('/search', ensureLoggedIn, validateSearchParam,
 
 router.get('/import', ensureLoggedIn, setImporter, validateSongId,
   async (req, res, next) => {
-    res.json({
-      status: StatusCodes.OK
-    })
+    try {
+      const song = await req.importer.import(req.query.sid)
+      res.json({
+        status: StatusCodes.OK,
+        data: {
+          song: song
+        }
+      })
+    } catch (e) {
+      next(e)
+    }
   })
 
 router.use(errorHandler('import'))
+
 module.exports = router

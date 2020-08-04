@@ -65,8 +65,7 @@ describe(BASE_URL, async function () {
       return agent
     }
 
-    const getSearchedSongs = async (agent) => {
-      const query = 'britney spears toxic'
+    const getSearchedSongs = async (agent, query) => {
       const res = await agent.get(`${BASE_URL}/search?q=${query}`)
       return res.body.data.songs
     }
@@ -90,7 +89,7 @@ describe(BASE_URL, async function () {
     it("should return an error if the song id doesn't match "
        + " one that was returned earlier", async () => {
         const agent = await getAgentAfterLogin()
-        await getSearchedSongs(agent)
+        await getSearchedSongs(agent, 'britney spears toxic')
         const songId = '2'
 
         const res = await agent.get(`${BASE_URL}/import?sid=${songId}`)
@@ -98,6 +97,27 @@ describe(BASE_URL, async function () {
         expect(res.body.error).not.to.be.empty
        })
 
-    it('should import the song matching the given id')
+    it('should import the song matching the given id', async () => {
+      const agent = await getAgentAfterLogin()
+      const query = 'britney spears toxic'
+      const songResults = await getSearchedSongs(agent, query)
+      const songToImport = songResults[0]
+      const songId = songToImport.id
+
+      const dbSongCount = await Song
+        .query()
+        .resultSize()
+      expect(dbSongCount).to.eql(0)
+
+      const res = await agent.get(`${BASE_URL}/import?sid=${songId}`)
+      expect(res.body).to.have.status(200)
+      expect(res.body.data).not.to.be.empty
+
+      const songs = await Song.query()
+      expect(songs.length).to.eql(1)
+      expect(songs[0].title).to.eql(songToImport.title)
+      expect(songs[0].text).not.to.be.empty
+      expect(songs[0].text).to.match(/you know that you're toxic/i)
+    })
   })
 })
