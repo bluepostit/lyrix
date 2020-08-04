@@ -19,10 +19,10 @@ const SONGLIST_ATTRIBUTES = [
 const validateId = validateIdForEntity(SongList)
 const validateSongListData = validateDataForEntity(SongList)
 const ensureOwnership = ensureOwnershipForEntity('song list')
-const checkForDuplicates = checkForDuplicatesForEntity(
-  SongList,
-  ['title']
-)
+const checkForDuplicates = checkForDuplicatesForEntity({
+  entityClass: SongList,
+  fields: ['title']
+})
 
 const setSongList = async (req, res, next) => {
   const songList = await SongList

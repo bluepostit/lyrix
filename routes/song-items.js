@@ -11,10 +11,10 @@ const { errorHandler } = require('../helpers/errors')
 const { SongItem } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 
-const checkForDuplicates = checkForDuplicatesForEntity(
-  SongItem,
-  ['title', 'song_id']
-)
+const checkForDuplicates = checkForDuplicatesForEntity({
+  entityClass: SongItem,
+  fields: ['title', 'song_id']
+})
 const validateSongItemData = validateDataForEntity(SongItem)
 const validateId = validateIdForEntity(SongItem)
 const ensureOwnership = ensureOwnershipForEntity('song item')

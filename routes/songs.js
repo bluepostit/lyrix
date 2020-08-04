@@ -10,7 +10,8 @@ const {
   checkIsAdmin,
   ensureAdmin,
   validateIdForEntity,
-  validateDataForEntity
+  validateDataForEntity,
+  checkForDuplicatesForEntity
 } = require('./common')
 
 const SONG_ATTRIBUTES = [
@@ -85,24 +86,12 @@ const getNextSong = async (song, context, contextId) => {
   return nextSong
 }
 
-const checkForDuplicates = async (req, res, next) => {
-  const body = req.body
-  const duplicate = await Song
-    .query()
-    .first()
-    .where({
-      title: body.title,
-      artist_id: body.artist_id
-    })
-
-  if (duplicate) {
-    return next({
-      type: 'UniqueViolationError',
-      userMessage: 'A similar song by that artist already exists'
-    })
-  }
-  next()
-}
+const checkForDuplicates = checkForDuplicatesForEntity({
+  entityClass: Song,
+  fields: ['title', 'artist_id'],
+  forUser: false,
+  message: 'A similar song by that artist already exists'
+})
 
 const sanitize = async (req, res, next) => {
   const body = req.body

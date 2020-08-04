@@ -5,6 +5,7 @@ const { Artist } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 const {
   StatusCodes,
+  checkForDuplicatesForEntity,
   checkIsAdmin,
   ensureAdmin,
   validateIdForEntity,
@@ -16,21 +17,11 @@ const songsRouter = require('./artist-songs.js')
 const ARTIST_ATTRIBUTES = ['artists.id', 'artists.name']
 const SONG_ATTRIBUTES = ['id', 'title', 'text']
 
-const checkForDuplicates = async (req, res, next) => {
-  const body = req.body
-  const duplicate = await Artist
-    .query()
-    .first()
-    .where({ name: body.name })
-
-  if (duplicate) {
-    return next({
-      type: 'UniqueViolationError',
-      userMessage: `A similar artist (${duplicate.name}) already exists`
-    })
-  }
-  next()
-}
+const checkForDuplicates = checkForDuplicatesForEntity({
+  entityClass: Artist,
+  fields: ['name'],
+  forUser: false
+})
 
 const sanitize = async (req, res, next) => {
   const body = req.body

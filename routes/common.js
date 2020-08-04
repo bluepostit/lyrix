@@ -90,32 +90,37 @@ const ensureOwnershipForEntity = (entityName, userField = 'user_id') => {
   }
 }
 
-const checkForDuplicatesForEntity = (
-  entityClass, fields, forUser = true, userField = 'user_id') => {
-    return async (req, res, next) => {
-      const entity = req.entity
-      const body = req.body
+const checkForDuplicatesForEntity = ({
+  entityClass,
+  fields,
+  forUser = true,
+  userField = 'user_id',
+  message = 'A similar entity already exists'
+}) => {
+  return async (req, res, next) => {
+    const entity = req.entity
+    const body = req.body
 
-      const where = {}
-      fields.forEach(field => where[field] = body[field])
-      const query = entityClass
-        .query()
-        .first()
-        .where(where)
+    const where = {}
+    fields.forEach(field => where[field] = body[field])
+    const query = entityClass
+      .query()
+      .first()
+      .where(where)
 
-      if (forUser && userField) {
-        query.where({ [userField]: req.user.id })
-      }
-      // console.log(query.toKnexQuery().toSQL().toNative())
-      const duplicate = await query
-      if (duplicate) {
-        return next({
-          type: 'UniqueViolationError',
-          userMessage: 'A similar song item already exists'
-        })
-      }
-      next()
+    if (forUser && userField) {
+      query.where({ [userField]: req.user.id })
     }
+    // console.log(query.toKnexQuery().toSQL().toNative())
+    const duplicate = await query
+    if (duplicate) {
+      return next({
+        type: 'UniqueViolationError',
+        userMessage: message
+      })
+    }
+    next()
+  }
 }
 
 module.exports = {
