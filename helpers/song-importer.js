@@ -2,6 +2,7 @@ class SongImporter {
   constructor(session, genius) {
     this.session = session
     this.genius = genius
+    this.results = session.songSearchResults || []
   }
 
   async search(param, limit = 5) {
@@ -18,7 +19,12 @@ class SongImporter {
       }
     }))
     this.results = songs
+    this.session.songSearchResults = songs
     return songs
+  }
+
+  hasCachedSong(id) {
+    return this.results.find(e => e.id === id)
   }
 }
 

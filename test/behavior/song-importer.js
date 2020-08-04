@@ -54,6 +54,50 @@ describe(BASE_URL, async function () {
       expect(song.artist).to.match(/britney spears/i)
       expect(song.id).to.match(/\d+/)
     })
+  })
 
+  describe('GET /import', function () {
+    this.timeout(REQUEST_TIMEOUT * 2)
+
+    const getAgentAfterLogin = async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+      return agent
+    }
+
+    const getSearchedSongs = async (agent) => {
+      const query = 'britney spears toxic'
+      const res = await agent.get(`${BASE_URL}/search?q=${query}`)
+      return res.body.data.songs
+    }
+
+    it('should return an error if user is not signed in', async () => {
+      const res = await chai.request(app).get(`${BASE_URL}/import`)
+      expect(res.body).to.have.status(401)
+      expect(res.body.error).not.to.be.empty
+    })
+
+    it('should return an error if the song id is empty', async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.get(`${BASE_URL}/import?sid=`)
+      agent.close()
+
+      expect(res.body).to.have.status(400)
+      expect(res.body.message).to.match(/missing|empty|search/)
+    })
+
+    it("should return an error if the song id doesn't match "
+       + " one that was returned earlier", async () => {
+        const agent = await getAgentAfterLogin()
+        await getSearchedSongs(agent)
+        const songId = '2'
+
+        const res = await agent.get(`${BASE_URL}/import?sid=${songId}`)
+        expect(res.body).to.have.status(404)
+        expect(res.body.error).not.to.be.empty
+       })
+
+    it('should import the song matching the given id')
   })
 })

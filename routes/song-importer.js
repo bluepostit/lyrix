@@ -12,27 +12,56 @@ const validateSearchParam = async (req, res, next) => {
   const param = req.query.q
   if (param) {
     req.query.q = param.trim()
+    return next()
   }
-  if (!param) {
-    next({
-      statusCode: StatusCodes.BAD_REQUEST,
-      userMessage: "Search term can't be empty"
+  next({
+    statusCode: StatusCodes.BAD_REQUEST,
+    userMessage: "Search term can't be empty"
+  })
+}
+
+const validateSongId = async (req, res, next) => {
+  const songId = req.query.sid
+  if (songId) {
+    req.query.sid = parseInt(songId.trim(), 10)
+    if (req.importer.hasCachedSong(req.query.sid)) {
+      return next()
+    }
+    return next({
+      statusCode: StatusCodes.NOT_FOUND,
+      userMessage: 'The song cannot be found. Please search again'
     })
   }
+  next({
+    statusCode: StatusCodes.BAD_REQUEST,
+    userMessage: "Song id can't be empty"
+  })
+}
+
+const setImporter = async (req, res, next) => {
+  const genius = new Genius.Client(process.env.GENIUS_API_KEY)
+  const importer = new SongImporter(req.session, genius)
+  req.importer = importer
   next()
 }
 
 
 router.get('/search', ensureLoggedIn, validateSearchParam,
+  setImporter,
+    async (req, res, next) => {
+      const songs = await req.importer.search(req.query.q)
+      res.json({
+        status: StatusCodes.OK,
+        data: {
+          songs
+        }
+      })
+    })
+
+router.get('/import', ensureLoggedIn, setImporter, validateSongId,
   async (req, res, next) => {
-    const genius = new Genius.Client(process.env.GENIUS_API_KEY)
-    const importer = new SongImporter(req.session, genius)
-    const songs = await importer.search(req.query.q)
     res.json({
-      status: StatusCodes.OK,
-      data: {
-        songs
-      }
+      status: StatusCodes.OK
     })
   })
 
