@@ -31,6 +31,11 @@ if (process.env.NODE_ENV === 'test' && process.env.DEBUG) {
   })
 }
 
+if (process.env.LOGGING) {
+  const morgan = require('morgan')
+  app.use(morgan(process.env.LOGGING))
+}
+
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')))
 

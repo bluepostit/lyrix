@@ -6,7 +6,7 @@ Lyrix is a song collection app which helps you keep track of the songs you like 
 [![Build Status](https://travis-ci.org/bluepostit/lyrix.svg?branch=master)](https://travis-ci.org/bluepostit/lyrix)
 
 **Server technologies:**
-- The server is a REST API service written in [Node.js](https://nodejs.org/en/). 
+- The server is a REST API service written in [Node.js](https://nodejs.org/en/).
 - It's built and run with the [Yarn](https://yarnpkg.com/lang/en/) package manager.
 - It uses [Express](https://expressjs.com/) to structure its request-response system and for routing.
 - Database access is via [Ojection.js ORM](https://vincit.github.io/objection.js/) on top of [Knex.js query builder](https://knexjs.org/).
@@ -26,11 +26,13 @@ Lyrix is a song collection app which helps you keep track of the songs you like 
 1. Install requirements by running `yarn`
 1. Setup a **PostgreSQL** database for **development**.
 1. `$ touch .env`
-1. Provide database connection parameters inside `.env`:
+1. Provide the following environment variables inside `.env`:
     - DB_HOST
     - DB_NAME
     - DB_USERNAME
     - DB_PASSWORD
+    - SESSION_SECRET - to be used for creating sessions with `express-session`
+    - LOGGING - optional value to be used with the [morgan](https://expressjs.com/en/resources/middleware/morgan.html) logger, eg. `common`, `dev`
 1. Optional: specify a port number for serving the React frontend, in `client/.env`:
     - PORT
     Default as per `react-scripts start`: `3000`
@@ -44,6 +46,7 @@ Lyrix is a song collection app which helps you keep track of the songs you like 
     - DB_TEST_NAME
     - DB_TEST_USERNAME
     - DB_TEST_PASSWORD
+    - SESSION_SECRET - to be used for creating sessions with `express-session`
 1. Run all tests: `yarn test`.
 1. You can specify specific test types to run, eg. `yarn test:unit` for only unit tests, or `yarn test:behav` for only behavior/integration tests.
 
