@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton, SongItemsButton } from '../../components'
+import { Deleter } from '../../components/modals'
 
-const getSong = (songId, songlistId, artistId) => {
+const getSongData = (songId, songlistId, artistId) => {
   let url = `/songs/${songId}`
   if (songlistId) {
     url += `?context=songlist&contextId=${songlistId}`
@@ -18,7 +19,7 @@ const getSong = (songId, songlistId, artistId) => {
       if (json.error) {
         throw json
       }
-      return json.data
+      return json
     })
 }
 
@@ -35,17 +36,32 @@ const PageContent = (props) => {
 
 const Song = (props) => {
   const { artistId, songlistId, songId } = useParams()
-  const [song, setSong] = useState({title: null, text: null})
+  const [data, setData] = useState({
+    data: {
+      title: null,
+      text: null
+    },
+    actions: []
+  })
   const [nextLink, setNextLink] = useState()
+  const [deleting, setDeleting] = useState(false)
   const history = useHistory()
   const location = useLocation()
 
+  const handleDeleteClick = () => {
+    setDeleting(true)
+  }
+
+  const onDelete = () => {
+    history.replace('/songs')
+  }
+
   useEffect(() => {
-    getSong(songId, songlistId, artistId)
-      .then((song) => {
-        setSong(song)
-        if (song.nextSongId) {
-          setNextLink(location.pathname.replace(/songs\/\d+/, `songs/${song.nextSongId}`))
+    getSongData(songId, songlistId, artistId)
+      .then((data) => {
+        setData(data)
+        if (data.data.nextSongId) {
+          setNextLink(location.pathname.replace(/songs\/\d+/, `songs/${data.data.nextSongId}`))
         } else {
           setNextLink(null)
         }
@@ -58,15 +74,24 @@ const Song = (props) => {
     }, [history, songId, artistId, songlistId, location.pathname]) // things to monitor for render
     // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
-  const peeker = <SongItemsButton song={song} {...props} />
+  const peeker = <SongItemsButton song={data.data} {...props} />
 
   return (
     <div className="song-page">
       <Page
-        content={<PageContent song={song} />}
-        title={song.title}
+        content={<PageContent song={data.data} />}
+        title={data.data.title}
+        actions={data.actions}
         nextLink={nextLink}
+        onDeleteClick={handleDeleteClick}
         peeker={peeker}
+      />
+      <Deleter
+        entity={data.data}
+        noun="song"
+        show={deleting}
+        setShow={setDeleting}
+        onDelete={onDelete}
       />
     </div>
   )

@@ -339,6 +339,66 @@ describe('/songs', () => {
 
   })
 
+  describe('DELETE /songs/:id', () => {
+    it('should return an error when not signed in', async () => {
+      chai.request(app).delete('/songs/1')
+        .end((err, res) => {
+          if (err) {
+            console.log(err)
+          }
+          expect(res.body).to.have.status(401)
+        })
+    })
+
+    it('should return an error when no id is given', async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent.delete('/songs')
+
+      const body = res.body
+      expect(body).to.have.status(400)
+      expect(body.error).to.not.be.empty
+    })
+
+    it('should return an error when user is not an admin', async () => {
+      await RecordManager.loadFixture('songs')
+      const song = await Song.query().first()
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .delete(`/songs/${song.id}`)
+      expect(res.body).to.have.status(403)
+    })
+
+    it('should return an error when no song can be found with the given id',
+      async () => {
+        const user = await RecordManager.insertUser({ admin: true })
+        const agent = await SessionManager.loginAsUser(app, user)
+        const res = await agent
+          .delete('/songs/1')
+
+        const body = res.body
+        expect(body).to.have.status(404)
+      })
+
+    it('should delete the song with the given id', async () => {
+      await RecordManager.loadFixture('songs')
+      const songs = await Song.query()
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .delete(`/songs/${songs[0].id}`)
+      const body = res.body
+
+      expect(body).to.have.status(204) // no content
+
+      const countAfter = await Song.query().resultSize()
+      expect(countAfter).to.eql(songs.length - 1)
+    })
+  })
+
   describe('User Actions', () => {
     it('should provide a visitor with a link to view a song', async () => {
       const res = await chai.request(app).get('/songs')
