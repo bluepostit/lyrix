@@ -36,15 +36,45 @@ const SongForm = ({
     return artists.find(item => item.id === id)
   }
 
-  const handleChange = (event) => {
+  const updateSong = (changes) => {
     const songCopy = { ...song }
-    const target = event.target
-    if (target.name === 'artist_id') {
-      songCopy.artist = getArtist(parseInt(target.value))
-    } else {
-      songCopy[target.name] = target.value
+    for (const key in changes) {
+      if (changes.hasOwnProperty(key)) {
+        const value = changes[key]
+        songCopy[key] = value
+      }
     }
     setSong(songCopy)
+  }
+
+  const handleChange = (event) => {
+    let key = event.target.name
+    let value = event.target.value
+    if (key === 'artist_id') {
+      key = 'artist'
+      value = getArtist(parseInt(event.target.value))
+    }
+    updateSong({ [key]: value })
+  }
+
+  const searchLyrics = async () => {
+    const query = new URLSearchParams({
+      artist_id: song.artist.id,
+      title: song.title
+    })
+    const url = `/api/lyrics?${query.toString()}`
+    fetch(url)
+      .then(res => res.json())
+      .then((json) => {
+        if (json.error) {
+          setErrorMessage(json.message)
+        } else {
+          updateSong({
+            title: json.data.title,
+            text: json.data.lyrics
+          })
+        }
+      })
   }
 
   const handleSubmit = async (event) => {
@@ -115,7 +145,10 @@ const SongForm = ({
         </Form.Group>
 
         <Form.Group controlId="songText">
-          <Form.Label>Lyrics</Form.Label>
+          <div>
+            <Form.Label>Lyrics</Form.Label>
+            <Button variant="secondary" size="sm" className="ml-2" onClick={searchLyrics}>Search!</Button>
+          </div>
           <Form.Control
             as="textarea"
             rows="5"
