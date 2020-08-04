@@ -71,20 +71,59 @@ const validateDataForEntity = (entityClass) => {
       await entityClass.fromJson(req.body)
       await next()
     } catch (e) {
-      return next({
-        statusCode: StatusCodes.BAD_REQUEST,
-        message: e.message,
-        userMessage: 'Invalid input'
-      })
+      return next(e)
     }
   }
 }
 
+const ensureOwnershipForEntity = (entityName, userField = 'user_id') => {
+  return async (req, res, next) => {
+    const entity = req.entity
+    const entityUserId = entity[userField]
+    if (!entityUserId || (req.user.id != entityUserId)) {
+      return next({
+        statusCode: StatusCodes.FORBIDDEN,
+        userMessage: `This ${entityName} does not belong to you`
+      })
+    }
+    next()
+  }
+}
+
+const checkForDuplicatesForEntity = (
+  entityClass, fields, forUser = true, userField = 'user_id') => {
+    return async (req, res, next) => {
+      const entity = req.entity
+      const body = req.body
+
+      const where = {}
+      fields.forEach(field => where[field] = body[field])
+      const query = entityClass
+        .query()
+        .first()
+        .where(where)
+
+      if (forUser && userField) {
+        query.where({ [userField]: req.user.id })
+      }
+      // console.log(query.toKnexQuery().toSQL().toNative())
+      const duplicate = await query
+      if (duplicate) {
+        return next({
+          type: 'UniqueViolationError',
+          userMessage: 'A similar song item already exists'
+        })
+      }
+      next()
+    }
+}
 
 module.exports = {
   StatusCodes,
   ensureAdmin,
   checkIsAdmin,
+  ensureOwnershipForEntity,
+  checkForDuplicatesForEntity,
   validateIdForEntity,
   validateDataForEntity
 }

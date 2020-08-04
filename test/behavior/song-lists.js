@@ -40,7 +40,7 @@ describe('/songlists', async () => {
 
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
-      expect(res.body.error).to.eql(false)
+      expect(res.body).not.to.haveOwnProperty('error')
 
       const data = res.body.data
       expect(data).to.be.an('array')

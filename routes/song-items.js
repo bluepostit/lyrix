@@ -1,54 +1,23 @@
 const express = require('express')
 const router = express.Router()
-const { StatusCodes, validateIdForEntity } = require('./common')
+const {
+  StatusCodes,
+  checkForDuplicatesForEntity,
+  ensureOwnershipForEntity,
+  validateIdForEntity,
+  validateDataForEntity
+} = require('./common')
 const { errorHandler } = require('../helpers/errors')
 const { SongItem } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 
-const checkForDuplicates = async (req, res, next) => {
-  const body = req.body
-  const duplicate = await SongItem
-    .query()
-    .first()
-    .where({
-      title: body.title,
-      song_id: body.song_id,
-      user_id: req.user.id
-    })
-
-  if (duplicate) {
-    return next({
-      type: 'UniqueViolationError',
-      userMessage: 'A similar song item already exists'
-    })
-  }
-  next()
-}
-
-const validateSongItemData = async (req, res, next) => {
-  const body = req.body
-  body.userId = req.user.id
-  try {
-    // Trigger model class's validation rules
-    await SongItem.fromJson(body)
-    await next()
-  } catch (e) {
-    return next(e)
-  }
-}
-
+const checkForDuplicates = checkForDuplicatesForEntity(
+  SongItem,
+  ['title', 'song_id']
+)
+const validateSongItemData = validateDataForEntity(SongItem)
 const validateId = validateIdForEntity(SongItem)
-
-const ensureOwnership = async (req, res, next) => {
-  const songItem = req.entity
-  if (songItem.user_id !== req.user.id) {
-    return next({
-      statusCode: StatusCodes.FORBIDDEN,
-      userMessage: 'The song item you are trying to update does not belong to you'
-    })
-  }
-  next()
-}
+const ensureOwnership = ensureOwnershipForEntity('song item')
 
 const sanitize = async (req, res, next) => {
   const body = req.body

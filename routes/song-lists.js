@@ -2,113 +2,104 @@ const express = require('express')
 const router = express.Router()
 const { SongList } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
+const {
+  StatusCodes,
+  checkForDuplicatesForEntity,
+  ensureOwnershipForEntity,
+  validateIdForEntity,
+  validateDataForEntity
+} = require('./common')
+const { errorHandler } = require('../helpers/errors')
 
 const SONGLIST_ATTRIBUTES = [
   'title',
   'id'
 ]
 
-const createSonglistValidation = (req, res, next) => {
-  const body = req.body
-  // Is `title` present?
-  if (!body.title) {
-    return res.json({
-      status: 400,
-      error: 'Missing fields',
-      message: 'Please include a title for your songlist'
-    })
-  }
+const validateId = validateIdForEntity(SongList)
+const validateSongListData = validateDataForEntity(SongList)
+const ensureOwnership = ensureOwnershipForEntity('song list')
+const checkForDuplicates = checkForDuplicatesForEntity(
+  SongList,
+  ['title']
+)
 
-  // Check for songlist with the same title
-  req.user
-    .$relatedQuery('songLists')
-    .where('title', '=', body.title)
-    .then((data) => {
-      if (data.length > 0) {
-        return res.json({
-          status: 400,
-          error: 'Duplicate songlist',
-          message: 'You already have a songlist with this name'
-        })
-      }
-      next()
-    })
+const setSongList = async (req, res, next) => {
+  const songList = await SongList
+    .query()
+    .findById(req.params.id)
+    .allowGraph('[songs.artist]')
+    .withGraphFetched('[songs.artist]')
+
+  req.songList = songList
+  next()
 }
 
 router.get('/', ensureLoggedIn,
   async (req, res, next) => {
-    const songlists = await req.user
-      .$relatedQuery('songLists')
-      .select(...SONGLIST_ATTRIBUTES)
-      .withGraphFetched('songs')
+    try {
+      const songlists = await req.user
+        .$relatedQuery('songLists')
+        .select(...SONGLIST_ATTRIBUTES)
+        .withGraphFetched('songs')
 
-    res.json({
-      error: false,
-      data: songlists
-    })
+      res.json({
+        status: StatusCodes.OK,
+        data: songlists
+      })
+    } catch (e) {
+      next(e)
+    }
   })
 
 router.get('/count', ensureLoggedIn,
   async (req, res, next) => {
-    const data = await req.user
-      .$relatedQuery('songLists')
-      .count()
-    const count = parseInt(data[0].count, 10)
+    try {
+      const count = await req.user
+        .$relatedQuery('songLists')
+        .resultSize()
 
-    res.json({
-      error: false,
-      status: 200,
-      data: count
-    })
-  })
-
-router.get('/:id', ensureLoggedIn,
-  async (req, res, next) => {
-    res.type('json')
-    const songList = await SongList
-      .query()
-      .findById(req.params.id)
-      .allowGraph('[songs.artist]')
-      .withGraphFetched('[songs.artist]')
-
-    let status = 200
-    let error = false
-    if (songList === undefined) {
-      error = 'Song list not found'
-      status = 404
-    } else if (songList.user_id !== req.user.id) {
-      error = 'Not your song list'
-      status = 401
+      res.json({
+        status: StatusCodes.OK,
+        data: count
+      })
+    } catch (e) {
+      next(e)
     }
-    res.json({
-      error: error,
-      status: status,
-      data: songList
-    })
   })
 
-router.post('/', ensureLoggedIn, createSonglistValidation,
+router.get('/:id', ensureLoggedIn, validateId, setSongList,
+  ensureOwnership,
+    async (req, res, next) => {
+      const songList = await SongList
+        .query()
+        .findById(req.params.id)
+        .allowGraph('[songs.artist]')
+        .withGraphFetched('[songs.artist]')
+      res.json({
+        status: StatusCodes.OK,
+        data: songList
+      })
+    })
+
+router.post('/', ensureLoggedIn, validateSongListData, checkForDuplicates,
   async (req, res, next) => {
     try {
       const list = await req.user
         .$relatedQuery('songLists')
-        .insertGraph([
-          {
-            title: req.body.title
-          }
-        ])
+        .insertGraph({
+          title: req.body.title
+        })
       res.json({
-        status: 201, // created
-        id: list[0].id
+        status: StatusCodes.CREATED,
+        id: list.id
       })
     } catch (error) {
-      console.log(error)
-      console.log(error.stack)
-      res.json({
-        status: 500,
-        error: "Couldn't create the songlist"
-      })
+      error.userMessage = "Couldn't create the songlist"
+      next(error)
     }
   })
+
+router.use(errorHandler('song list'))
 
 module.exports = router
