@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router()
+const { UniqueViolationError } = require('objection')
 
 const { Song } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 const { SongsHelper } = require('../helpers/songs')
+const { errorHandler } = require('../helpers/errors')
 const {
   StatusCodes,
   checkIsAdmin,
@@ -95,10 +97,9 @@ const checkForDuplicates = async (req, res, next) => {
     })
 
   if (duplicate) {
-    return res.json({
-      status: StatusCodes.BAD_REQUEST,
-      error: 'Invalid input',
-      message: `A similar song by that artist already exists`
+    return next({
+      type: UniqueViolationError,
+      userMessage: 'A similar song by that artist already exists'
     })
   }
   next()
@@ -158,7 +159,7 @@ router.get('/:id', validateId, setSong, setSongContext,
 
 router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
   checkForDuplicates, sanitize,
-    async (req, res) => {
+    async (req, res, next) => {
       const response = {
         status: StatusCodes.CREATED
       }
@@ -168,12 +169,11 @@ router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
           .insert(req.sanitizedBody)
         response.data = song
       } catch (error) {
-        console.log(error)
-        console.log(error.stack)
-        response.status = StatusCodes.INTERNAL_SERVER_ERROR
-        response.error = "Couldn't create the song"
+        return next(error)
       }
       res.json(response)
     })
+
+router.use(errorHandler('song'))
 
 module.exports = router

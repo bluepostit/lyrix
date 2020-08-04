@@ -285,6 +285,20 @@ describe('/songs', () => {
       expect(res.body).to.have.status(400)
     })
 
+    it('should return an error when an invalid artist is given', async () => {
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post('/songs')
+        .send({
+          title: 'This is a song',
+          text: 'This is some text. It is different',
+          artist_id: 1
+        })
+      expect(res.body).to.have.status(400)
+    })
+
     it('should return an error when a song with the same title exists',
       async () => {
         await RecordManager.loadFixture('songs')

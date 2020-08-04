@@ -15,10 +15,9 @@ const ensureAdmin = async (req, res, next) => {
   if (req.user.admin) {
     next()
   } else {
-    res.json({
-      status: StatusCodes.FORBIDDEN,
-      error: 'Unauthorized',
-      message: 'You are not authorized to do this action'
+    next({
+      statusCode: StatusCodes.FORBIDDEN,
+      userMessage: 'You are not authorized to do this action'
     })
   }
 }
@@ -44,10 +43,9 @@ const validateIdForEntity = (entityClass = null) => {
   return async (req, res, next) => {
     const id = req.params.id
     if (!id) {
-      return res.json({
-        status: StatusCodes.BAD_REQUEST,
-        error: 'Invalid input',
-        message: 'You must provide a valid id'
+      return next({
+        statusCode: StatusCodes.BAD_REQUEST,
+        userMessage: 'You must provide a valid id'
       })
     }
     if (entityClass) {
@@ -55,10 +53,9 @@ const validateIdForEntity = (entityClass = null) => {
         .query()
         .findById(id)
       if (!entity) {
-        return res.json({
-          status: StatusCodes.NOT_FOUND,
-          error: 'Not found',
-          message: 'No entity found with that id'
+        return next({
+          statusCode: StatusCodes.NOT_FOUND,
+          userMessage: 'No entity found with that id'
         })
       }
       req.entity = entity
@@ -74,10 +71,10 @@ const validateDataForEntity = (entityClass) => {
       await entityClass.fromJson(req.body)
       await next()
     } catch (e) {
-      return res.json({
-        status: StatusCodes.BAD_REQUEST,
-        error: 'Invalid input',
-        message: e.message
+      return next({
+        statusCode: StatusCodes.BAD_REQUEST,
+        message: e.message,
+        userMessage: 'Invalid input'
       })
     }
   }
