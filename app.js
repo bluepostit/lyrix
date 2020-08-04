@@ -46,6 +46,7 @@ app.use('/api/songs', require('./routes/songs'))
 app.use('/api/songlists', require('./routes/song-lists'))
 app.use('/api/song-items', require('./routes/song-items'))
 app.use('/api/song-item-types', require('./routes/song-item-types'))
+app.use('/api/song-importer', require('./routes/song-importer'))
 app.use('/api/user', require('./routes/authentication'))
 
 // Fallback routing: respond with the React app's index page.
