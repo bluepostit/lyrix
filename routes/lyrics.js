@@ -63,7 +63,11 @@ router.get('/', ensureLoggedIn, validateQueryArtist, validateQueryData,
       const lyrics = await song.lyrics()
       res.json({
         status: StatusCodes.OK,
-        data: lyrics
+        data: {
+          title: song.title,
+          artist: song.artist.name,
+          lyrics: lyrics
+        }
       })
     } catch (e) {
       let statusCode = StatusCodes.INTERNAL_SERVER_ERROR

@@ -79,7 +79,10 @@ describe(BASE_URL, function() {
       const res = await agent.get(
         `${BASE_URL}?artist_id=${artist.id}&title=${title}`)
       expect(res.body).to.have.status(200)
-      expect(res.body.data).to.match(/questions of science/i)
+      const data = res.body.data
+      expect(data.artist).to.match(/coldplay/i)
+      expect(data.title).to.match(new RegExp(title, 'i'))
+      expect(data.lyrics).to.match(/questions of science/i)
     })
   })
 })
