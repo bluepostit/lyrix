@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 
 const { SongItemType } = require('../models')
+const { StatusCodes } = require('./common')
+const { errorHandler } = require('../helpers/errors')
 
 const ATTRIBUTES = ['id', 'name']
 
@@ -12,12 +14,14 @@ router.get('/', async (req, res, next) => {
       .select(ATTRIBUTES)
       .orderBy('name')
     res.json({
-      error: false,
+      status: StatusCodes.OK,
       data: songItemTypes
     })
   } catch (error) {
-    console.log(error.stack)
+    next(error)
   }
 })
+
+router.use(errorHandler('song item'))
 
 module.exports = router
