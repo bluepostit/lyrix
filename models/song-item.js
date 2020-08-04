@@ -50,7 +50,7 @@ module.exports = class SongItem extends Model {
       properties: {
         id: { type: 'integer' },
         title: { type: 'string', minLength: 5, maxLength: 255 },
-        text: { type: 'string', minLength: 5, maxLength: 2000 },
+        text: { type: 'string', minLength: 5, maxLength: 20000 },
         song_id: { type: 'integer' },
         song_item_type_id: { type: 'integer' }
       }
