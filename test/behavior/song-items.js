@@ -33,7 +33,7 @@ describe('/song-items', async () => {
 
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
-      expect(res.body.error).to.be.eql(false)
+      expect(res.body).not.to.haveOwnProperty('error')
       expect(res.body.data).to.be.empty
     })
 

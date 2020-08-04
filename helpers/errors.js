@@ -3,7 +3,8 @@ const {
   ConstraintViolationError,
   UniqueViolationError,
   NotNullViolationError,
-  ForeignKeyViolationError
+  ForeignKeyViolationError,
+  ValidationError
 } = require('objection')
 const { StatusCodes } = require('../routes/common')
 
@@ -33,6 +34,10 @@ const errorHandler = (entityName) => {
 
     const status = getStatus(err)
     // console.log(`status: ${status}`)
+
+    if (err instanceof ValidationError) {
+      err.userMessage = err.message
+    }
 
     res.json({
       error: err.userError || 'Error',
