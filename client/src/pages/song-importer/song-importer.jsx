@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useHistory } from "react-router-dom"
 import {
   Button, Form, ToggleButton, ToggleButtonGroup
@@ -23,26 +23,13 @@ const SongImporter = () => {
   const [loadingTitle, setLoadingTitle] = useState('')
   const [error, setError] = useState('')
 
-  // useEffect(() => {
-  //   fetchSong(songId)
-  //     .then((song) => {
-  //       setSong(song)
-  //       // songItem.song = song
-  //     })
-  //     .catch((e) => {
-  //       console.log('Something went wrong!')
-  //       console.log(e)
-  //       history.push('/login')
-  //     })
-  // }, [history, songId, songItem.song]) // things to monitor for render
-
-
-  const onCreateSuccess = () => {
-    history.push('/songs')
+  const onImportSuccess = (song) => {
+    history.push(`/songs/${song.id}`)
   }
 
   const handleSearchStart = () => {
     setSongs([])
+    setError('')
     setLoadingTitle('Searching...')
   }
 
@@ -55,11 +42,6 @@ const SongImporter = () => {
     setLoading(false)
   }
 
-  const onSearchError = (error) => {
-    console.log('error!')
-    console.log(error)
-  }
-
   const getImportUrl = (form) => {
     const queryString = getFormData(form)
     const url = `${action}?${queryString}`
@@ -68,7 +50,6 @@ const SongImporter = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    console.log('submit!')
     setError('')
     const url = getImportUrl(event.currentTarget)
     setLoadingTitle('Importing...')
@@ -77,12 +58,11 @@ const SongImporter = () => {
       .then(res => res.json())
       .then((json) => {
         setLoading(false)
-        console.log(json)
         if (json.status !== 200) {
           setError(json.message)
         } else {
           const song = json.data.song
-          history.push(`/songs/${song.id}`)
+          onImportSuccess(song)
         }
       })
 

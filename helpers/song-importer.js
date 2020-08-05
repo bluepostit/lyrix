@@ -75,7 +75,8 @@ class SongImporter {
 
     if (!artist || !title ||!lyrics) {
       throw {
-        userMessage: "Couldn't find all required data to import"
+        userMessage: "Couldn't find all required data to import. "
+          + "Please try again."
       }
     }
 

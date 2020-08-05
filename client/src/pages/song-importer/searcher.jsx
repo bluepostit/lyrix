@@ -30,7 +30,6 @@ const Searcher = ({
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    console.log('submit!')
     setError('')
     const url = getSearchUrl(event.currentTarget)
     onSearchStart()
@@ -40,7 +39,6 @@ const Searcher = ({
       .then((json) => {
         onSearchComplete(json)
         setLoading(false)
-        console.log(json)
         if (json.status !== 200) {
           setError(json.message)
         }
