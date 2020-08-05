@@ -75,29 +75,21 @@ class Loader {
   }
 
   beginStopping() {
-    console.log('begin stopping - starting the timer...')
     this.stoppingTimer = setTimeout(() => {
-      console.log('time up! calling onStop()')
       this.isLoading = false
       this.stoppingTimer = null
       this.triggerEvent('stop')
     }, LOADING_STOP_TIMEOUT)
-    console.log(`(Are we stopping? ${!!this.stoppingTimer})`)
   }
 
   cancelStopping() {
-    console.log('cancel stopping')
     if (this.stoppingTimer) {
-      console.log('yes, clearing timeout')
       clearTimeout(this.stoppingTimer)
       this.stoppingTimer = null
     }
   }
 
   start(message) {
-    console.log(`Loader.start(${message})`)
-    console.log(`Are we stopping? ${!!this.stoppingTimer}`)
-    console.log(this)
     if (this.stoppingTimer) {
       this.cancelStopping()
     }
@@ -107,10 +99,7 @@ class Loader {
   }
 
   stop() {
-    console.log(`Loader.stop()`)
-    console.log(this)
     if (!this.stoppingTimer) {
-      console.log('not stopping yet; begin stopping...')
       this.beginStopping()
     }
   }
