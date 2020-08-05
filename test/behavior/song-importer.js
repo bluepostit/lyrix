@@ -119,5 +119,27 @@ describe(BASE_URL, async function () {
       expect(songs[0].text).not.to.be.empty
       expect(songs[0].text).to.match(/you know that you're toxic/i)
     })
+
+    it('should fail when we already have that song in the database',
+      async () => {
+        await RecordManager.loadFixture('artists.coldplay.with-yellow')
+        const agent = await getAgentAfterLogin()
+        const query = 'coldplay yellow'
+        const songResults = await getSearchedSongs(agent, query)
+        const songToImport = songResults[0]
+        const songId = songToImport.id
+
+        const dbSongCount = await Song
+          .query()
+          .resultSize()
+        expect(dbSongCount).to.eql(1)
+
+        const res = await agent.get(`${BASE_URL}/import?sid=${songId}`)
+        expect(res.body).to.have.status(400)
+        expect(res.body.message).not.to.be.empty
+
+        const songs = await Song.query()
+        expect(songs.length).to.eql(1)
+      })
   })
 })
