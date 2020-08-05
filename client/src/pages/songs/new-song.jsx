@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom"
 import { Page } from '../page'
 import { SongForm } from './form'
 
-const NewSong = () => {
+const NewSong = ({ loader }) => {
   const title = 'Add a Song'
   const history = useHistory()
   const [song, setSong] = useState({
@@ -37,6 +37,7 @@ const NewSong = () => {
       setSong={setSong}
       action={'/api/songs'}
       method='POST'
+      loader={loader}
       onSuccess={onCreateSuccess} />
 
   return (

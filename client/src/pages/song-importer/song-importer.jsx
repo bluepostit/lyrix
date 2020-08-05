@@ -14,13 +14,11 @@ const getFormData = (form) => {
   return data.toString()
 }
 
-const SongImporter = () => {
+const SongImporter = ({ loader }) => {
   const title = 'Import a Song'
   const history = useHistory()
   const action = '/api/song-importer/import'
   const [songs, setSongs] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [loadingTitle, setLoadingTitle] = useState('')
   const [error, setError] = useState('')
 
   const onImportSuccess = (song) => {
@@ -30,7 +28,6 @@ const SongImporter = () => {
   const handleSearchStart = () => {
     setSongs([])
     setError('')
-    setLoadingTitle('Searching...')
   }
 
   const onSearch = (res) => {
@@ -39,7 +36,6 @@ const SongImporter = () => {
       songs = res.data.songs
     }
     setSongs(songs)
-    setLoading(false)
   }
 
   const getImportUrl = (form) => {
@@ -52,34 +48,28 @@ const SongImporter = () => {
     event.preventDefault()
     setError('')
     const url = getImportUrl(event.currentTarget)
-    setLoadingTitle('Importing...')
-    setLoading(true)
+    loader.start('Importing...')
     fetch(url)
       .then(res => res.json())
       .then((json) => {
-        setLoading(false)
         if (json.status !== 200) {
           setError(json.message)
         } else {
           const song = json.data.song
           onImportSuccess(song)
         }
+      }).finally(() => {
+        loader.stop()
       })
-
   }
 
   const content =
     <>
       <Searcher
-        loading={loading}
-        setLoading={setLoading}
+        loader={loader}
         onSearchStart={handleSearchStart}
         onSearchComplete={onSearch}
         action={'/api/song-importer/search'}
-      />
-      <LoadingModal
-        loading={loading}
-        title={loadingTitle}
       />
       <div className="container">
         <FormError error={error} />
@@ -102,7 +92,7 @@ const SongImporter = () => {
           </Form.Group>
           <div className="d-flex justify-content-end">
             <Button variant="primary" type="submit"
-              disabled={loading} hidden={songs.length < 1}>
+              disabled={loader.loading} hidden={songs.length < 1}>
               Import!
             </Button>
           </div>

@@ -54,6 +54,7 @@ const LoadingModal = ({
     <Modal show={loading} onHide={onHide}
       backdrop="static"
       keyboard={false}
+      animation={false}
       className="lyrix-modal"
       aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header>

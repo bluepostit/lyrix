@@ -3,14 +3,15 @@ import { useHistory } from "react-router-dom"
 
 const ListDataset = ({
   url,
-  loading = true,
-  setLoading,
+  loader,
+  shouldLoad,
   onLoadingComplete
 }) => {
   const [data, setData] = useState([])
   const [error, setError] = useState('')
 
   const fetchData = () => {
+    loader && loader.start()
     fetch(url)
       .then(res => res.json())
       .then((json) => {
@@ -18,14 +19,14 @@ const ListDataset = ({
           setError(json)
         }
         setData(json)
-        setLoading(false)
+        loader && loader.stop()
         onLoadingComplete(json)
       })
   }
 
   useEffect(() => {
     fetchData()
-  }, [loading, data.length])
+  }, [shouldLoad, data.length])
 
   return (
     <>
@@ -45,4 +46,64 @@ const ErrorHandler = ({
   return <></>
 }
 
-export { ListDataset }
+const LOADING_STOP_TIMEOUT = 100 // milliseconds
+
+class Loader {
+  constructor(message) {
+    this.isLoading = false
+    this.stoppingTimer = null
+    this.message = message
+    this.listeners = {
+      'start': [],
+      'stop': []
+    }
+  }
+
+  addListener(event, listener) {
+    if (!['start', 'stop'].includes(event)) {
+      throw Error('Invalid event type')
+    }
+    this.listeners[event].push(listener)
+  }
+
+  triggerEvent(event, ...params) {
+    this.listeners[event].forEach(listener => listener(...params))
+  }
+
+  get loading() {
+    return this.isLoading
+  }
+
+  beginStopping() {
+    this.stoppingTimer = setTimeout(() => {
+      this.isLoading = false
+      this.stoppingTimer = null
+      this.triggerEvent('stop')
+    }, LOADING_STOP_TIMEOUT)
+  }
+
+  cancelStopping() {
+    if (this.stoppingTimer) {
+      clearTimeout(this.stoppingTimer)
+      this.stoppingTimer = null
+    }
+  }
+
+  start(message) {
+    if (this.stoppingTimer) {
+      this.cancelStopping()
+    }
+    this.message = message || this.message
+    this.triggerEvent('start', message)
+    this.isLoading = true
+  }
+
+  stop() {
+    if (!this.stoppingTimer) {
+      this.beginStopping()
+    }
+  }
+}
+
+
+export { ListDataset, Loader }

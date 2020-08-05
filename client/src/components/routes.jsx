@@ -11,7 +11,7 @@ import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
 
-const RouterSwitch = () => {
+const RouterSwitch = ({ loader }) => {
   return (
     <Switch>
       <Route path="/login">
@@ -21,34 +21,51 @@ const RouterSwitch = () => {
         <Auth.SignUp />
       </Route>
 
-      <Route path="/artists/:artistId/songs/:songId" children={<Songs.Show />} />
-      <Route path="/artists/:artistId" children={<Artists.Show />} />
+      <Route path="/artists/:artistId/songs/:songId">
+        <Songs.Show loader={loader} />
+      </Route>
+      <Route path="/artists/:artistId">
+        <Artists.Show loader={loader} />
+      </Route>
       <Route path="/artists">
-        <Artists.Index />
+        <Artists.Index loader={loader} />
       </Route>
 
-      <Route path="/songs/new" children={<Songs.New />} />
+      <Route path="/songs/new" children={<Songs.New loader={loader} />} />
       <Route path="/songs/:songId/song-items/new"
-        children={<SongItems.New />} />
-      <Route path="/songs/:id/edit" children={<Songs.Edit />} />
-      <Route path="/songs/:songId" children={<Songs.Show />} />
+        children={<SongItems.New loader={loader} />} />
+      <Route path="/songs/:id/edit" children={<Songs.Edit loader={loader} />} />
+      <Route path="/songs/:songId" children={<Songs.Show loader={loader} />} />
       <Route path="/songs">
-        <Songs.Index />
+        <Songs.Index loader={loader} />
       </Route>
 
-      <Route path="/songlists/:songlistId/songs/:songId"
-        children={<Songs.Show />} />
-      <Route path="/songlists/new" children={<Songlists.New />} />
-      <Route path="/songlists/:id" children={<Songlists.Show />} />
+      <Route path="/songlists/:songlistId/songs/:songId">
+        <Songs.Show loader={loader} />
+      </Route>
+      <Route path="/songlists/new">
+        <Songlists.New loader={loader} />
+      </Route>
+      <Route path="/songlists/:id">
+        <Songlists.Show loader={loader} />
+      </Route>
       <Route path="/songlists">
-        <Songlists.Index />
+        <Songlists.Index loader={loader} />
       </Route>
 
-      <Route path="/song-items/:id/edit" children={<SongItems.Edit />} />
-      <Route path="/song-items/:id" children={<SongItems.Show />} />
-      <Route path="/song-items" children={<SongItems.Index />} />
+      <Route path="/song-items/:id/edit">
+        <SongItems.Edit loader={loader} />
+      </Route>
+      <Route path="/song-items/:id">
+        <SongItems.Show loader={loader} />
+      </Route>
+      <Route path="/song-items">
+        <SongItems.Index loader={loader} />
+      </Route>
 
-      <Route path="/import" children={<Importer />} />
+      <Route path="/import">
+        <Importer loader={loader}/>
+      </Route>
 
       <Route path="/">
         <Home />

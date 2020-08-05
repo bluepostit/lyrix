@@ -16,7 +16,7 @@ const fetchSongItem = async (id) => {
     })
 }
 
-const EditSongItem = () => {
+const EditSongItem = ({ loader }) => {
   const title = 'Editing Song Item'
   const history = useHistory()
   const [songItem, setSongItem] = useState({
@@ -29,12 +29,16 @@ const EditSongItem = () => {
   const { id } = useParams()
 
   useEffect(() => {
+    loader.start('Loading...')
     fetchSongItem(id)
       .then(songItem => setSongItem(songItem))
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
         history.push('/login')
+      })
+      .finally(() => {
+        loader.stop()
       })
   }, [history, id]) // things to monitor for render
 
@@ -50,6 +54,7 @@ const EditSongItem = () => {
       setSongItem={setSongItem}
       action={`/api/song-items/${songItem.id}`}
       method='PUT'
+      loader={loader}
       onSuccess={onUpdateSuccess} />
 
   return (

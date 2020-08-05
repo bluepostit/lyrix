@@ -25,6 +25,7 @@ const SongForm = ({
   setSong,
   action,
   method,
+  loader,
   onSuccess
 }) => {
   const history = useHistory()
@@ -32,7 +33,6 @@ const SongForm = ({
   const [artists, setArtists] = useState([])
   const [validated, setValidated] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
 
   const getArtist = (id) => {
     return artists.find(item => item.id === id)
@@ -55,12 +55,14 @@ const SongForm = ({
     if (key === 'artist_id') {
       key = 'artist'
       value = getArtist(parseInt(event.target.value))
+        || { id: '' }
     }
     updateSong({ [key]: value })
   }
 
   const searchLyrics = async () => {
-    setIsLoading(true)
+    setErrorMessage('')
+    loader.start('Searching for lyrics...')
     const query = new URLSearchParams({
       artist_id: song.artist.id,
       title: song.title
@@ -77,7 +79,8 @@ const SongForm = ({
             text: json.data.lyrics
           })
         }
-        setIsLoading(false)
+      }).finally(() => {
+        loader.stop()
       })
   }
 
@@ -87,6 +90,7 @@ const SongForm = ({
     const form = event.currentTarget
     // setValidated(true)
 
+    loader.start('Saving song...')
     fetch(action, {
       method,
       body: getFormData(form),
@@ -100,20 +104,23 @@ const SongForm = ({
         } else {
           onSuccess()
         }
+      }).finally(() => {
+        loader.stop()
       })
   }
 
   useEffect(() => {
-    setIsLoading(true)
+    loader.start('Loading artists...')
     fetchArtists()
       .then((artists) => {
         setArtists(artists)
-        setIsLoading(false)
       })
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
         history.push('/login')
+      }).finally(() => {
+        loader.stop()
       })
   }, [history, artists.length]) // things to monitor for render
 
@@ -174,11 +181,6 @@ const SongForm = ({
           </Button>
         </div>
       </Form>
-      <LoadingModal
-        loading={isLoading}
-        setLoading={setIsLoading}
-        content="Content is loading; please wait"
-      />
     </div>
   )
 }

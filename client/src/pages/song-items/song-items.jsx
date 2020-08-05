@@ -5,10 +5,10 @@ import { ItemListPage } from '../item-list-page'
 import { SongItem } from '../../components/list-items'
 
 const SongItems = ({
-  title = 'My Song Items'
+  title = 'My Song Items',
+  loader
 }) => {
   const history = useHistory()
-  const [loading, setLoading] = useState(true)
   const [data, setData] = useState({ data: [], actions: {} })
 
   const onSongItemClick = (songItem) => {
@@ -27,15 +27,14 @@ const SongItems = ({
     <>
       <ListDataset
         url="/api/song-items"
-        loading={loading}
-        setLoading={setLoading}
+        loader={loader}
         onLoadingComplete={onLoadingComplete}
       />
       <ItemListPage
         title={title}
         items={data.data}
         actions={data.actions}
-        loading={loading}
+        loading={loader.loading}
         onItemClick={onSongItemClick}
         renderItem={renderSongItem}
       />
