@@ -47,13 +47,13 @@ const SongItemsModal = ({
 const LoadingModal = ({
   title = 'Loading...',
   loading = false,
-  setLoading,
-  content
 }) => {
-  const onHide = () => { setLoading(false) }
+  const onHide = () => { }
 
   return (
     <Modal show={loading} onHide={onHide}
+      backdrop="static"
+      keyboard={false}
       className="lyrix-modal"
       aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header>

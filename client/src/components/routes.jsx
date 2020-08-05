@@ -6,6 +6,7 @@ import {
 import { Home } from '../pages'
 import * as Auth from '../pages/auth'
 import * as Artists from '../pages/artists'
+import { SongImporter as Importer } from '../pages/song-importer'
 import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
@@ -46,6 +47,8 @@ const RouterSwitch = () => {
       <Route path="/song-items/:id/edit" children={<SongItems.Edit />} />
       <Route path="/song-items/:id" children={<SongItems.Show />} />
       <Route path="/song-items" children={<SongItems.Index />} />
+
+      <Route path="/import" children={<Importer />} />
 
       <Route path="/">
         <Home />
