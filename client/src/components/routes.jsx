@@ -13,17 +13,19 @@ import * as Songs from '../pages/songs'
 const RouterSwitch = () => {
   return (
     <Switch>
-      <Route path="/artists/:artistId/songs/:songId" children={<Songs.Show />} />
-      <Route path="/artists/:artistId" children={<Artists.Show />} />
-      <Route path="/artists">
-        <Artists.Index />
-      </Route>
       <Route path="/login">
         <Auth.Login />
       </Route>
       <Route path="/sign-up">
         <Auth.SignUp />
       </Route>
+
+      <Route path="/artists/:artistId/songs/:songId" children={<Songs.Show />} />
+      <Route path="/artists/:artistId" children={<Artists.Show />} />
+      <Route path="/artists">
+        <Artists.Index />
+      </Route>
+
       <Route path="/songs/new" children={<Songs.New />} />
       <Route path="/songs/:songId/song-items/new"
         children={<SongItems.New />} />
