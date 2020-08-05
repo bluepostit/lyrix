@@ -4,12 +4,11 @@ import { ListDataset } from '../../components/data'
 import { ItemListPage } from '../item-list-page'
 import { Song } from '../../components/list-items'
 
-const Songs = (props) => {
+const Songs = ({ loader }) => {
   const history = useHistory()
-  const [loading, setLoading] = useState(true)
   const [data, setData] = useState({ data: [], actions: {} })
 
-  let title = props.title || "Songs"
+  let title = "Songs"
 
   const renderSong = (song) => {
     return <Song song={song} />
@@ -31,14 +30,13 @@ const Songs = (props) => {
     <>
       <ListDataset
         url="/api/songs"
-        loading={loading}
-        setLoading={setLoading}
+        loader={loader}
         onLoadingComplete={onLoadingComplete}
       />
       <ItemListPage title={title}
         items={data.data}
         actions={data.actions}
-        loading={loading}
+        loading={loader.loading}
         onNewClick={onNewClick}
         onItemClick={onSongClick}
         renderItem={renderSong}

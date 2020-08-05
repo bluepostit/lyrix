@@ -11,7 +11,7 @@ import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
 
-const RouterSwitch = () => {
+const RouterSwitch = ({ loader }) => {
   return (
     <Switch>
       <Route path="/login">
@@ -33,7 +33,7 @@ const RouterSwitch = () => {
       <Route path="/songs/:id/edit" children={<Songs.Edit />} />
       <Route path="/songs/:songId" children={<Songs.Show />} />
       <Route path="/songs">
-        <Songs.Index />
+        <Songs.Index loader={loader} />
       </Route>
 
       <Route path="/songlists/:songlistId/songs/:songId"
