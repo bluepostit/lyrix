@@ -15,9 +15,8 @@ const renderSong = (song, index) => {
   )
 }
 
-const Songlist = () => {
+const Songlist = ({ loader }) => {
   const { id } = useParams()
-  const [loading, setLoading] = useState(false)
   const [data, setData] = useState({
     data: {
       title: '',
@@ -43,15 +42,14 @@ const Songlist = () => {
     <>
       <ListDataset
         url={`/api/songlists/${id}`}
-        loading={loading}
-        setLoading={setLoading}
+        loader={loader}
         onLoadingComplete={onLoadingComplete}
       />
       <ItemListPage
         title={data.data.title}
         items={data.data.songs}
         actions={data.actions}
-        loading={loading}
+        loading={loader.loading}
         onNewClick={onNewClick}
         onItemClick={onSongClick}
         renderItem={renderSong}

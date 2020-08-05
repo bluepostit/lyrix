@@ -30,7 +30,7 @@ const PageContent = ({ songItem }) => {
   )
 }
 
-const SongItem = () => {
+const SongItem = ({ loader }) => {
   const { id } = useParams()
   const [data, setData] = useState({
     title: null,
@@ -54,6 +54,7 @@ const SongItem = () => {
   }
 
   useEffect(() => {
+    loader.start('Loading Song Item...')
     getSongItem(id)
       .then((data) => {
         setData(data)
@@ -61,6 +62,9 @@ const SongItem = () => {
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
+      })
+      .finally(() => {
+        loader.stop()
       })
   }, [history, id]) // things to monitor for render
     // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects)
@@ -71,6 +75,7 @@ const SongItem = () => {
         content={<PageContent songItem={data.data} />}
         actions={data.actions}
         title={<SongItemPageTitle songItem={data.data} />}
+        loader={loader}
         onEditClick={goToEdit}
         onDeleteClick={handleDeleteClick}
       />

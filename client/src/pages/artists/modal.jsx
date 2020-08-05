@@ -7,32 +7,30 @@ const getFormData = (form) => {
 }
 
 const ArtistModal = ({
-  artist = { name: '' },
-  setArtist,
   role,
   title,
   show,
-  setShow,
+  onSuccess,
+  onDismiss,
   confirmText = 'Save',
-  dismissText = 'Cancel',
-  onSuccess
+  dismissText = 'Cancel'
 }) => {
-
+  const [modalArtist, setModalArtist] = useState({})
   const [error, setError] = useState('')
   const [isLoading, setLoading] = useState(false)
 
   let action = '/api/artists'
   let method = 'POST'
-  if (role === 'update') {
-    action = `/api/artists/${artist.id}`
+  if (role === 'update' && modalArtist) {
+    action = `/api/artists/${modalArtist.id}`
     method = 'UPDATE'
   }
 
   const handleClose = () => {
-    setShow(false)
     setLoading(false)
+    onDismiss()
     setError('')
-    setArtist({ name: '' })
+    setModalArtist({ name: '' })
   }
 
   const handleSubmit = async (event) => {
@@ -60,15 +58,16 @@ const ArtistModal = ({
 
   const handleChange = (event) => {
     setError('')
-    const artistCopy = { ...artist }
+    const artistCopy = { ...modalArtist }
     const target = event.target
     artistCopy[target.name] = target.value
-    setArtist(artistCopy)
+    setModalArtist(artistCopy)
   }
 
   return (
     <Modal show={show} onHide={handleClose}
       className="song-items-modal"
+      animation={false}
       aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header>
         <Modal.Title>{title}</Modal.Title>
@@ -87,7 +86,7 @@ const ArtistModal = ({
                 type="text"
                 placeholder="Type the artist's name here"
                 name="name"
-                value={artist.name}
+                value={modalArtist.name}
                 onChange={handleChange}
               />
             </Form.Group>

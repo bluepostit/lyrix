@@ -15,7 +15,7 @@ const fetchSong = async (id) => {
     })
 }
 
-const EditSong = () => {
+const EditSong = ({ loader }) => {
   const title = 'Editing Song'
   const history = useHistory()
   const [song, setSong] = useState({
@@ -31,8 +31,12 @@ const EditSong = () => {
   const { id } = useParams()
 
   useEffect(() => {
+    loader.start('Loading song...')
     fetchSong(id)
-      .then(song => setSong(song))
+      .then((song) => {
+        setSong(song)
+        loader.stop()
+      })
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
@@ -51,6 +55,7 @@ const EditSong = () => {
       setSong={setSong}
       action={`/api/songs/${song.id}`}
       method='PUT'
+      loader={loader}
       onSuccess={onUpdateSuccess} />
 
   return (

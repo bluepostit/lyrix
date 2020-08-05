@@ -22,15 +22,15 @@ const renderArtist = (artist) => {
   )
 }
 
-const Artists = () => {
+const Artists = ({ loader }) => {
   const history = useHistory()
-  const [modalArtist, setModalArtist] = useState({ name: '' })
+  const [datasetShouldLoad, setDatasetShouldLoad] = useState(true)
   const [showModal, setShowModal] = useState(false)
-  const [loading, setLoading] = useState(true)
   const [data, setData] = useState({ data: [], actions: {} })
 
   const onLoadingComplete = (data) => {
     setData(data)
+    setDatasetShouldLoad(false)
   }
 
   const onArtistClick = (artist) => {
@@ -41,35 +41,37 @@ const Artists = () => {
     setShowModal(true)
   }
 
+  const onModalDismiss = () => {
+    setShowModal(false)
+  }
+
   const onSuccessfulCreate = () => {
     // Need to reload items!
-    setLoading(true)
+    setDatasetShouldLoad(true)
   }
 
   return (
     <>
       <ListDataset
         url="/api/artists"
-        loading={loading}
-        setLoading={setLoading}
+        loader={loader}
+        shouldLoad={datasetShouldLoad}
         onLoadingComplete={onLoadingComplete}
       />
       <ItemListPage title="Artists"
         items={data.data}
         actions={data.actions}
-        loading={loading}
+        loader={loader}
         onNewClick={onNewClick}
         onItemClick={onArtistClick}
         renderItem={renderArtist}
       />
       <ArtistModal
-        artist={modalArtist}
-        setArtist={setModalArtist}
         role="create"
         title="Add an Artist"
         show={showModal}
-        setShow={setShowModal}
         onSuccess={onSuccessfulCreate}
+        onDismiss={onModalDismiss}
       />
     </>
   )

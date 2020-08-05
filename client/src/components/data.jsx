@@ -4,13 +4,14 @@ import { useHistory } from "react-router-dom"
 const ListDataset = ({
   url,
   loader,
+  shouldLoad,
   onLoadingComplete
 }) => {
   const [data, setData] = useState([])
   const [error, setError] = useState('')
 
   const fetchData = () => {
-    loader.start()
+    loader && loader.start()
     fetch(url)
       .then(res => res.json())
       .then((json) => {
@@ -18,14 +19,14 @@ const ListDataset = ({
           setError(json)
         }
         setData(json)
-        loader.stop()
+        loader && loader.stop()
         onLoadingComplete(json)
       })
   }
 
   useEffect(() => {
     fetchData()
-  }, [loader.loading, data.length])
+  }, [shouldLoad, data.length])
 
   return (
     <>

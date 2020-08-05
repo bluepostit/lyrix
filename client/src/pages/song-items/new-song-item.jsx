@@ -16,7 +16,7 @@ const fetchSong = async (id) => {
     })
 }
 
-const NewSongItem = () => {
+const NewSongItem = ({ loader }) => {
   const title = 'Add a Song Item'
   const history = useHistory()
   const [song, setSong] = useState({id: ''})
@@ -30,6 +30,7 @@ const NewSongItem = () => {
   const { songId } = useParams()
 
   useEffect(() => {
+    loader.start('Loading...')
     fetchSong(songId)
       .then((song) => {
         setSong(song)
@@ -39,6 +40,9 @@ const NewSongItem = () => {
         console.log('Something went wrong!')
         console.log(e)
         history.push('/login')
+      })
+      .finally(() => {
+        loader.stop()
       })
   }, [history, songId, songItem.song]) // things to monitor for render
 
@@ -54,6 +58,7 @@ const NewSongItem = () => {
       setSongItem={setSongItem}
       action={'/api/song-items'}
       method='POST'
+      loader={loader}
       onSuccess={onCreateSuccess} />
 
   return (

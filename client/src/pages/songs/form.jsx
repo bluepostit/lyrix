@@ -25,6 +25,7 @@ const SongForm = ({
   setSong,
   action,
   method,
+  loader,
   onSuccess
 }) => {
   const history = useHistory()
@@ -32,7 +33,6 @@ const SongForm = ({
   const [artists, setArtists] = useState([])
   const [validated, setValidated] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
 
   const getArtist = (id) => {
     return artists.find(item => item.id === id)
@@ -55,12 +55,14 @@ const SongForm = ({
     if (key === 'artist_id') {
       key = 'artist'
       value = getArtist(parseInt(event.target.value))
+        || { id: '' }
     }
     updateSong({ [key]: value })
   }
 
   const searchLyrics = async () => {
-    setIsLoading(true)
+    setErrorMessage('')
+    loader.start('Searching for lyrics...')
     const query = new URLSearchParams({
       artist_id: song.artist.id,
       title: song.title
@@ -69,6 +71,7 @@ const SongForm = ({
     fetch(url)
       .then(res => res.json())
       .then((json) => {
+        loader.stop()
         if (json.error) {
           setErrorMessage(json.message)
         } else {
@@ -77,7 +80,6 @@ const SongForm = ({
             text: json.data.lyrics
           })
         }
-        setIsLoading(false)
       })
   }
 
@@ -104,11 +106,11 @@ const SongForm = ({
   }
 
   useEffect(() => {
-    setIsLoading(true)
+    loader.start('Loading artists...')
     fetchArtists()
       .then((artists) => {
         setArtists(artists)
-        setIsLoading(false)
+        loader.stop()
       })
       .catch((e) => {
         console.log('Something went wrong!')
@@ -174,11 +176,6 @@ const SongForm = ({
           </Button>
         </div>
       </Form>
-      <LoadingModal
-        loading={isLoading}
-        setLoading={setIsLoading}
-        content="Content is loading; please wait"
-      />
     </div>
   )
 }

@@ -9,6 +9,7 @@ const SongItemForm = ({
   song,
   action,
   method,
+  loader,
   onSuccess
 }) => {
   const history = useHistory()
@@ -43,6 +44,7 @@ const SongItemForm = ({
     const form = event.currentTarget
     // setValidated(true)
 
+    loader.start('Saving Song Item...')
     fetch(action, {
       method,
       body: getFormData(form),
@@ -56,6 +58,9 @@ const SongItemForm = ({
         } else {
           onSuccess()
         }
+      })
+      .finally(() => {
+        loader.stop()
       })
   }
 
@@ -71,12 +76,16 @@ const SongItemForm = ({
   }
 
   useEffect(() => {
+    loader.start('Loading...')
     fetchSongItemTypes()
       .then(itemTypes => setItemTypes(itemTypes))
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
         history.push('/login')
+      })
+      .finally(() => {
+        loader.stop()
       })
   }, [history, itemTypes.length]) // things to monitor for render
 
