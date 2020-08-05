@@ -4,6 +4,8 @@ import { RouterSwitch } from './components/routes'
 import { LoadingModal } from './components/modals'
 import { Loader } from './components/data'
 
+const loader = new Loader('Loading...')
+
 function App() {
   const [loading, setLoading] = useState(false)
   const [loadingMessage, setLoadingMessage] = useState('Loading...')
@@ -14,7 +16,8 @@ function App() {
   const onLoadEnd = () => {
     setLoading(false)
   }
-  const loader = new Loader(loadingMessage, onLoadStart, onLoadEnd)
+  loader.addListener('start', onLoadStart)
+  loader.addListener('stop', onLoadEnd)
 
   return (
     <>

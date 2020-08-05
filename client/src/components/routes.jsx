@@ -31,7 +31,7 @@ const RouterSwitch = ({ loader }) => {
       <Route path="/songs/:songId/song-items/new"
         children={<SongItems.New />} />
       <Route path="/songs/:id/edit" children={<Songs.Edit />} />
-      <Route path="/songs/:songId" children={<Songs.Show />} />
+      <Route path="/songs/:songId" children={<Songs.Show loader={loader} />} />
       <Route path="/songs">
         <Songs.Index loader={loader} />
       </Route>

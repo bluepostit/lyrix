@@ -48,12 +48,25 @@ const ErrorHandler = ({
 const LOADING_STOP_TIMEOUT = 100 // milliseconds
 
 class Loader {
-  constructor(message, onStart, onStop) {
+  constructor(message) {
     this.isLoading = false
-    this.isStopping = false
+    this.stoppingTimer = null
     this.message = message
-    this.onStart = onStart
-    this.onStop = onStop
+    this.listeners = {
+      'start': [],
+      'stop': []
+    }
+  }
+
+  addListener(event, listener) {
+    if (!['start', 'stop'].includes(event)) {
+      throw Error('Invalid event type')
+    }
+    this.listeners[event].push(listener)
+  }
+
+  triggerEvent(event, ...params) {
+    this.listeners[event].forEach(listener => listener(...params))
   }
 
   get loading() {
@@ -61,32 +74,42 @@ class Loader {
   }
 
   beginStopping() {
-    this.stopping = true
+    console.log('begin stopping - starting the timer...')
     this.stoppingTimer = setTimeout(() => {
-      this.onStop()
+      console.log('time up! calling onStop()')
+      this.triggerEvent('stop')
       this.isLoading = false
+      this.stoppingTimer = null
     }, LOADING_STOP_TIMEOUT)
+    console.log(`(Are we stopping? ${!!this.stoppingTimer})`)
   }
 
   cancelStopping() {
+    console.log('cancel stopping')
     if (this.stoppingTimer) {
+      console.log('yes, clearing timeout')
       clearTimeout(this.stoppingTimer)
+      this.stoppingTimer = null
     }
   }
 
   start(message) {
     console.log(`Loader.start(${message})`)
-    if (this.stopping) {
-      this.cancelStop()
+    console.log(`Are we stopping? ${!!this.stoppingTimer}`)
+    console.log(this)
+    if (this.stoppingTimer) {
+      this.cancelStopping()
     }
     this.message = message || this.message
-    this.onStart(message)
+    this.triggerEvent('start', message)
     this.isLoading = true
   }
 
   stop() {
     console.log(`Loader.stop()`)
-    if (!this.stopping) {
+    console.log(this)
+    if (!this.stoppingTimer) {
+      console.log('not stopping yet; begin stopping...')
       this.beginStopping()
     }
   }

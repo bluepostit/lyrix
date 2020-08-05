@@ -35,6 +35,7 @@ const PageContent = (props) => {
 }
 
 const Song = (props) => {
+  const loader = props.loader
   const { artistId, songlistId, songId } = useParams()
   const [data, setData] = useState({
     data: {
@@ -61,6 +62,7 @@ const Song = (props) => {
   }
 
   useEffect(() => {
+    loader.start('Loading song...')
     getSongData(songId, songlistId, artistId)
       .then((data) => {
         setData(data)
@@ -69,6 +71,7 @@ const Song = (props) => {
         } else {
           setNextLink(null)
         }
+        loader.stop()
       })
       .catch((e) => {
         console.log('Something went wrong!')
@@ -86,6 +89,7 @@ const Song = (props) => {
         content={<PageContent song={data.data} />}
         title={data.data.title}
         actions={data.actions}
+        loader={props.loader}
         nextLink={nextLink}
         onEditClick={goToEdit}
         onDeleteClick={handleDeleteClick}
