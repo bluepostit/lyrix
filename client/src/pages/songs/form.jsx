@@ -71,7 +71,6 @@ const SongForm = ({
     fetch(url)
       .then(res => res.json())
       .then((json) => {
-        loader.stop()
         if (json.error) {
           setErrorMessage(json.message)
         } else {
@@ -80,6 +79,8 @@ const SongForm = ({
             text: json.data.lyrics
           })
         }
+      }).finally(() => {
+        loader.stop()
       })
   }
 
@@ -89,6 +90,7 @@ const SongForm = ({
     const form = event.currentTarget
     // setValidated(true)
 
+    loader.start('Saving song...')
     fetch(action, {
       method,
       body: getFormData(form),
@@ -102,6 +104,8 @@ const SongForm = ({
         } else {
           onSuccess()
         }
+      }).finally(() => {
+        loader.stop()
       })
   }
 
@@ -110,12 +114,13 @@ const SongForm = ({
     fetchArtists()
       .then((artists) => {
         setArtists(artists)
-        loader.stop()
       })
       .catch((e) => {
         console.log('Something went wrong!')
         console.log(e)
         history.push('/login')
+      }).finally(() => {
+        loader.stop()
       })
   }, [history, artists.length]) // things to monitor for render
 
