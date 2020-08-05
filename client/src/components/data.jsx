@@ -78,9 +78,9 @@ class Loader {
     console.log('begin stopping - starting the timer...')
     this.stoppingTimer = setTimeout(() => {
       console.log('time up! calling onStop()')
-      this.triggerEvent('stop')
       this.isLoading = false
       this.stoppingTimer = null
+      this.triggerEvent('stop')
     }, LOADING_STOP_TIMEOUT)
     console.log(`(Are we stopping? ${!!this.stoppingTimer})`)
   }
