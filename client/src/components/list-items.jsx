@@ -1,13 +1,27 @@
 import React from 'react'
 import { Icon } from './icons'
 
-const SongItem = (props) => {
-  const item = props.songItem
+const Song = ({ song }) => {
+  let artistName = song.artist.name || song.artist
+  return (
+    <div className="d-flex w-100 justify-content-between">
+      <div>
+        <Icon entity="song" />
+        <span>{song.title}</span> <em><small>&ndash; {artistName}</small></em>
+      </div>
+      <div>
+        {/* <span className="badge badge-pill badge-info">
+        </span> */}
+      </div>
+    </div>
+  )
+}
 
-  let lines = [ item.title, '']
-  if (item.song && item.song.title) {
+const SongItem = ({ songItem }) => {
+  let lines = [ songItem.title, '']
+  if (songItem.song && songItem.song.title) {
     lines[1] = lines[0]
-    lines[0] = item.song.title
+    lines[0] = songItem.song.title
   }
 
   return (
@@ -26,10 +40,10 @@ const SongItem = (props) => {
       </div>
       <div className="badges">
         <span className="badge badge-pill badge-info">
-          {item.songItemType.name}
+          {songItem.songItemType.name}
         </span>
       </div>
     </div>
   )
 }
-export { SongItem }
+export { Song, SongItem }

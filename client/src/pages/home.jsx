@@ -5,6 +5,7 @@ import { Icon } from '../components/icons'
 
 const PageContent = (props) => {
   const artistsIcon = <Icon entity="artist" />
+  const importIcon = <Icon entity="import" />
   const songsIcon = <Icon entity="song" />
   const songlistsIcon = <Icon entity="songlist" />
   const songItemsIcon = <Icon entity="songItem" />
@@ -16,6 +17,7 @@ const PageContent = (props) => {
           <div className="beneath-nav menu-buttons">
             <MenuButton action="artists" icon={artistsIcon} />
             <MenuButton action="songs" icon={songsIcon} />
+            <MenuButton action="import" icon={importIcon} />
             <MenuButton action="songlists" icon={songlistsIcon} />
             <MenuButton action="song-items" icon={songItemsIcon} />
           </div>

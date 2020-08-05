@@ -6,6 +6,7 @@ import {
 import { Home } from '../pages'
 import * as Auth from '../pages/auth'
 import * as Artists from '../pages/artists'
+import { SongImporter as Importer } from '../pages/song-importer'
 import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
@@ -13,17 +14,19 @@ import * as Songs from '../pages/songs'
 const RouterSwitch = () => {
   return (
     <Switch>
-      <Route path="/artists/:artistId/songs/:songId" children={<Songs.Show />} />
-      <Route path="/artists/:artistId" children={<Artists.Show />} />
-      <Route path="/artists">
-        <Artists.Index />
-      </Route>
       <Route path="/login">
         <Auth.Login />
       </Route>
       <Route path="/sign-up">
         <Auth.SignUp />
       </Route>
+
+      <Route path="/artists/:artistId/songs/:songId" children={<Songs.Show />} />
+      <Route path="/artists/:artistId" children={<Artists.Show />} />
+      <Route path="/artists">
+        <Artists.Index />
+      </Route>
+
       <Route path="/songs/new" children={<Songs.New />} />
       <Route path="/songs/:songId/song-items/new"
         children={<SongItems.New />} />
@@ -44,6 +47,8 @@ const RouterSwitch = () => {
       <Route path="/song-items/:id/edit" children={<SongItems.Edit />} />
       <Route path="/song-items/:id" children={<SongItems.Show />} />
       <Route path="/song-items" children={<SongItems.Index />} />
+
+      <Route path="/import" children={<Importer />} />
 
       <Route path="/">
         <Home />
