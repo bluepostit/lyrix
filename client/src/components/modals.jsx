@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, ListGroup, Modal, Alert } from 'react-bootstrap'
+import { Button, ListGroup, Modal, Alert, Spinner } from 'react-bootstrap'
 import { SongItem } from '../components/list-items'
 import { Icon } from '../components/icons'
 
@@ -47,21 +47,26 @@ const SongItemsModal = ({
 const LoadingModal = ({
   title = 'Loading...',
   loading = false,
+  setLoading,
   content
 }) => {
+  const onHide = () => { setLoading(false) }
+
   return (
-    <Modal show={loading}
+    <Modal show={loading} onHide={onHide}
       className="lyrix-modal"
       aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div>{content}</div>
+        <div className="modal-spinner">
+          <Spinner animation="border" variant="primary" />
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary"
-          show={false}
+          show={''}
           disabled={loading}
           onClick={null}>
           Cancel

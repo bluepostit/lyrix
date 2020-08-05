@@ -175,6 +175,7 @@ const SongForm = ({
       </Form>
       <LoadingModal
         loading={isLoading}
+        setLoading={setIsLoading}
         content="Content is loading; please wait"
       />
     </div>
