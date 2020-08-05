@@ -8,8 +8,7 @@ const getFormData = (form) => {
 }
 
 const Searcher = ({
-  loading = false,
-  setLoading,
+  loader,
   onSearchStart,
   onSearchComplete,
   action
@@ -32,16 +31,17 @@ const Searcher = ({
     event.preventDefault()
     setError('')
     const url = getSearchUrl(event.currentTarget)
+    loader.start('Searching for Songs...')
     onSearchStart()
-    setLoading(true)
     fetch(url)
       .then(res => res.json())
       .then((json) => {
         onSearchComplete(json)
-        setLoading(false)
         if (json.status !== 200) {
           setError(json.message)
         }
+      }).finally(() => {
+        loader.stop()
       })
   }
 
@@ -50,8 +50,7 @@ const Searcher = ({
       <FormError error={error} />
       <Form onSubmit={handleSubmit}
         className="mt-2"
-        id="song-importer-search-form"
-        >
+        id="song-importer-search-form">
           <Form.Group controlId="query">
             <Form.Label>Search for a Song</Form.Label>
             <Form.Control
@@ -64,7 +63,7 @@ const Searcher = ({
           </Form.Group>
         <div className="d-flex justify-content-end">
           <Button variant="primary" type="submit"
-            disabled={loading}>
+            disabled={loader.loading}>
             Search
           </Button>
         </div>
