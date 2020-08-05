@@ -142,13 +142,14 @@ const SongForm = ({
             name="artist_id"
             value={song.artist.id}
             onChange={handleChange} >
-            {
-              artists.map((artist, index) =>
-                <option value={artist.id} key={index}>
-                  {artist.name}
-                </option>
-              )
-            }
+              <option value=""></option>
+              {
+                artists.map((artist, index) =>
+                  <option value={artist.id} key={index}>
+                    {artist.name}
+                  </option>
+                )
+              }
           </Form.Control>
         </Form.Group>
 
