@@ -22,7 +22,9 @@ const Page = (props) => {
     <div className="page-content">
       <div className="list-page">
         <PageHeader {...props} />
-        {props.content}
+        <div className="lyrix-page beneath-nav">
+          {props.content}
+        </div>
       </div>
     </div>
   )

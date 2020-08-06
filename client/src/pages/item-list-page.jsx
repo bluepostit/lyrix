@@ -45,7 +45,7 @@ const ItemListDiv = ({
   renderItem = (item, index) => { }
 }) => {
   return (
-    <div className="list-group lyrix-list">
+    <div className="list-group lyrix-list beneath-nav">
       {items.map((item, index) =>
         <Item
           key={index}

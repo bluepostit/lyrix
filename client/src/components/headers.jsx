@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory, Link } from "react-router-dom"
 import { NavbarButton as Button } from '../components/buttons'
 import { Icon } from '../components/icons'
+import { Nav, Navbar } from 'react-bootstrap'
 
 /**
  *
@@ -17,7 +18,7 @@ import { Icon } from '../components/icons'
  * - nextLink - string|null - if empty, won't show the link
  * - peeker - content to add peeking out of the edge of the navbar.
  */
-const Navbar = ({
+const LyrixNavbar = ({
   nextLink = null,
   hasBackButton = true,
   hasHomeButton = true,
@@ -29,6 +30,7 @@ const Navbar = ({
   peeker = null
 }) => {
   const history = useHistory()
+  const [expanded, setExpanded] = useState(false)
   const goBack = () => {
     history.goBack()
     window.scrollTo(0, 0)
@@ -41,7 +43,17 @@ const Navbar = ({
     window.scrollTo(0, 0)
   }
 
-  return (
+  const onToggle = (expanded) => {
+    if (!expanded) {
+      setTimeout(() => {
+        setExpanded(expanded)
+      }, 300)
+    } else {
+      setExpanded(expanded)
+    }
+  }
+
+  const old = (
     <nav className="navbar navbar-light mobile-header">
       <div className="button-group">
         <Button action="previous" onClick={goBack} show={hasBackButton} />
@@ -68,6 +80,26 @@ const Navbar = ({
       </div>
       {peeker}
     </nav>
+  )
+
+  const className = 'lyrix-navbar ' + (expanded ? '' : 'collapsed')
+
+  return (
+    <Navbar collapseOnSelect fixed="top"
+      onToggle={onToggle}
+      expand="lg" variant="light" className={className}>
+        <Navbar.Toggle aria-controls="lyrix-navbar-more" />
+        <Navbar.Collapse id="lyrix-navbar-more">
+          <Nav className="mr-auto">
+            <Nav.Link href="/">
+              <Icon entity="home" /><strong>Lyrix</strong>
+            </Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+        <div className="navbar-title">
+          <Navbar.Brand>{title}</Navbar.Brand>
+        </div>
+    </Navbar>
   )
 }
 
@@ -99,4 +131,4 @@ const SongItemPageTitle = ({
   )
 }
 
-export { Navbar, SongItemPageTitle }
+export { LyrixNavbar as Navbar, SongItemPageTitle }

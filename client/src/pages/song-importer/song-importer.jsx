@@ -64,14 +64,14 @@ const SongImporter = ({ loader }) => {
   }
 
   const content =
-    <>
+    <div className="container beneath-nav pt-2">
       <Searcher
         loader={loader}
         onSearchStart={handleSearchStart}
         onSearchComplete={onSearch}
         action={'/api/song-importer/search'}
       />
-      <div className="container">
+      <div>
         <FormError error={error} />
         <Form onSubmit={handleSubmit}
           className="mt-2"
@@ -98,7 +98,7 @@ const SongImporter = ({ loader }) => {
           </div>
         </Form>
       </div>
-    </>
+    </div>
 
   return (
     <div className="song-page">

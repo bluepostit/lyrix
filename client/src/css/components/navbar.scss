@@ -1,3 +1,30 @@
+.lyrix-navbar {
+  justify-content: flex-start;
+  background-color: $bg-navbar;
+  color: $primary;
+  font-family: $font-title;
+  padding: 0.5rem;
+  box-shadow: 0 3px 15px darkgray;
+
+  &.collapsed {
+    height: $navbar-height;
+  }
+
+  .navbar-brand {
+    color: $primary;
+  }
+}
+
+.lyrix-navbar .navbar-title {
+  width: 80%;
+  text-align: center;
+}
+
+.beneath-nav {
+  max-height: 100vh - $navbar-height !important;
+  margin-top: $navbar-height;
+}
+
 .mobile-header {
   text-align: center;
   background-color: #ccc;
