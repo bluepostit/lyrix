@@ -1,3 +1,4 @@
+const debug = require('debug')('lyrix:importer')
 const { Artist } = require('../models')
 
 const MAX_LYRICS_FETCH_ATTEMPTS = 3
@@ -9,6 +10,7 @@ const selectOrInsertArtist = async (name) => {
     .where('name', 'ilike', name)
 
   if (!artist) {
+    debug(`artist '${name}' not found; inserting...`)
     artist = await Artist
       .query()
       .insert({ name })
@@ -25,7 +27,7 @@ const getLyrics = async (genius, songId) => {
   const track = await genius.tracks.get(String(songId))
   let lyrics = ''
   for (let i = 0; i < MAX_LYRICS_FETCH_ATTEMPTS; i++) {
-    console.log(`trying to get lyrics: #${i + 1}`)
+    debug(`trying to get lyrics: #${i + 1}`)
     lyrics = await track.lyrics()
     if (lyrics) {
       return lyrics
@@ -54,6 +56,7 @@ class SongImporter {
         id: track.id
       }
     }))
+    debug('found song results: %O', songs)
     this.results = songs
     request.session.songSearchResults = songs
     return songs
@@ -86,7 +89,7 @@ class SongImporter {
         title,
         text: lyrics
       })
-    // console.log(query.toKnexQuery().toSQL().toNative())
+    debug('%o', query.toKnexQuery().toSQL().toNative())
     return await query
   }
 }
