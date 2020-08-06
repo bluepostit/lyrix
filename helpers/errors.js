@@ -31,7 +31,6 @@ const getStatus = (err) => {
 const errorHandler = (entityName) => {
   return (async (err, req, res, next) => {
     // console.log(`hit error handler for ${entityName}`)
-    debug('original error: %O', err)
 
     const status = getStatus(err)
     // console.log(`status: ${status}`)
@@ -46,6 +45,7 @@ const errorHandler = (entityName) => {
       status
     }
     debug(error)
+    debug('original error: %O', err)
     res.json(error)
   })
 }

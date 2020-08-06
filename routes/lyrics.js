@@ -1,5 +1,6 @@
 const express = require('express')
-const Genius = (require('genius-lyrics'))
+const Genius = require('genius-lyrics')
+const debug = require('debug')('lyrix:lyrics')
 const router = express.Router()
 const {
   StatusCodes,
@@ -59,7 +60,9 @@ router.get('/', ensureLoggedIn, validateQueryArtist, validateQueryData,
         { limit: 1 }
       )
       const song = results[0]
+      debug('found song: %O', song)
       const lyrics = await song.lyrics()
+      debug(`found lyrics: "${lyrics.slice(0, 100)}..."`)
       res.json({
         status: StatusCodes.OK,
         data: {

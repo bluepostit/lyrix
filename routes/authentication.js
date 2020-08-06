@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const passport = require('passport')
 const objection = require('objection')
+const debug = require('debug')('lyrix:route:auth')
 
 const { User } = require('../models')
 
@@ -86,14 +87,12 @@ router.post('/login', (req, res, next) => {
       })
     }
     if (err) {
-      console.log('error authenticating user')
-      console.log(err)
+      debug('error authenticating user: %O', err)
       return next(err)
     }
     req.logIn(user, async (err) => {
       if (err) {
-        console.log('error logging in user')
-        console.log(err)
+        debug('error signing user in: %O', err)
         return res.json({
           status: 500,
           error: "couldn't log in",
@@ -133,6 +132,7 @@ router.post('/sign-up', signUpValidation, async (req, res, next) => {
     })
   } catch (error) {
     if (error instanceof objection.ValidationError) {
+      debug('invalid input: %O', error)
       return res.json({
         status: 400,
         error: 'Invalid input',
@@ -140,6 +140,7 @@ router.post('/sign-up', signUpValidation, async (req, res, next) => {
       })
     }
     if (error.constraint === 'users_email_unique') {
+      debug('email already exists: "%s"', req.body.email)
       return res.json({
         status: 400,
         error: 'Email already exists',
@@ -148,7 +149,7 @@ router.post('/sign-up', signUpValidation, async (req, res, next) => {
     }
 
     // Something else went wrong.
-    console.log(error)
+    debug('something went wrong: %O', error)
     return res.json({
       status: 500,
       error: 'Server error',
