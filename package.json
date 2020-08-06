@@ -68,7 +68,7 @@
     "server": "nodemon app.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "console": "node --experimental-repl-await toolbox/console.js",
-    "test": "bash test/lib/test.sh",
+    "test": "NODE_ENV=test PORT=4001 node test/lib/test.js",
     "test:behav": "bash test/lib/test.sh behavior",
     "test:unit": "bash test/lib/test.sh models"
   }
