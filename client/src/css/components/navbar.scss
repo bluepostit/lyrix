@@ -1,13 +1,15 @@
 .lyrix-navbar {
-  justify-content: flex-start;
+  justify-content: flex-end;
   background-color: $light-gray;
   color: $primary;
   font-family: $font-title;
   padding: 0.5rem;
   box-shadow: 0 3px 15px darkgray;
+  flex-wrap: wrap;
 
   &.collapsed {
     height: $navbar-height;
+    flex-wrap: nowrap;
     // transition: height 3s;
   }
 
@@ -21,12 +23,17 @@
   // .nav-link, .horizontal-divider {
     // display: none;
   // }
-  transition: 0.01s !important;
+  transition: 0s !important;
 }
 
 .lyrix-navbar .navbar-title {
-  width: 80%;
   text-align: center;
+  white-space: normal;
+  font-size: 1.5rem;
+  width: 100%;
+  margin-right: 0.3rem;
+  overflow-wrap: anywhere;
+  overflow: scroll;
 }
 
 .lyrix-navbar .horizontal-divider {
