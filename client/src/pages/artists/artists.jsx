@@ -43,7 +43,7 @@ const Artists = ({ loader }) => {
 
   const navActions = [{
     name: 'new',
-    value: onNewClick
+    value: data.actions.create ? onNewClick : null
   }]
 
   const onModalDismiss = () => {

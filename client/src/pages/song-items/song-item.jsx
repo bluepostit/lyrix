@@ -55,10 +55,10 @@ const SongItem = ({ loader }) => {
 
   const navActions = [{
     name: 'edit',
-    value: goToEdit
+    value: data.actions.edit ? goToEdit : null
   }, {
     name: 'delete',
-    value: handleDeleteClick
+    value: data.actions.delete ? handleDeleteClick : null
   }]
 
   useEffect(() => {

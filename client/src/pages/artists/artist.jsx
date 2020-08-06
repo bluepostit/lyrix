@@ -51,10 +51,10 @@ const Artist = ({ loader }) => {
   const navActions = [
     {
       name: 'new',
-      value: onNewClick
+      value: data.actions.create ? onNewClick : null
     }, {
       name: 'delete',
-      value: onDeleteClick
+      value: data.actions.delete ? onDeleteClick : null
     }
   ]
 
