@@ -65,7 +65,12 @@ const Song = (props) => {
     setShowSongItemsModal(true)
   }
 
-  const handleSongItemsModalClose = () => {
+  const handleSongItemsModalClose = (value) => {
+    if (value === 'new') {
+      history.push(`/songs/${data.data.id}/song-items/new`)
+    } else if (value) {
+      history.push(`/song-items/${value.id}`)
+    }
     setShowSongItemsModal(false)
   }
 
@@ -130,7 +135,6 @@ const Song = (props) => {
         navActions={navActions}
       />
       <SongItemsModal title="Your Song Items"
-        song={data.data}
         songItems={data.data.songItems}
         show={showSongItemsModal}
         handleClose={handleSongItemsModalClose}
