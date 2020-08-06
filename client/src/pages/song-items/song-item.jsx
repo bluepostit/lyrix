@@ -53,6 +53,14 @@ const SongItem = ({ loader }) => {
     history.replace('/song-items')
   }
 
+  const navActions = [{
+    name: 'edit',
+    value: goToEdit
+  }, {
+    name: 'delete',
+    value: handleDeleteClick
+  }]
+
   useEffect(() => {
     loader.start('Loading Song Item...')
     getSongItem(id)
@@ -76,8 +84,7 @@ const SongItem = ({ loader }) => {
         actions={data.actions}
         title={<SongItemPageTitle songItem={data.data} />}
         loader={loader}
-        onEditClick={goToEdit}
-        onDeleteClick={handleDeleteClick}
+        navActions={navActions}
       />
       <Deleter
         entity={data.data}

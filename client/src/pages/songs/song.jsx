@@ -61,6 +61,17 @@ const Song = (props) => {
     history.replace('/songs')
   }
 
+  const navActions = [{
+    name: 'edit',
+    value: goToEdit
+  }, {
+    name: 'delete',
+    value: handleDeleteClick
+  }, {
+    name: 'next',
+    value: nextLink
+  }]
+
   useEffect(() => {
     loader.start('Loading song...')
     getSongData(songId, songlistId, artistId)
@@ -90,9 +101,7 @@ const Song = (props) => {
         title={data.data.title}
         actions={data.actions}
         loader={props.loader}
-        nextLink={nextLink}
-        onEditClick={goToEdit}
-        onDeleteClick={handleDeleteClick}
+        navActions={navActions}
         peeker={peeker}
       />
       <Deleter

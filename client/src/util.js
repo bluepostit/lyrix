@@ -62,5 +62,14 @@ const getNextSongLink = async (song, songlistId) => {
   return nextSongLink
 }
 
+const toTitleCase = (string) => {
+  const words = string.split(/\W+/)
+  const titles = words.map((word) => {
+    return word.slice(0, 1).toUpperCase()
+      + word.slice(1).toLowerCase()
+  })
+  return titles.join(' ')
+}
 
-export { getNextSongLink }
+
+export { getNextSongLink, toTitleCase }
