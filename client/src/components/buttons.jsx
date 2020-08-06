@@ -72,14 +72,14 @@ const NavbarButton = ({
     event.preventDefault()
     onClick(action)
   }
-  const title = toTitleCase(action.name)
+  const title = toTitleCase(action.title || action.name)
   return (
     <>
       <Nav.Link onClick={handleClick} data-action={action.name} >
         <Icon entity={action.name} /> {title}
       </Nav.Link>
       <div className="horizontal-divider"
-        hidden={action.hasDivider} />
+        hidden={!action.hasDivider} />
     </>
   )
 }

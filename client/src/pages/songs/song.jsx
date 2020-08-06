@@ -62,14 +62,15 @@ const Song = (props) => {
   }
 
   const navActions = [{
+    name: 'next',
+    value: nextLink,
+    hasDivider: true
+  }, {
     name: 'edit',
     value: goToEdit
   }, {
     name: 'delete',
     value: handleDeleteClick
-  }, {
-    name: 'next',
-    value: nextLink
   }]
 
   useEffect(() => {

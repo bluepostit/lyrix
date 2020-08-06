@@ -21,11 +21,6 @@ const LyrixNavbar = ({
   const history = useHistory()
   const [expanded, setExpanded] = useState(false)
 
-  const goBack = () => {
-    history.goBack()
-    window.scrollTo(0, 0)
-  }
-
   const goHome = () => {
     history.push('/')
   }
@@ -71,15 +66,15 @@ const LyrixNavbar = ({
         <Navbar.Brand>{title}</Navbar.Brand>
       </div>
 
-        <Navbar.Toggle aria-controls="lyrix-navbar-more" transition={false} />
+        <Navbar.Toggle aria-controls="lyrix-navbar-more" />
         <Navbar.Collapse id="lyrix-navbar-more">
           <Nav className="mr-auto">
             <Nav.Link href="#" onClick={goHome} >
               <Icon entity="home" /><strong> Lyrix</strong>
             </Nav.Link>
             <div className="horizontal-divider"
-              hidden={navActions.length > 0} />
-            {navActions.map((action, index) =>
+              hidden={navActions.length < 1} />
+            {navActions.filter(i => i.value).map((action, index) =>
               <NavbarButton action={action}
                 onClick={handleActionClick}
                 key={index + 1} />
