@@ -3,13 +3,36 @@ import { Button, ListGroup, Modal, Alert, Spinner } from 'react-bootstrap'
 import { SongItem } from '../components/list-items'
 import { Icon } from '../components/icons'
 
+const SongItemsModalListItem = ({
+  songItem,
+  onClick
+}) => {
+  const handleClick = () => {
+    onClick(songItem)
+  }
+  return (
+    <ListGroup.Item
+      action
+      onClick={handleClick}>
+        <SongItem songItem={songItem} />
+    </ListGroup.Item>
+  )
+}
+
 const SongItemsModal = ({
   title = 'Song Items',
-  song,
   songItems,
   show,
   handleClose
 }) => {
+
+  const onNewSongItemClick = (event) => {
+    handleClose('new')
+  }
+
+  const onSongItemClick = (songItem) => {
+    handleClose(songItem)
+  }
 
   return (
     <Modal show={show} onHide={handleClose}
@@ -23,16 +46,16 @@ const SongItemsModal = ({
           <ListGroup.Item
               action
               key={0}
-              href={`/songs/${song.id}/song-items/new`}>
+              onClick={onNewSongItemClick}>
             <Icon entity="new" /> Create new song item...
           </ListGroup.Item>
-          {
-            songItems.map((item, index) =>
-              <ListGroup.Item action href={`/song-items/${item.id}`} key={index + 1}>
-                <SongItem songItem={item} />
-              </ListGroup.Item>
-            )
-          }
+          {songItems.map((item, index) =>
+            <SongItemsModalListItem
+              songItem={item}
+              key={index + 1}
+              onClick={onSongItemClick}
+            />
+          )}
         </ListGroup>
       </Modal.Body>
       <Modal.Footer>

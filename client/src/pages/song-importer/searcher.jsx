@@ -38,7 +38,7 @@ const Searcher = ({
       .then((json) => {
         onSearchComplete(json)
         if (json.status !== 200) {
-          setError(json.message)
+          setError(json.error)
         }
       }).finally(() => {
         loader.stop()

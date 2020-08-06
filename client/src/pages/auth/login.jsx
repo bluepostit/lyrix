@@ -45,10 +45,10 @@ const Login = () => {
 
   return (
     <div className="page-content">
-      <Navbar title="Lyrix" />
       <div className="container text-page">
-        <div className="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 pt-2">
-          <h1>Login</h1>
+        <Navbar title={<h2>Lyrix</h2>} />
+        <div className="beneath-nav col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 pt-2">
+          <h3>Login</h3>
           <form action="/api/user/login" method="post" onSubmit={onSubmit}>
             <FormError error={error} />
             <div className="form-group">
