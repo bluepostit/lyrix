@@ -88,29 +88,14 @@ const LyrixNavbar = ({
 }
 
 const SongItemPageTitle = ({
-  songItem = null,
-  song = null,
+  songItem = { title: '' },
   title = 'Add a New Song Item'
 }) => {
-  let lines = []
-  if (songItem) {
-    lines[0] = songItem.title
-    lines[1] = songItem.song.title
-    song = songItem.song
-  } else if (song) {
-    lines[0] = title
-    lines[1] = song.title
-  }
 
   return (
     <div className="title">
-      <div>
-        <Icon entity="songItem" />
-        <strong className="ml-2">{lines[0]}</strong>
-      </div>
-      <Link to={`/songs/${song.id}`}>
-        <span className="content-secondary">{lines[1]}</span>
-      </Link>
+      <Icon entity="songItem" />
+      <strong className="ml-2">{songItem.title || title}</strong>
     </div>
   )
 }

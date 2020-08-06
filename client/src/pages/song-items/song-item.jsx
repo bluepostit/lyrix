@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
-import { Icon } from '../../components/icons'
+import { SongItemPageTitle } from '../../components/headers'
 import { Deleter } from '../../components/modals'
 
 const getSongItem = (songItemId) => {
@@ -27,15 +27,6 @@ const PageContent = ({ songItem }) => {
       </div>
       <ToTopButton />
     </>
-  )
-}
-
-const Title = ({ songItem }) => {
-  return (
-    <div>
-      <Icon entity="songItem" />
-      <strong className="ml-2">{songItem.title}</strong>
-    </div>
   )
 }
 
@@ -119,7 +110,7 @@ const SongItem = ({ loader }) => {
       <Page
         content={<PageContent songItem={data.data} />}
         actions={data.actions}
-        title={<Title songItem={data.data} />}
+        title={<SongItemPageTitle songItem={data.data} />}
         loader={loader}
         navActions={navActions}
       />
