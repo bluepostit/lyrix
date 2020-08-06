@@ -106,6 +106,16 @@ const sanitize = async (req, res, next) => {
 const validateId = validateIdForEntity(Song)
 const validateSongData = validateDataForEntity(Song)
 
+const validateForeignParameters = async (req, res, next) => {
+  if (!req.body.artist_id) {
+    return next({
+      type: 'ConstraintViolationError',
+      userMessage: 'Artist is required'
+    })
+  }
+  next()
+}
+
 router.use([checkIsAdmin, addUserActions])
 
 router.get('/', async (req, res, next) => {
@@ -145,8 +155,8 @@ router.get('/:id', validateId, setSong, setSongContext,
     })
   })
 
-router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
-  checkForDuplicates, sanitize,
+router.post('/', ensureLoggedIn, ensureAdmin, validateForeignParameters,
+  validateSongData, checkForDuplicates, sanitize,
     async (req, res, next) => {
       const response = {
         status: StatusCodes.CREATED
@@ -162,8 +172,8 @@ router.post('/', ensureLoggedIn, ensureAdmin, validateSongData,
       res.json(response)
     })
 
-router.put('/:id', ensureLoggedIn, ensureAdmin, validateId, validateSongData,
-  sanitize,
+router.put('/:id', ensureLoggedIn, ensureAdmin, validateId,
+  validateForeignParameters, validateSongData, sanitize,
     async (req, res, next) => {
       try {
         const song = await Song

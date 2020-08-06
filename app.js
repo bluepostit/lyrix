@@ -22,7 +22,7 @@ types.setTypeParser(20, function (val) {
 // Routes
 
 // Debug request info if we're running tests and DEBUG env variable is set.
-if (process.env.NODE_ENV === 'test' && process.env.DEBUG) {
+if (process.env.NODE_ENV === 'test' && process.env.DEBUG_REQUESTS) {
   app.use((req, res, next) => {
     console.log("\n=== REQUEST ===")
     console.log(`${req.method} ${req.url}`)
