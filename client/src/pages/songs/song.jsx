@@ -40,7 +40,8 @@ const Song = (props) => {
   const [data, setData] = useState({
     data: {
       title: null,
-      text: null
+      text: null,
+      artist: { id: '' }
     },
     actions: []
   })
@@ -62,6 +63,11 @@ const Song = (props) => {
   }
 
   const navActions = [{
+    name: 'artist',
+    title: data.data.artist.name,
+    value: `/artists/${data.data.artist.id}`,
+    hasDivider: true
+  }, {
     name: 'next',
     value: nextLink,
     hasDivider: true
