@@ -300,6 +300,20 @@ describe(BASE_URL, () => {
       expect(res.body).to.have.status(400)
     })
 
+    it('should return an error when no artist is given', async () => {
+      const user = await RecordManager.insertUser({ admin: true })
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post(BASE_URL)
+        .send({
+          title: 'This is a song',
+          text: 'This is some text. It is different',
+        })
+      expect(res.body).to.have.status(400)
+      expect(res.body.message).to.match(/missing|provide|require/)
+    })
+
     it('should return an error when a song with the same title exists',
       async () => {
         await RecordManager.loadFixture('songs')

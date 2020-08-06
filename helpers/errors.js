@@ -18,7 +18,7 @@ const getStatus = (err) => {
     return StatusCodes.BAD_REQUEST
   }
   if (err instanceof ConstraintViolationError
-    || err.type === ConstraintViolationError) {
+    || err.type === 'ConstraintViolationError') {
       return StatusCodes.BAD_REQUEST
   }
   if (err instanceof UniqueViolationError
