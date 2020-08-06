@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from "react-router-dom"
 import { Page } from '../page'
-import { ToTopButton, SongItemsButton } from '../../components'
+import { ToTopButton } from '../../components'
 import { Deleter, SongItemsModal } from '../../components/modals'
 import { pluralize } from '../../util'
 
@@ -78,8 +78,9 @@ const Song = (props) => {
     history.replace('/songs')
   }
 
+  const songItems = data.data.songItems || []
   const songItemsTitle =
-    `You have ${pluralize(data.data.songItems.length, 'item')}`
+    `You have ${pluralize(songItems.length, 'item')}`
   const hasEdit = data.actions.edit
   const hasDelete = data.actions.delete
 
@@ -135,7 +136,7 @@ const Song = (props) => {
         navActions={navActions}
       />
       <SongItemsModal title="Your Song Items"
-        songItems={data.data.songItems}
+        songItems={songItems}
         show={showSongItemsModal}
         handleClose={handleSongItemsModalClose}
       />
