@@ -1,3 +1,4 @@
+const debug = require('debug')('lyrix:common')
 const StatusCodes = (() => {
   return {
     OK: 200,
@@ -111,7 +112,7 @@ const checkForDuplicatesForEntity = ({
     if (forUser && userField) {
       query.where({ [userField]: req.user.id })
     }
-    // console.log(query.toKnexQuery().toSQL().toNative())
+    debug('checking for duplicate: %o', query.toKnexQuery().toSQL().toNative())
     const duplicate = await query
     if (duplicate) {
       return next({

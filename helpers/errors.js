@@ -6,6 +6,7 @@ const {
   ForeignKeyViolationError,
   ValidationError
 } = require('objection')
+const debug = require('debug')('lyrix:err')
 const { StatusCodes } = require('../routes/common')
 
 const getStatus = (err) => {
@@ -30,7 +31,6 @@ const getStatus = (err) => {
 const errorHandler = (entityName) => {
   return (async (err, req, res, next) => {
     // console.log(`hit error handler for ${entityName}`)
-    // console.log(err)
 
     const status = getStatus(err)
     // console.log(`status: ${status}`)
@@ -39,11 +39,14 @@ const errorHandler = (entityName) => {
       err.userMessage = err.message
     }
 
-    res.json({
+    const error = {
       error: err.userError || 'Error',
       message: err.userMessage || `Problem processing ${entityName} request`,
       status
-    })
+    }
+    debug(error)
+    debug('original error: %O', err)
+    res.json(error)
   })
 }
 

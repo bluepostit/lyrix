@@ -2,6 +2,7 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 
 const { User } = require('../models')
+const debug = require('debug')('lyrix:auth')
 
 const findUser = (username) => {
   return User
@@ -14,12 +15,12 @@ passport.use(new LocalStrategy(
     findUser(username)
       .then(async (user, err) => {
         if (err) {
-          console.log('error finding user')
+          debug('error finding user')
           return callback(err)
         }
 
         if (!user) {
-          console.log('user not found!')
+          debug('user not found!')
           return callback(null, false)
         }
 
@@ -27,6 +28,7 @@ passport.use(new LocalStrategy(
         if (match) {
           return callback(null, user)
         } else {
+          debug("password doesn't match")
           return callback(null, false)
         }
       })
@@ -42,6 +44,7 @@ passport.deserializeUser(async (id, callback) => {
   if (user) {
     callback(null, user)
   } else {
+    debug(`Could not deserialize user #${id}`)
     return callback(new Error(`Could not deserialize user #${id}`))
   }
 })
