@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
-import { SongItemPageTitle } from '../../components/headers'
+import { Icon } from '../../components/icons'
 import { Deleter } from '../../components/modals'
 
 const getSongItem = (songItemId) => {
@@ -30,12 +30,28 @@ const PageContent = ({ songItem }) => {
   )
 }
 
+const Title = ({ songItem }) => {
+  return (
+    <div>
+      <Icon entity="songItem" />
+      <strong className="ml-2">{songItem.title}</strong>
+    </div>
+  )
+}
+
 const SongItem = ({ loader }) => {
   const { id } = useParams()
   const [data, setData] = useState({
     title: null,
     text: null,
-    data: { song: { title: '' } },
+    data: {
+      song: {
+        title: '',
+        artist: {
+          name: ''
+        }
+      }
+    },
     actions: {}
   })
   const [deleting, setDeleting] = useState(false)
@@ -43,6 +59,14 @@ const SongItem = ({ loader }) => {
 
   const goToEdit = () => {
     history.push(`/song-items/${data.data.id}/edit`)
+  }
+
+  const goToArtist = () => {
+    history.push(`/artists/${data.data.song.artist.id}`)
+  }
+
+  const goToSong = () => {
+    history.push(`/songs/${data.data.song.id}`)
   }
 
   const handleDeleteClick = () => {
@@ -53,12 +77,25 @@ const SongItem = ({ loader }) => {
     history.replace('/song-items')
   }
 
+  const hasEdit = data.actions.edit
+  const hasDelete = data.actions.delete
+
   const navActions = [{
     name: 'edit',
-    value: data.actions.edit ? goToEdit : null
+    value: hasEdit ? goToEdit : null,
+    hasDivider: !hasDelete
   }, {
     name: 'delete',
-    value: data.actions.delete ? handleDeleteClick : null
+    value: data.actions.delete ? handleDeleteClick : null,
+    hasDivider: true
+  }, {
+    name: 'artist',
+    title: data.data.song.artist.name,
+    value: goToArtist
+  }, {
+    name: 'song',
+    title: data.data.song.title,
+    value: goToSong
   }]
 
   useEffect(() => {
@@ -82,7 +119,7 @@ const SongItem = ({ loader }) => {
       <Page
         content={<PageContent songItem={data.data} />}
         actions={data.actions}
-        title={<SongItemPageTitle songItem={data.data} />}
+        title={<Title songItem={data.data} />}
         loader={loader}
         navActions={navActions}
       />
