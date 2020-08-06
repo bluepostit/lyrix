@@ -19,7 +19,12 @@ const fetchSong = async (id) => {
 const NewSongItem = ({ loader }) => {
   const title = 'Add a Song Item'
   const history = useHistory()
-  const [song, setSong] = useState({id: ''})
+  const [song, setSong] = useState({
+    id: '',
+    artist: {
+      id: ''
+    }
+  })
   const [songItem, setSongItem] = useState({
     id: '',
     title: '',
@@ -46,10 +51,29 @@ const NewSongItem = ({ loader }) => {
       })
   }, [history, songId, songItem.song]) // things to monitor for render
 
+  const onSongClick = () => {
+    history.push(`/songs/${song.id}`)
+  }
+
+  const onArtistClick = () => {
+    history.push(`/artists/${song.artist.id}`)
+  }
 
   const onCreateSuccess = () => {
     history.push('/song-items')
   }
+
+  const navActions = [
+    {
+      name: 'artist',
+      title: song.artist.name,
+      value: onArtistClick
+    }, {
+      name: 'song',
+      title: song.title,
+      value: onSongClick
+    }
+  ]
 
   const content =
     <SongItemForm
@@ -65,6 +89,7 @@ const NewSongItem = ({ loader }) => {
     <div className="song-item-page">
       <Page
         content={content}
+        navActions={navActions}
         title={<SongItemPageTitle song={song} title={title} />}
       />
     </div>

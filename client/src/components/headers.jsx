@@ -70,7 +70,7 @@ const LyrixNavbar = ({
         <Navbar.Toggle aria-controls="lyrix-navbar-more" />
         <Navbar.Collapse id="lyrix-navbar-more">
           <Nav className="mr-auto">
-            <Nav.Link href="#" onClick={goHome} >
+            <Nav.Link onClick={goHome} >
               <Icon entity="home" /><strong> Lyrix</strong>
             </Nav.Link>
             <div className="horizontal-divider"

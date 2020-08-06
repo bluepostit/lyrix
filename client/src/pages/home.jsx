@@ -13,7 +13,7 @@ const PageContent = (props) => {
     return (
       <div className="page-content">
         <div className="lyrix-page d-sm-block">
-          <Navbar title="Lyrix" hasBackButton={false} hasHomeButton={false} />
+          <Navbar title={<h3>Lyrix</h3>} />
           <div className="menu-buttons">
             <MenuButton action="artists" icon={artistsIcon} />
             <MenuButton action="songs" icon={songsIcon} />
