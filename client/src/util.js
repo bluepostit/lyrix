@@ -71,5 +71,13 @@ const toTitleCase = (string) => {
   return titles.join(' ')
 }
 
+const pluralize = (number, word) => {
+  if (number === 1) {
+    return `1 ${word}`
+  } else {
+    return `${number} ${word}s`
+  }
+}
 
-export { getNextSongLink, toTitleCase }
+
+export { getNextSongLink, pluralize, toTitleCase }

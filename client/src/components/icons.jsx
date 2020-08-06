@@ -12,6 +12,7 @@ const ICON_CLASSES = {
   delete: 'fas fa-trash',
   songItem: 'fas fa-file-alt',
   import: 'fas fa-cloud-upload-alt',
+  star: 'fas fa-star',
   default: 'fas fa-star'
 }
 

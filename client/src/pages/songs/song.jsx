@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton, SongItemsButton } from '../../components'
-import { Deleter } from '../../components/modals'
+import { Deleter, SongItemsModal } from '../../components/modals'
+import { pluralize } from '../../util'
 
 const getSongData = (songId, songlistId, artistId) => {
   let url = `/api/songs/${songId}`
@@ -41,11 +42,13 @@ const Song = (props) => {
     data: {
       title: null,
       text: null,
-      artist: { id: '' }
+      artist: { id: '' },
+      songItems: []
     },
     actions: []
   })
   const [nextLink, setNextLink] = useState()
+  const [showSongItemsModal, setShowSongItemsModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const history = useHistory()
   const location = useLocation()
@@ -58,20 +61,36 @@ const Song = (props) => {
     setDeleting(true)
   }
 
+  const onSongItemsButtonClick = () => {
+    setShowSongItemsModal(true)
+  }
+
+  const handleSongItemsModalClose = () => {
+    setShowSongItemsModal(false)
+  }
+
   const onDelete = () => {
     history.replace('/songs')
   }
+
+  const songItemsTitle =
+    `You have ${pluralize(data.data.songItems.length, 'item')}`
 
   const navActions = [{
     name: 'artist',
     title: data.data.artist.name,
     value: `/artists/${data.data.artist.id}`,
-    hasDivider: true
+    hasDivider: !nextLink
   }, {
     name: 'next',
     value: nextLink,
     hasDivider: true
-  }, {
+    }, {
+    name: 'songItem',
+    title: songItemsTitle,
+    value: onSongItemsButtonClick,
+    hasDivider: true
+  },{
     name: 'edit',
     value: goToEdit
   }, {
@@ -99,8 +118,6 @@ const Song = (props) => {
     }, [history, songId, artistId, songlistId, location.pathname]) // things to monitor for render
     // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
-  const peeker = <SongItemsButton song={data.data} {...props} />
-
   return (
     <div className="song-page">
       <Page
@@ -109,7 +126,12 @@ const Song = (props) => {
         actions={data.actions}
         loader={props.loader}
         navActions={navActions}
-        peeker={peeker}
+      />
+      <SongItemsModal title="Your Song Items"
+        song={data.data}
+        songItems={data.data.songItems}
+        show={showSongItemsModal}
+        handleClose={handleSongItemsModalClose}
       />
       <Deleter
         entity={data.data}
