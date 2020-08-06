@@ -1,6 +1,6 @@
 .lyrix-navbar {
   justify-content: flex-start;
-  background-color: $bg-navbar;
+  background-color: $light-gray;
   color: $primary;
   font-family: $font-title;
   padding: 0.5rem;
@@ -8,6 +8,7 @@
 
   &.collapsed {
     height: $navbar-height;
+    // transition: height 3s;
   }
 
   .navbar-brand {
@@ -15,9 +16,21 @@
   }
 }
 
+#lyrix-navbar-more.collapsing {
+  // .nav-link, .horizontal-divider {
+    // display: none;
+  // }
+  transition: 0.01s !important;
+}
+
 .lyrix-navbar .navbar-title {
   width: 80%;
   text-align: center;
+}
+
+.lyrix-navbar .horizontal-divider {
+  @extend .dropdown-divider;
+  border-top-color: $border-gray;
 }
 
 .beneath-nav {

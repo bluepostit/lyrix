@@ -39,15 +39,32 @@ const LyrixNavbar = ({
     history.push('/')
   }
   const goNext = () => {
+    setExpanded(false)
     history.push(nextLink)
     window.scrollTo(0, 0)
+  }
+  const goNew = () => {
+    collapse()
+    onNewClick()
+  }
+  const goEdit = () => {
+    setExpanded(false)
+    onEditClick()
+  }
+  const goDelete = () => {
+    setExpanded(false)
+    onDeleteClick()
+  }
+
+  const collapse = () => {
+    setTimeout(() => {
+      setExpanded(false)
+    }, 10)
   }
 
   const onToggle = (expanded) => {
     if (!expanded) {
-      setTimeout(() => {
-        setExpanded(expanded)
-      }, 300)
+      collapse()
     } else {
       setExpanded(expanded)
     }
@@ -87,18 +104,42 @@ const LyrixNavbar = ({
   return (
     <Navbar collapseOnSelect fixed="top"
       onToggle={onToggle}
+      expanded={expanded}
       expand="lg" variant="light" className={className}>
-        <Navbar.Toggle aria-controls="lyrix-navbar-more" />
+      <div className="navbar-title">
+        <Navbar.Brand>{title}</Navbar.Brand>
+      </div>
+
+        <Navbar.Toggle aria-controls="lyrix-navbar-more" transition={false} />
         <Navbar.Collapse id="lyrix-navbar-more">
           <Nav className="mr-auto">
-            <Nav.Link href="/">
-              <Icon entity="home" /><strong>Lyrix</strong>
+            <Nav.Link href="#" onClick={goHome} >
+              <Icon entity="home" /><strong> Lyrix</strong>
             </Nav.Link>
+            <div className="horizontal-divider" />
+
+            <Nav.Link onClick={goNext} hidden={!nextLink} >
+              <Icon entity="next" /> Next
+            </Nav.Link>
+            <div className="horizontal-divider" hidden={!nextLink} />
+
+          <Nav.Link onClick={goNew}
+            hidden={!(onNewClick && actions.create)} >
+              <Icon entity="new" /> New
+          </Nav.Link>
+
+          <Nav.Link onClick={goEdit}
+            hidden={!(onEditClick && actions.edit)} >
+              <Icon entity="edit" /> Edit
+          </Nav.Link>
+
+          <Nav.Link onClick={goDelete}
+            hidden={!(onDeleteClick && actions.delete)} >
+              <Icon entity="delete" /> Delete
+          </Nav.Link>
+
           </Nav>
         </Navbar.Collapse>
-        <div className="navbar-title">
-          <Navbar.Brand>{title}</Navbar.Brand>
-        </div>
     </Navbar>
   )
 }
