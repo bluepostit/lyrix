@@ -32,6 +32,11 @@ const Songlists = ({ loader }) => {
     history.push('/songlists/new')
   }
 
+  const navActions = [{
+    name: 'new',
+    value: onNewClick
+  }]
+
   const onLoadingComplete = (data) => {
     setData(data)
   }
@@ -48,7 +53,7 @@ const Songlists = ({ loader }) => {
         items={data.data}
         actions={data.actions}
         loading={loader.loading}
-        onNewClick={onNewClick}
+        navActions={navActions}
         onItemClick={onSonglistClick}
         renderItem={renderSonglist}
      />

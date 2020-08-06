@@ -1,3 +1,51 @@
+.lyrix-navbar {
+  justify-content: flex-end;
+  background-color: $light-gray;
+  color: $primary;
+  font-family: $font-title;
+  padding: 0.5rem;
+  box-shadow: 0 3px 15px darkgray;
+  flex-wrap: wrap;
+
+  &.collapsed {
+    height: $navbar-height;
+    flex-wrap: nowrap;
+    // transition: height 3s;
+  }
+
+  .navbar-brand {
+    color: $primary;
+    margin: 0;
+  }
+}
+
+#lyrix-navbar-more.collapsing {
+  // .nav-link, .horizontal-divider {
+    // display: none;
+  // }
+  transition: 0s !important;
+}
+
+.lyrix-navbar .navbar-title {
+  text-align: center;
+  white-space: normal;
+  font-size: 1.5rem;
+  width: 100%;
+  margin-right: 0.3rem;
+  overflow-wrap: anywhere;
+  overflow: scroll;
+}
+
+.lyrix-navbar .horizontal-divider {
+  @extend .dropdown-divider;
+  border-top-color: $border-gray;
+}
+
+.beneath-nav {
+  max-height: 100vh - $navbar-height !important;
+  margin-top: $navbar-height;
+}
+
 .mobile-header {
   text-align: center;
   background-color: #ccc;

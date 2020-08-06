@@ -4,9 +4,13 @@ html {
 
 :focus {outline:none !important;}
 
+.lyrix-page {
+  height: 100vh;
+}
+
 .list-page, .text-page {
   background-color: $bg-beige;
-  min-height: 100vh;
+  height: 100vh - $navbar-height !important;
 }
 
 .list-page {
@@ -15,11 +19,6 @@ html {
 
 .page-content {
   display: block;
-}
-
-.beneath-nav {
-  height: 80vh !important;
-  margin-top: 5vh;
 }
 
 @media (min-width: 576px) {
@@ -35,4 +34,5 @@ html {
 
 .song-page-contents {
   position: relative;
+  overflow: scroll;
 }

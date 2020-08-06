@@ -41,6 +41,11 @@ const Artists = ({ loader }) => {
     setShowModal(true)
   }
 
+  const navActions = [{
+    name: 'new',
+    value: data.actions.create ? onNewClick : null
+  }]
+
   const onModalDismiss = () => {
     setShowModal(false)
   }
@@ -62,7 +67,7 @@ const Artists = ({ loader }) => {
         items={data.data}
         actions={data.actions}
         loader={loader}
-        onNewClick={onNewClick}
+        navActions={navActions}
         onItemClick={onArtistClick}
         renderItem={renderArtist}
       />

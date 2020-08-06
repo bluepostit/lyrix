@@ -48,6 +48,16 @@ const Artist = ({ loader }) => {
     history.replace('/artists')
   }
 
+  const navActions = [
+    {
+      name: 'new',
+      value: data.actions.create ? onNewClick : null
+    }, {
+      name: 'delete',
+      value: data.actions.delete ? onDeleteClick : null
+    }
+  ]
+
   return (
     <>
       <ListDataset
@@ -60,8 +70,7 @@ const Artist = ({ loader }) => {
         items={data.data.songs}
         actions={data.actions}
         loading={loader.loading}
-        onNewClick={onNewClick}
-        onDeleteClick={onDeleteClick}
+        navActions={navActions}
         onItemClick={onSongClick}
         renderItem={renderSong}
       />

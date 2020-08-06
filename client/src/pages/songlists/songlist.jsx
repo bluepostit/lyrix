@@ -34,6 +34,11 @@ const Songlist = ({ loader }) => {
     history.push('/songs/new')
   }
 
+  const navActions = [{
+    name: 'new',
+    value: onNewClick
+  }]
+
   const onLoadingComplete = (data) => {
     setData(data)
   }
@@ -50,7 +55,7 @@ const Songlist = ({ loader }) => {
         items={data.data.songs}
         actions={data.actions}
         loading={loader.loading}
-        onNewClick={onNewClick}
+        navActions={navActions}
         onItemClick={onSongClick}
         renderItem={renderSong}
         renderItemMultiLine={true}

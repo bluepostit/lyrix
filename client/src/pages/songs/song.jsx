@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton, SongItemsButton } from '../../components'
-import { Deleter } from '../../components/modals'
+import { Deleter, SongItemsModal } from '../../components/modals'
+import { pluralize } from '../../util'
 
 const getSongData = (songId, songlistId, artistId) => {
   let url = `/api/songs/${songId}`
@@ -25,9 +26,9 @@ const getSongData = (songId, songlistId, artistId) => {
 
 const PageContent = (props) => {
   return (
-    <div className="song-page-contents">
+    <div className="song-page-contents beneath-nav">
       <div className="song-text">
-        <div>{props.song.text}</div>
+        {props.song.text}
       </div>
       <ToTopButton />
     </div>
@@ -40,11 +41,14 @@ const Song = (props) => {
   const [data, setData] = useState({
     data: {
       title: null,
-      text: null
+      text: null,
+      artist: { id: '' },
+      songItems: []
     },
     actions: []
   })
   const [nextLink, setNextLink] = useState()
+  const [showSongItemsModal, setShowSongItemsModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const history = useHistory()
   const location = useLocation()
@@ -57,9 +61,44 @@ const Song = (props) => {
     setDeleting(true)
   }
 
+  const onSongItemsButtonClick = () => {
+    setShowSongItemsModal(true)
+  }
+
+  const handleSongItemsModalClose = () => {
+    setShowSongItemsModal(false)
+  }
+
   const onDelete = () => {
     history.replace('/songs')
   }
+
+  const songItemsTitle =
+    `You have ${pluralize(data.data.songItems.length, 'item')}`
+  const hasEdit = data.actions.edit
+  const hasDelete = data.actions.delete
+
+  const navActions = [{
+    name: 'artist',
+    title: data.data.artist.name,
+    value: `/artists/${data.data.artist.id}`,
+    hasDivider: !nextLink
+  }, {
+    name: 'next',
+    value: nextLink,
+    hasDivider: true
+    }, {
+    name: 'songItem',
+    title: songItemsTitle,
+    value: onSongItemsButtonClick,
+    hasDivider: hasEdit || hasDelete
+  },{
+    name: 'edit',
+    value: hasEdit ? goToEdit : null
+  }, {
+    name: 'delete',
+    value: hasDelete ? handleDeleteClick : null
+  }]
 
   useEffect(() => {
     loader.start('Loading song...')
@@ -81,8 +120,6 @@ const Song = (props) => {
     }, [history, songId, artistId, songlistId, location.pathname]) // things to monitor for render
     // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
-  const peeker = <SongItemsButton song={data.data} {...props} />
-
   return (
     <div className="song-page">
       <Page
@@ -90,10 +127,13 @@ const Song = (props) => {
         title={data.data.title}
         actions={data.actions}
         loader={props.loader}
-        nextLink={nextLink}
-        onEditClick={goToEdit}
-        onDeleteClick={handleDeleteClick}
-        peeker={peeker}
+        navActions={navActions}
+      />
+      <SongItemsModal title="Your Song Items"
+        song={data.data}
+        songItems={data.data.songItems}
+        show={showSongItemsModal}
+        handleClose={handleSongItemsModalClose}
       />
       <Deleter
         entity={data.data}

@@ -19,14 +19,14 @@ const getSongItem = (songItemId) => {
 
 const PageContent = ({ songItem }) => {
   return (
-    <div>
-      <div className="song-item-text-display">
+    <>
+      <div className="song-item-text-display beneath-nav">
         <div className="song-item-text-box">
           {songItem.text}
         </div>
       </div>
       <ToTopButton />
-    </div>
+    </>
   )
 }
 
@@ -35,7 +35,14 @@ const SongItem = ({ loader }) => {
   const [data, setData] = useState({
     title: null,
     text: null,
-    data: { song: { title: '' } },
+    data: {
+      song: {
+        title: '',
+        artist: {
+          name: ''
+        }
+      }
+    },
     actions: {}
   })
   const [deleting, setDeleting] = useState(false)
@@ -45,6 +52,14 @@ const SongItem = ({ loader }) => {
     history.push(`/song-items/${data.data.id}/edit`)
   }
 
+  const goToArtist = () => {
+    history.push(`/artists/${data.data.song.artist.id}`)
+  }
+
+  const goToSong = () => {
+    history.push(`/songs/${data.data.song.id}`)
+  }
+
   const handleDeleteClick = () => {
     setDeleting(true)
   }
@@ -52,6 +67,27 @@ const SongItem = ({ loader }) => {
   const onDelete = () => {
     history.replace('/song-items')
   }
+
+  const hasEdit = data.actions.edit
+  const hasDelete = data.actions.delete
+
+  const navActions = [{
+    name: 'edit',
+    value: hasEdit ? goToEdit : null,
+    hasDivider: !hasDelete
+  }, {
+    name: 'delete',
+    value: data.actions.delete ? handleDeleteClick : null,
+    hasDivider: true
+  }, {
+    name: 'artist',
+    title: data.data.song.artist.name,
+    value: goToArtist
+  }, {
+    name: 'song',
+    title: data.data.song.title,
+    value: goToSong
+  }]
 
   useEffect(() => {
     loader.start('Loading Song Item...')
@@ -76,8 +112,7 @@ const SongItem = ({ loader }) => {
         actions={data.actions}
         title={<SongItemPageTitle songItem={data.data} />}
         loader={loader}
-        onEditClick={goToEdit}
-        onDeleteClick={handleDeleteClick}
+        navActions={navActions}
       />
       <Deleter
         entity={data.data}
