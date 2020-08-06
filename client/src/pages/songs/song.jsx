@@ -75,6 +75,8 @@ const Song = (props) => {
 
   const songItemsTitle =
     `You have ${pluralize(data.data.songItems.length, 'item')}`
+  const hasEdit = data.actions.edit
+  const hasDelete = data.actions.delete
 
   const navActions = [{
     name: 'artist',
@@ -89,13 +91,13 @@ const Song = (props) => {
     name: 'songItem',
     title: songItemsTitle,
     value: onSongItemsButtonClick,
-    hasDivider: true
+    hasDivider: hasEdit || hasDelete
   },{
     name: 'edit',
-    value: goToEdit
+    value: hasEdit ? goToEdit : null
   }, {
     name: 'delete',
-    value: handleDeleteClick
+    value: hasDelete ? handleDeleteClick : null
   }]
 
   useEffect(() => {

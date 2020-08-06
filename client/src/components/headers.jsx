@@ -56,6 +56,7 @@ const LyrixNavbar = ({
   }
 
   const className = 'lyrix-navbar ' + (expanded ? '' : 'collapsed')
+  const visibleActions = navActions.filter(i => i.value)
 
   return (
     <Navbar collapseOnSelect fixed="top"
@@ -73,8 +74,8 @@ const LyrixNavbar = ({
               <Icon entity="home" /><strong> Lyrix</strong>
             </Nav.Link>
             <div className="horizontal-divider"
-              hidden={navActions.length < 1} />
-            {navActions.filter(i => i.value).map((action, index) =>
+              hidden={visibleActions.length < 1} />
+            {visibleActions.map((action, index) =>
               <NavbarButton action={action}
                 onClick={handleActionClick}
                 key={index + 1} />

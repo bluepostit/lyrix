@@ -24,7 +24,7 @@ const Songs = ({ loader }) => {
 
   const navActions = [{
     name: 'new',
-    value: onNewClick
+    value: data.actions.create ? onNewClick : null
   }]
 
   const onLoadingComplete = (data) => {
