@@ -28,7 +28,7 @@ const SonglistForm = (props) => {
         setCanSubmit(true)
         console.log(response)
         if (response.error) {
-          setError(response.message)
+          setError(response.error)
         } else {
           props.onCreate(response)
         }
