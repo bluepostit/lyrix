@@ -16,7 +16,7 @@ const fetchSong = async (id) => {
 }
 
 const EditSong = ({ loader }) => {
-  const title = 'Editing Song'
+  const title = 'Edit Song'
   const history = useHistory()
   const [song, setSong] = useState({
     id: '',
@@ -49,22 +49,18 @@ const EditSong = ({ loader }) => {
     history.push(`/songs/${id}`)
   }
 
-  const content =
-    <SongForm
-      song={song}
-      setSong={setSong}
-      action={`/api/songs/${song.id}`}
-      method='PUT'
-      loader={loader}
-      onSuccess={onUpdateSuccess} />
-
   return (
-    <div className="song-page">
-      <Page
-        content={content}
-        title="Edit Song"
-      />
-    </div>
+    <Page title={title}>
+      <div className="pt-1 song-page">
+        <SongForm
+          song={song}
+          setSong={setSong}
+          action={`/api/songs/${song.id}`}
+          method='PUT'
+          loader={loader}
+          onSuccess={onUpdateSuccess} />
+      </div>
+    </Page>
   )
 }
 
