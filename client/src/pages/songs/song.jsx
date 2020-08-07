@@ -127,14 +127,13 @@ const Song = (props) => {
     // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
 
   return (
-    <div className="song-page">
-      <Page
-        content={<PageContent song={data.data} />}
-        title={data.data.title}
-        actions={data.actions}
-        loader={props.loader}
-        navActions={navActions}
-      />
+    <Page title={data.data.title} actions={navActions}>
+      <div className="song-page-contents">
+        <div className="song-text">
+          {data.data.text}
+        </div>
+        <ToTopButton />
+      </div>
       <SongItemsModal title="Your Song Items"
         songItems={songItems}
         show={showSongItemsModal}
@@ -147,7 +146,7 @@ const Song = (props) => {
         setShow={setDeleting}
         onDelete={onDelete}
       />
-    </div>
+    </Page>
   )
 }
 
