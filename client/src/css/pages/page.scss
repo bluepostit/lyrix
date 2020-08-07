@@ -4,6 +4,10 @@ html {
 
 :focus {outline:none !important;}
 
+h1, h2, h3, h4, h5 {
+  color: $primary;
+}
+
 .lyrix-page {
   max-height: 100vh;
   background-color: $bg-beige;
