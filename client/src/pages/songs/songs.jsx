@@ -40,9 +40,8 @@ const Songs = ({ loader }) => {
       />
       <ItemListPage title={title}
         items={data.data}
-        actions={data.actions}
+        actions={navActions}
         loading={loader.loading}
-        navActions={navActions}
         onItemClick={onSongClick}
         renderItem={renderSong}
       />
