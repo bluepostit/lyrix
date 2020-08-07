@@ -14,15 +14,6 @@ html {
 
 .list-page, .text-page {
   background-color: $bg-beige;
-  height: 100vh - $navbar-height !important;
-}
-
-.list-page {
-  position: relative;
-}
-
-.page-content {
-  display: block;
 }
 
 .lyrix-page.has-navbar .page-content {
