@@ -72,7 +72,7 @@ const SongForm = ({
       .then(res => res.json())
       .then((json) => {
         if (json.error) {
-          setErrorMessage(json.message)
+          setErrorMessage(json.error)
         } else {
           updateSong({
             title: json.data.title,
@@ -100,7 +100,7 @@ const SongForm = ({
     }).then(response => response.json())
       .then((json) => {
         if (json.error) {
-          setErrorMessage(json.message)
+          setErrorMessage(json.error)
         } else {
           onSuccess()
         }

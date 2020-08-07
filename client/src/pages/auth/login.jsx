@@ -35,7 +35,7 @@ const Login = () => {
         setCanSubmit(true)
         console.log(response)
         if (response.error) {
-          setError(response.message)
+          setError(response.error)
         } else {
           let { from } = location.state || { from: { pathname: "/" } };
           history.replace(from);

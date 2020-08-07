@@ -52,7 +52,7 @@ const SongImporter = ({ loader }) => {
       .then(res => res.json())
       .then((json) => {
         if (json.status !== 200) {
-          setError(json.message)
+          setError(json.error)
         } else {
           const song = json.data.song
           onImportSuccess(song)

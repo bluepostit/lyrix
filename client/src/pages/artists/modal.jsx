@@ -47,7 +47,7 @@ const ArtistModal = ({
     }).then(response => response.json())
       .then((json) => {
         if (json.error) {
-          setError(json.message)
+          setError(json.error)
           setLoading(false)
         } else {
           handleClose()

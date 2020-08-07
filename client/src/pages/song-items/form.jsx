@@ -54,7 +54,7 @@ const SongItemForm = ({
     }).then(response => response.json())
       .then((json) => {
         if (json.error) {
-          setErrorMessage(json.message)
+          setErrorMessage(json.error)
         } else {
           onSuccess()
         }
