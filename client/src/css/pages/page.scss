@@ -5,11 +5,13 @@ html {
 :focus {outline:none !important;}
 
 .lyrix-page {
-  height: 100vh;
+  max-height: 100vh;
+  background-color: $bg-beige;
 }
 
 .lyrix-page .content-wrapper {
-  height: 100%;
+  height: 100vh - $navbar-height !important;
+  margin-top: $navbar-height;
 }
 
 .list-page, .text-page {
@@ -20,7 +22,8 @@ html {
   // max-height: 100vh - $navbar-height !important;
   // padding-top: $navbar-height;
   display: flex;
-  height: 100vh;
+  flex-direction: column;
+  max-height: 100vh;
 }
 
 @media (min-width: 576px) {

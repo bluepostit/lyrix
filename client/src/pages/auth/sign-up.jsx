@@ -49,7 +49,7 @@ const SignUp = () => {
     <div className="page-content">
       <div className="container text-page">
         <Navbar title={<h2>Lyrix</h2>} />
-        <div className="beneath-nav col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 pt-2">
+        <div className="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 pt-2">
           <h3>Sign Up</h3>
           <form action="/api/user/sign-up" method="post" onSubmit={onSubmit}>
             <FormError error={error} />

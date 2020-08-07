@@ -26,7 +26,7 @@ const getSongData = (songId, songlistId, artistId) => {
 
 const PageContent = (props) => {
   return (
-    <div className="song-page-contents beneath-nav">
+    <div className="song-page-contents">
       <div className="song-text">
         {props.song.text}
       </div>

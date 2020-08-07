@@ -64,7 +64,7 @@ const SongImporter = ({ loader }) => {
   }
 
   const content =
-    <div className="container beneath-nav pt-2">
+    <div className="container pt-2">
       <Searcher
         loader={loader}
         onSearchStart={handleSearchStart}
