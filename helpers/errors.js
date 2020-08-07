@@ -43,7 +43,9 @@ const errorHandler = (entityName) => {
       error: err.userMessage || `Problem processing ${entityName} request`,
       status
     }
-    error.redirect = err.redirect
+    if (err.redirect) {
+      error.redirect = err.redirect
+    }
     debug(error)
     debug('original error: %O', err)
     res.json(error)
