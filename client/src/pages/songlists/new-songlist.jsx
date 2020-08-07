@@ -12,12 +12,11 @@ const NewSonglist = () => {
   }
 
   return (
-    <div className="songlist-page">
-      <Page
-        content={<SonglistForm onCreate={onCreationSuccess} />}
-        title={title}
-      />
-    </div>
+    <Page title={title}>
+      <div className="pt-1">
+        <SonglistForm onCreate={onCreationSuccess} />
+      </div>
+    </Page>
   )
 }
 

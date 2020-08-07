@@ -12,6 +12,10 @@
   flex-direction: column;
   align-items: center;
   color: $border-gray;
+
+  h1, h2, h3 {
+    color: $border-gray;
+  }
 }
 
 .lyrix-list-item {
