@@ -276,7 +276,7 @@ describe(BASE_URL, async () => {
       const body = res.body
       expect(body).to.have.status(400)
       expect(body.error).to.not.be.empty
-      expect(body.message).to.match(/text.*short/i)
+      expect(body.error).to.match(/text.*short/i)
     })
 
     it('should update the song item with the given data', async () => {

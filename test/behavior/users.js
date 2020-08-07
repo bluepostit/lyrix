@@ -4,6 +4,8 @@ const expect = chai.expect
 const app = require('../../app')
 const { User } = require('../../models')
 const RecordManager = require('../record-manager')
+const { getDebugger } = require('../common')
+const debug = getDebugger()
 
 chai.use(chaiHttp)
 
@@ -34,138 +36,104 @@ describe(BASE_URL, () => {
   }
 
   describe('POST /login', () => {
-    it('should return an error message if there are empty fields', async () => {
-      await User.createUser(TEST_USER_DATA)
-      try {
-        chai.request(app)
-          .post(`${BASE_URL}/login`)
-          .send({
-            username: TEST_USER_DATA.email,
-            password: ''
-          })
-          .end((err, res) => {
-            if (err) {
-              console.log(err.stack)
-            }
-            expect(res).to.have.status(200)
-            expect(res.body).to.be.an('object')
+    it('should return an error when no email is given', async () => {
+      const user = await RecordManager.insertUser()
+      const res = await chai
+        .request(app)
+        .post(`${BASE_URL}/login`)
+        .send({ password: user.unencryptedPassword })
 
-            const data = res.body
-            expect(data.status).to.eql(401)
-            expect(data.error).to.eql('not found')
-          })
-      } catch (err) {
-        console.log(err)
-      }
+      const body = res.body
+      debug(body)
+      expect(body).to.have.status(401) // Unauthorized
+      expect(body.error).to.match(/email/)
     })
 
-    it('should return an error message if there is no matching user',
-      async () => {
-        try {
-          chai.request(app)
-            .post(`${BASE_URL}/login`)
-            .send({
-              username: TEST_USER_DATA.email,
-              password: ''
-            })
-            .end((err, res) => {
-              if (err) {
-                console.log(err.stack)
-              }
-              expect(res).to.have.status(200)
-              expect(res.body).to.be.an('object')
+    it('should return an error when no password is given', async () => {
+      const user = await RecordManager.insertUser()
+      const res = await chai
+        .request(app)
+        .post(`${BASE_URL}/login`)
+        .send({ email: user.email })
 
-              const data = res.body
-              expect(data.status).to.eql(401)
-              expect(data.error).to.eql('not found')
-            })
-        } catch (err) {
-          console.log(err)
-        }
+      const body = res.body
+      debug(body)
+      expect(body).to.have.status(401) // Unauthorized
+      expect(body.error).to.match(/email/)
+    })
+
+    it('should return an error if no user matches given credentials',
+      async () => {
+        const res = await chai
+          .request(app)
+          .post(`${BASE_URL}/login`)
+          .send({
+            email: 'test.email@host.com',
+            password: '123456'
+          })
+
+        const body = res.body
+        debug(body)
+        expect(body).to.have.status(401) // Unauthorized
+        expect(body.error).to.match(/email/)
+      })
+
+    it('should return an error if an incorrect password is given',
+      async () => {
+        const user = await RecordManager.insertUser()
+        const res = await chai
+          .request(app)
+          .post(`${BASE_URL}/login`)
+          .send({
+            email: user.email,
+            password: `${user.unencryptedPassword}@`
+          })
+
+        const body = res.body
+        debug(body)
+        expect(body).to.have.status(401) // Unauthorized
+        expect(body.error).to.match(/email/)
       })
 
     it('should return a success message when given correct credentials',
       async () => {
-        await User.createUser(TEST_USER_DATA)
-        try {
-          const res = await chai.request(app)
-            .post(`${BASE_URL}/login`)
-            .send({
-              username: TEST_USER_DATA.email,
-              password: TEST_USER_DATA.password
-            })
+        const user = await RecordManager.insertUser()
+        const res = await chai
+          .request(app)
+          .post(`${BASE_URL}/login`)
+          .send({
+            username: user.email,
+            password: user.unencryptedPassword
+          })
+
           expect(res).to.have.status(200)
           expect(res.body).to.be.an('object')
 
-          const data = res.body
-          expect(data.status).to.eql(200)
-          expect(data.user).to.be.an('object')
-          expect(data.user.email).to.eql(TEST_USER_DATA.email)
-        } catch (err) {
-          console.log(err)
-        }
-      })
-
-    it('should return the user\'s songlists when given correct credentials',
-      async () => {
-        const bob = await User.createUser(TEST_USER_DATA)
-        await bob
-          .$relatedQuery('songLists')
-          .insertGraph([
-            {
-              title: 'SongList 1'
-            },
-            {
-              title: 'SongList 2'
-            }
-          ])
-        try {
-          const res = await chai.request(app)
-            .post(`${BASE_URL}/login`)
-            .send({
-              username: TEST_USER_DATA.email,
-              password: TEST_USER_DATA.password
-            })
-          expect(res).to.have.status(200)
-          expect(res.body).to.be.an('object')
-
-          const data = res.body
-          expect(data.status).to.eql(200)
-          expect(data.user).to.be.an('object')
-          expect(data.user.email).to.eql(TEST_USER_DATA.email)
-          expect(data.user).to.have.property('songLists')
-          expect(data.user.songLists.length).to.eql(2)
-          expect(data.user.songLists[1]).to.include({ title: 'SongList 2' })
-        } catch (err) {
-          console.log(err)
-        }
+          const body = res.body
+          debug(body)
+          expect(body.status).to.eql(200)
+          expect(body.user).to.be.an('object')
+          expect(body.user.email).to.eql(user.email)
       })
   })
 
   describe('POST /sign-up', () => {
     it('should fail if a user is already signed in', async () => {
-      await User.createUser(LOGGED_IN_USER_DATA)
+      const user = await RecordManager.insertUser()
+      const agent = chai.request.agent(app)
+      await agent
+        .post(`${BASE_URL}/login`)
+        .send({
+          username: user.email,
+          password: user.unencryptedPassword
+        })
 
-      try {
-        // Login with chai agent
-        const agent = chai.request.agent(app)
+      // Now try to sign up as a different user
+      const res = await agent
+        .post(`${BASE_URL}/sign-up`)
+        .send(GOOD_SIGN_UP_DATA)
 
-        await agent
-          .post(`${BASE_URL}/login`)
-          .send({
-            username: LOGGED_IN_USER_DATA.email,
-            password: LOGGED_IN_USER_DATA.password
-          })
-
-        // Now try to sign up as a different user
-        const res = await agent
-          .post(`${BASE_URL}/sign-up`)
-          .send(GOOD_SIGN_UP_DATA)
-
-        expect(res.body).to.have.status(403) // forbidden
-      } catch (e) {
-        console.log(e)
-      }
+      expect(res.body).to.have.status(403) // forbidden
     })
 
     it('should allow a user to sign up with valid input', async () => {
@@ -208,42 +176,34 @@ describe(BASE_URL, () => {
     })
 
     it('should fail with duplicated email address', async () => {
-      await User.createUser({
-        email: GOOD_SIGN_UP_DATA.email,
-        password: GOOD_SIGN_UP_DATA.password
-      })
+      const user = await RecordManager.insertUser()
+      const agent = chai.request.agent(app)
 
-      try {
-        const agent = chai.request.agent(app)
+      const res = await agent
+        .post(`${BASE_URL}/sign-up`)
+        .send({
+          email: user.email,
+          password: user.unencryptedPassword,
+          password2: user.unencryptedPassword
+        })
 
-        const res = await agent
-          .post(`${BASE_URL}/sign-up`)
-          .send(GOOD_SIGN_UP_DATA)
-
-        expect(res.body).to.have.status(400) // forbidden
-        expect(res.body.message).to.include('already exists')
-      } catch (e) {
-        console.log(e)
-      }
+      expect(res.body).to.have.status(400) // forbidden
+      expect(res.body.error).to.include('already exists')
     })
 
     it('should fail with non-email email address', async () => {
-      try {
-        const agent = chai.request.agent(app)
+      const agent = chai.request.agent(app)
 
-        // Empty password
-        const res = await agent
-          .post(`${BASE_URL}/sign-up`)
-          .send({
-            email: 'not-an-email.address',
-            password: GOOD_SIGN_UP_DATA.password,
-            password2: GOOD_SIGN_UP_DATA.password2
-          })
-        expect(res.body).to.have.status(400) // bad request
-        expect(res.body.error).to.include('valid')
-      } catch (e) {
-        console.log(e)
-      }
+      // Empty password
+      const res = await agent
+        .post(`${BASE_URL}/sign-up`)
+        .send({
+          email: 'not-an-email.address',
+          password: GOOD_SIGN_UP_DATA.password,
+          password2: GOOD_SIGN_UP_DATA.password2
+        })
+      expect(res.body).to.have.status(400) // bad request
+      expect(res.body.error).to.match(/email/)
     })
 
     it('should fail with password that is too short', async () => {

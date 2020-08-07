@@ -311,7 +311,7 @@ describe(BASE_URL, () => {
           text: 'This is some text. It is different',
         })
       expect(res.body).to.have.status(400)
-      expect(res.body.message).to.match(/missing|provide|require/)
+      expect(res.body.error).to.match(/missing|provide|require/)
     })
 
     it('should return an error when a song with the same title exists',
@@ -329,7 +329,7 @@ describe(BASE_URL, () => {
             artist_id: song.artist_id
           })
         expect(res.body).to.have.status(400)
-        expect(res.body.message).to.match(/exists/)
+        expect(res.body.error).to.match(/exists/)
       })
 
     it('should create a song with the given data', async () => {
@@ -420,7 +420,7 @@ describe(BASE_URL, () => {
       const body = res.body
       expect(body).to.have.status(400)
       expect(body.error).to.not.be.empty
-      expect(body.message).to.match(/text.*short/i)
+      expect(body.error).to.match(/text.*short/i)
     })
 
     it('should update the song with the given data', async () => {
