@@ -28,7 +28,7 @@ const Item = ({
 const EmptyMessage = ({
   show
 }) => {
-  let className = 'beneath-nav lyrix-list empty ' + (show ? '' : 'd-none')
+  let className = 'lyrix-list empty ' + (show ? '' : 'd-none')
   return (
     <div className={className}>
       <h3>Nothing to show here, yet.</h3>
