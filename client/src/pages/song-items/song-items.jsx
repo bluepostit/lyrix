@@ -33,7 +33,6 @@ const SongItems = ({
       <ItemListPage
         title={title}
         items={data.data}
-        actions={data.actions}
         loading={loader.loading}
         onItemClick={onSongItemClick}
         renderItem={renderSongItem}
