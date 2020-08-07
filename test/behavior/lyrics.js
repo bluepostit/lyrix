@@ -33,7 +33,7 @@ describe(BASE_URL, function() {
 
       const res = await agent.get(BASE_URL)
       expect(res.body).to.have.status(400)
-      expect(res.body.message).to.match(/missing|(not found)/)
+      expect(res.body.error).to.match(/missing|(not found)/)
     })
 
     it('should return an error if no artist matches the given id',
@@ -43,7 +43,7 @@ describe(BASE_URL, function() {
 
         const res = await agent.get(`${BASE_URL}?artist_id=1`)
         expect(res.body).to.have.status(404)
-        expect(res.body.message).to.match(/provided|(not found)/)
+        expect(res.body.error).to.match(/provided|(not found)/)
       })
 
     it('should return an error if no title is given', async () => {
@@ -55,7 +55,7 @@ describe(BASE_URL, function() {
       const res = await agent.get(
         `${BASE_URL}?artist_id=${artist.id}&title=`)
       expect(res.body).to.have.status(400)
-      expect(res.body.message).to.match(/provided|(not found)/)
+      expect(res.body.error).to.match(/provided|(not found)/)
     })
 
     it('should return an error when no lyrics are found', async () => {

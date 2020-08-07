@@ -34,7 +34,7 @@ describe(BASE_URL, async function () {
       agent.close()
 
       expect(res.body).to.have.status(400)
-      expect(res.body.message).to.match(/missing|empty|search/)
+      expect(res.body.error).to.match(/missing|empty|search/)
     })
 
     it('should return a list of songs matching the search term(s)', async () => {
@@ -83,7 +83,7 @@ describe(BASE_URL, async function () {
       agent.close()
 
       expect(res.body).to.have.status(400)
-      expect(res.body.message).to.match(/missing|empty|search/)
+      expect(res.body.error).to.match(/missing|empty|search/)
     })
 
     it("should return an error if the song id doesn't match "
@@ -136,7 +136,7 @@ describe(BASE_URL, async function () {
 
         const res = await agent.get(`${BASE_URL}/import?sid=${songId}`)
         expect(res.body).to.have.status(400)
-        expect(res.body.message).not.to.be.empty
+        expect(res.body.error).not.to.be.empty
 
         const songs = await Song.query()
         expect(songs.length).to.eql(1)
