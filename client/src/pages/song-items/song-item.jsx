@@ -17,19 +17,6 @@ const getSongItem = (songItemId) => {
     })
 }
 
-const PageContent = ({ songItem }) => {
-  return (
-    <>
-      <div className="song-item-text-display">
-        <div className="song-item-text-box">
-          {songItem.text}
-        </div>
-      </div>
-      <ToTopButton />
-    </>
-  )
-}
-
 const SongItem = ({ loader }) => {
   const { id } = useParams()
   const [data, setData] = useState({
@@ -105,15 +92,15 @@ const SongItem = ({ loader }) => {
   }, [history, id]) // things to monitor for render
     // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects)
 
+  const title = <SongItemPageTitle songItem={data.data} />
   return (
-    <div className="song-item-page">
-      <Page
-        content={<PageContent songItem={data.data} />}
-        actions={data.actions}
-        title={<SongItemPageTitle songItem={data.data} />}
-        loader={loader}
-        navActions={navActions}
-      />
+    <Page title={title} actions={navActions}>
+      <div className="song-item-text-display">
+        <div className="song-item-text-box">
+          {data.data.text}
+        </div>
+      </div>
+      <ToTopButton />
       <Deleter
         entity={data.data}
         noun="song-item"
@@ -121,7 +108,7 @@ const SongItem = ({ loader }) => {
         setShow={setDeleting}
         onDelete={onDelete}
       />
-    </div>
+    </Page>
   )
 }
 
