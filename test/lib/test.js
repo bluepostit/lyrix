@@ -1,3 +1,4 @@
+const path = require('path')
 const { execSync } = require('child_process')
 const debugModule = require('debug')
 const debug = debugModule('lyrix:test')
@@ -28,11 +29,11 @@ const test = (target, args = '') => {
 const main = () => {
   const args = process.argv.slice(2)
   if (args.length < 1) {
-    return test(DEFAULT_TARGET)
+    return test(path.join(TEST_PATH_PREFIX, DEFAULT_TARGET))
   }
 
   let [target, ...rest] = args
-  target = `${TEST_PATH_PREFIX}/${target}`
+  target = path.join(TEST_PATH_PREFIX, target)
   rest = rest.map(r => r.replace(/\s/g, '\\ ')).join(' ')
   test(target, rest)
 }
