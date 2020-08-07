@@ -1,4 +1,5 @@
 .lyrix-list {
+  flex-grow: 1;
   list-style: none;
   padding-left: 0;
   font-family: $font-list-item;
@@ -11,6 +12,10 @@
   flex-direction: column;
   align-items: center;
   color: $border-gray;
+
+  h1, h2, h3 {
+    color: $border-gray;
+  }
 }
 
 .lyrix-list-item {

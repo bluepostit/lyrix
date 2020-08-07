@@ -4,21 +4,32 @@ html {
 
 :focus {outline:none !important;}
 
+h1, h2, h3, h4, h5 {
+  color: $primary;
+}
+
 .lyrix-page {
-  height: 100vh;
+  max-height: 100vh;
+  background-color: $bg-beige;
+}
+
+.lyrix-page .content-wrapper {
+  height: 100vh - $navbar-height !important;
+  margin-top: $navbar-height;
+  overflow-y: scroll;
 }
 
 .list-page, .text-page {
   background-color: $bg-beige;
-  height: 100vh - $navbar-height !important;
 }
 
-.list-page {
-  position: relative;
-}
-
-.page-content {
-  display: block;
+.lyrix-page.has-navbar .page-content {
+  // max-height: 100vh - $navbar-height !important;
+  // padding-top: $navbar-height;
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  height: 100%;
 }
 
 @media (min-width: 576px) {

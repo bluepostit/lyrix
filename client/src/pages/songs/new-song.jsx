@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useHistory } from "react-router-dom"
 import { Page } from '../page'
 import { SongForm } from './form'
@@ -13,40 +13,22 @@ const NewSong = ({ loader }) => {
     artist: { id: '', name: '' }
   })
 
-  // useEffect(() => {
-  //   fetchSong(songId)
-  //     .then((song) => {
-  //       setSong(song)
-  //       // songItem.song = song
-  //     })
-  //     .catch((e) => {
-  //       console.log('Something went wrong!')
-  //       console.log(e)
-  //       history.push('/login')
-  //     })
-  // }, [history, songId, songItem.song]) // things to monitor for render
-
-
   const onCreateSuccess = () => {
     history.push('/songs')
   }
 
-  const content =
-    <SongForm
-      song={song}
-      setSong={setSong}
-      action={'/api/songs'}
-      method='POST'
-      loader={loader}
-      onSuccess={onCreateSuccess} />
-
   return (
-    <div className="song-page">
-      <Page
-        content={content}
-        title={title}
-      />
-    </div>
+    <Page title={title}>
+      <div className="pt-1 song-page">
+        <SongForm
+          song={song}
+          setSong={setSong}
+          action={'/api/songs'}
+          method='POST'
+          loader={loader}
+          onSuccess={onCreateSuccess} />
+      </div>
+    </Page>
   )
 }
 

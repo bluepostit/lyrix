@@ -1,5 +1,5 @@
 import React from 'react'
-import { Navbar } from '../components/headers'
+import { Page } from './page'
 
 // A single list item
 const Item = ({
@@ -28,7 +28,7 @@ const Item = ({
 const EmptyMessage = ({
   show
 }) => {
-  let className = 'beneath-nav lyrix-list empty ' + (show ? '' : 'd-none')
+  let className = 'lyrix-list empty ' + (show ? '' : 'd-none')
   return (
     <div className={className}>
       <h3>Nothing to show here, yet.</h3>
@@ -45,7 +45,7 @@ const ItemListDiv = ({
   renderItem = (item, index) => { }
 }) => {
   return (
-    <div className="list-group lyrix-list beneath-nav">
+    <div className="list-group lyrix-list">
       {items.map((item, index) =>
         <Item
           key={index}
@@ -64,8 +64,6 @@ const ItemListDiv = ({
  * Uses the following props:
  * - title - string to be used at the top of the page
  * - getItems() - async function returning an array of items
- * - onNewClick() - function to handle clicking 'New'; usually a redirect
- * - onItemClick() - function to handle clicking individual item; usually a redirect
  * - renderItem() - function to render an individual item in the list
  * - renderItemMultiLine() - OPTIONAL boolean: whether to render multi-line content for each item
  *
@@ -76,25 +74,22 @@ const ItemListPage = ({
   actions,
   loading,
   noHeader,
+  title,
+  children,
    ...props
 }) => {
-  let navbar = <></>
-  if (!noHeader) {
-    navbar = <Navbar actions={actions} {...props} />
-  }
-
   let contents = <EmptyMessage show={!loading} />
   if (items.length > 0) {
     contents = <ItemListDiv items={items} show={!loading} {...props} />
   }
 
   return (
-    <div className="page-content">
-      <div className="list-page">
-        {navbar}
+    <Page title={title} actions={actions}>
+      <div className="page-content list-page">
         {contents}
+        {children}
       </div>
-    </div>
+    </Page>
   )
 }
 

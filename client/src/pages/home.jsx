@@ -1,36 +1,22 @@
 import React from 'react'
+import { Page } from './page'
 import { MenuButton } from '../components/buttons'
-import { Navbar } from '../components/headers'
-import { Icon } from '../components/icons'
 
-const PageContent = (props) => {
-  const artistsIcon = <Icon entity="artist" />
-  const importIcon = <Icon entity="import" />
-  const songsIcon = <Icon entity="song" />
-  const songlistsIcon = <Icon entity="songlist" />
-  const songItemsIcon = <Icon entity="songItem" />
-
-    return (
-      <div className="page-content">
-        <div className="lyrix-page d-sm-block">
-          <Navbar title={<h2>Lyrix</h2>} />
-          <div className="menu-buttons">
-            <MenuButton action="artists" icon={artistsIcon} />
-            <MenuButton action="songs" icon={songsIcon} />
-            <MenuButton action="import" icon={importIcon} />
-            <MenuButton action="songlists" icon={songlistsIcon} />
-            <MenuButton action="song-items" icon={songItemsIcon} />
-          </div>
+const Home = () => {
+  return (
+    <Page title={<h2>Lyrix</h2>}>
+      <div className="page-content home-page">
+        <div className="menu-buttons">
+          <MenuButton action="/artists" entity="artist" title="Artists" />
+          <MenuButton action="/songs" entity="song" title="Songs" />
+          <MenuButton action="/import" entity="import" title="Import" />
+          <MenuButton action="/songlists" entity="songlist"
+            title="Songlists" />
+          <MenuButton action="/song-items" entity="songItem"
+            title="Song Items" />
         </div>
       </div>
-    )
-}
-
-const Home = (props) => {
-  return (
-    <div className="home-page">
-      <PageContent />
-    </div>
+    </Page>
   )
 }
 

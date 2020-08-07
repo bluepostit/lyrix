@@ -68,19 +68,18 @@ const Artist = ({ loader }) => {
       <ItemListPage
         title={data.data.name}
         items={data.data.songs}
-        actions={data.actions}
+        actions={navActions}
         loading={loader.loading}
-        navActions={navActions}
         onItemClick={onSongClick}
-        renderItem={renderSong}
-      />
-      <Deleter
-        entity={data.data}
-        noun="artist"
-        show={deleting}
-        setShow={setDeleting}
-        onDelete={onDelete}
-      />
+        renderItem={renderSong}>
+        <Deleter
+          entity={data.data}
+          noun="artist"
+          show={deleting}
+          setShow={setDeleting}
+          onDelete={onDelete}
+        />
+      </ItemListPage>
     </>
   )}
 

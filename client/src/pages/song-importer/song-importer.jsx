@@ -6,7 +6,6 @@ import {
 import { Page } from '../page'
 import { Searcher } from './searcher'
 import { Song } from '../../components/list-items'
-import { LoadingModal } from '../../components/modals'
 import { FormError } from '../../components/forms'
 
 const getFormData = (form) => {
@@ -64,7 +63,7 @@ const SongImporter = ({ loader }) => {
   }
 
   const content =
-    <div className="container beneath-nav pt-2">
+    <div className="container pt-2">
       <Searcher
         loader={loader}
         onSearchStart={handleSearchStart}
@@ -101,12 +100,11 @@ const SongImporter = ({ loader }) => {
     </div>
 
   return (
-    <div className="song-page">
-      <Page
-        content={content}
-        title={title}
-      />
-    </div>
+    <Page title={title}>
+      <div className="page-content song-page">
+        {content}
+      </div>
+    </Page>
   )
 }
 
