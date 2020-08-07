@@ -5,6 +5,8 @@ const objection = require('objection')
 const debug = require('debug')('lyrix:route:auth')
 
 const { User } = require('../models')
+const { StatusCodes } = require('./common')
+const { errorHandler } = require('../helpers/errors')
 
 const signUpValidation = (req, res, next) => {
   if (req.isAuthenticated()) {
@@ -71,19 +73,12 @@ const buildSignUpValidationErrorMessage = (error) => {
   }
 }
 
-router.get('/login', (req, res) => {
-  res.render('login')
-})
-
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
-    // console.log(user, err, info)
     if (!user) {
-      return res.json({
-        redirect: '/user/login',
-        status: 401,
-        error: 'not found',
-        message: 'Please check your user name and password'
+      return next({
+        statusCode: StatusCodes.UNAUTHORIZED,
+        userMessage: 'Please check your email and password'
       })
     }
     if (err) {
@@ -93,17 +88,14 @@ router.post('/login', (req, res, next) => {
     req.logIn(user, async (err) => {
       if (err) {
         debug('error signing user in: %O', err)
-        return res.json({
-          status: 500,
-          error: "couldn't log in",
-          message: 'There was a problem logging you in'
+        return next({
+          userMessage: 'There was a problem logging you in'
         })
       }
       return res.json({
-        status: 200,
+        status: StatusCodes.OK,
         user: {
           email: user.email,
-          songLists: await user.$relatedQuery('songLists')
         }
       })
     })
@@ -157,5 +149,7 @@ router.post('/sign-up', signUpValidation, async (req, res, next) => {
     })
   }
 })
+
+router.use(errorHandler())
 
 module.exports = router
