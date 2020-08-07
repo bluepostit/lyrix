@@ -10,19 +10,17 @@ const { errorHandler } = require('../helpers/errors')
 
 const signUpValidation = (req, res, next) => {
   if (req.isAuthenticated()) {
-    return res.json({
-      status: 403,
-      error: 'You are already logged in',
-      message: 'You are already logged in'
+    return next({
+      statusCode: StatusCodes.FORBIDDEN,
+      userMessage: 'You are already logged in'
     })
   }
 
   const body = req.body
   if (!body.email || !body.password || !body.password2) {
-    return res.json({
-      status: 400,
-      error: 'Something went wrong',
-      message: 'Please fill in all fields'
+    return next({
+      statusCode: StatusCodes.BAD_REQUEST,
+      userMessage: 'Please fill in all fields'
     })
   }
 
@@ -30,48 +28,45 @@ const signUpValidation = (req, res, next) => {
   const pw1 = req.body.password.trim()
   const pw2 = req.body.password2.trim()
   if (pw1 !== pw2) {
-    return res.json({
-      status: 400,
-      error: 'Passwords do not match',
-      message: 'Please ensure both passwords match'
+    return next({
+      statusCode: StatusCodes.BAD_REQUEST,
+      userMessage: 'Please ensure both passwords match'
     })
   }
 
   if (!email || !pw1 || !pw2) {
-    return res.json({
-      status: 400,
-      error: 'Email and password cannot be empty',
-      message: 'Fields cannot be empty'
+    return next({
+      statusCode: StatusCodes.BAD_REQUEST,
+      userMessage: 'Please fill in all fields'
     })
   }
 
   const pwMinLength = User.jsonSchema.properties.password.minLength
   if (pw1.length < pwMinLength) {
-    return res.json({
-      status: 400,
-      error: 'Password too short',
-      message: 'Password is too short. ' +
+    return next({
+      statusCode: StatusCodes.BAD_REQUEST,
+      userMessage: 'Password is too short. ' +
         `It must be at least ${pwMinLength} characters long`
     })
   }
   next()
 }
 
-const buildSignUpValidationErrorMessage = (error) => {
-  const data = error.data
-  let message = ''
-  if (data.email) {
-    message += 'Please check email address.'
-    data.email.forEach((err) => {
-      if (err.keyword === 'required') {
-        message += ' Cannot be empty.'
-      } else if (err.keyword === 'format') {
-        message += 'Must be a vaild email address'
-      }
-    })
-    return message
-  }
-}
+// const buildSignUpValidationErrorMessage = (error) => {
+//   const data = error.data
+//   let message = ''
+//   if (data.email) {
+//     message += 'Please check email address.'
+//     data.email.forEach((err) => {
+//       if (err.keyword === 'required') {
+//         message += ' Cannot be empty.'
+//       } else if (err.keyword === 'format') {
+//         message += 'Must be a vaild email address'
+//       }
+//     })
+//     return message
+//   }
+// }
 
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
@@ -118,35 +113,24 @@ router.post('/sign-up', signUpValidation, async (req, res, next) => {
         return next(err)
       }
       return res.json({
-        status: 200,
+        status: StatusCodes.OK,
         message: 'You have successfully signed up'
       })
     })
   } catch (error) {
     if (error instanceof objection.ValidationError) {
       debug('invalid input: %O', error)
-      return res.json({
-        status: 400,
-        error: 'Invalid input',
-        message: buildSignUpValidationErrorMessage(error)
-      })
+      return next(error)
     }
     if (error.constraint === 'users_email_unique') {
       debug('email already exists: "%s"', req.body.email)
-      return res.json({
-        status: 400,
-        error: 'Email already exists',
-        message: 'An account already exists with that email address'
-      })
+      error.userMessage = 'An account already exists with that email address'
+      return next(error)
     }
 
     // Something else went wrong.
     debug('something went wrong: %O', error)
-    return res.json({
-      status: 500,
-      error: 'Server error',
-      message: 'Something went wrong'
-    })
+    return next("We couldn't complete your sign-up")
   }
 })
 
