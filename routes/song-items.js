@@ -62,6 +62,7 @@ router.get('/', ensureLoggedIn, addUserActions,
       .orderBy(['song.title', 'title'])
 
       res.json({
+        status: StatusCodes.OK,
         data: songItems,
         actions: req.userActions
     })

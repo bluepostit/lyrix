@@ -127,7 +127,7 @@ router.get('/', async (req, res, next) => {
     .orderBy(['title', 'artist.name'])
 
   res.json({
-    error: false,
+    status: StatusCodes.OK,
     data: songs,
     actions: req.userActions
   })
@@ -140,8 +140,7 @@ router.get('/count', async (req, res, next) => {
   const count = parseInt(data[0].count, 10)
 
   res.json({
-    error: false,
-    status: 200,
+    status: StatusCodes.OK,
     data: count
   })
 })
