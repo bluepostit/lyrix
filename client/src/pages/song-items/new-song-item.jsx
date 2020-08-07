@@ -75,24 +75,21 @@ const NewSongItem = ({ loader }) => {
     }
   ]
 
-  const content =
-    <SongItemForm
-      song={song}
-      songItem={songItem}
-      setSongItem={setSongItem}
-      action={'/api/song-items'}
-      method='POST'
-      loader={loader}
-      onSuccess={onCreateSuccess} />
+  const titleEl = <SongItemPageTitle song={song} title={title} />
 
   return (
-    <div className="song-item-page">
-      <Page
-        content={content}
-        navActions={navActions}
-        title={<SongItemPageTitle song={song} title={title} />}
-      />
-    </div>
+    <Page title={titleEl} actions={navActions}>
+      <div className="pt-1">
+        <SongItemForm
+          song={song}
+          songItem={songItem}
+          setSongItem={setSongItem}
+          action={'/api/song-items'}
+          method='POST'
+          loader={loader}
+          onSuccess={onCreateSuccess} />
+      </div>
+    </Page>
   )
 }
 
