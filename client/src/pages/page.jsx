@@ -1,30 +1,31 @@
 import React from 'react'
 import { Navbar } from '../components'
 
-const PageHeader = (props) => {
-  if (props.noHeader) {
-    return <></>
-  }
-  return <Navbar {...props} />
-}
-
 /**
  * Props:
  * - title - string to be used as the page's title
- * - content - string/JSX to be used as the page's content
+ * - children - string/JSX to be used as the page's content
+ * - noNavbar - if true, render no navbar
  *
  * Also includes all props offered by Navbar.
  * @see Navbar
- * @param {*} props
+ * @param {object} props
  */
-const Page = (props) => {
+const Page = ({
+  title,
+  actions,
+  noNavbar = false,
+  children
+}) => {
+  let header
+  if (!noNavbar) {
+    header = <Navbar actions={actions} title={title} />
+  }
   return (
-    <div className="page-content">
-      <div className="list-page">
-        <PageHeader {...props} />
-        <div className="lyrix-page beneath-nav">
-          {props.content}
-        </div>
+    <div className={"lyrix-page " + (noNavbar ? '' : 'has-navbar')}>
+      {header}
+      <div className="content-wrapper">
+        {children}
       </div>
     </div>
   )

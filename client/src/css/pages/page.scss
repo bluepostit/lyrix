@@ -8,6 +8,10 @@ html {
   height: 100vh;
 }
 
+.lyrix-page .content-wrapper {
+  height: 100%;
+}
+
 .list-page, .text-page {
   background-color: $bg-beige;
   height: 100vh - $navbar-height !important;
@@ -19,6 +23,13 @@ html {
 
 .page-content {
   display: block;
+}
+
+.lyrix-page.has-navbar .page-content {
+  // max-height: 100vh - $navbar-height !important;
+  // padding-top: $navbar-height;
+  display: flex;
+  height: 100vh;
 }
 
 @media (min-width: 576px) {

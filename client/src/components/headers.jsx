@@ -1,22 +1,18 @@
 import React, { useState } from 'react'
-import { useHistory, Link } from "react-router-dom"
-import { NavbarButton as Button, NavbarButton } from '../components/buttons'
+import { useHistory } from "react-router-dom"
+import { NavbarButton } from '../components/buttons'
 import { Icon } from '../components/icons'
 import { Nav, Navbar } from 'react-bootstrap'
 
 /**
  *
  * @param {*} props object containing the following:
- * - nextLink - (string) OPTIONAL link to navigate to when clicking 'next' (right arrow).
- *              If not provided, no right arrow will show.
  * - title - (any) content to be displayed in the center of the navbar
- * - peeker - content to add peeking out of the edge of the navbar.
+ * - actions - (array) OPTIONAL contextual actions to offer the user
  */
 const LyrixNavbar = ({
   title,
-  actions = {},
-  navActions = [],
-  peeker = null
+  actions = []
 }) => {
   const history = useHistory()
   const [expanded, setExpanded] = useState(false)
@@ -56,7 +52,7 @@ const LyrixNavbar = ({
   }
 
   const className = 'lyrix-navbar ' + (expanded ? '' : 'collapsed')
-  const visibleActions = navActions.filter(i => i.value)
+  const visibleActions = actions.filter(i => i.value)
 
   return (
     <Navbar collapseOnSelect fixed="top"
@@ -82,7 +78,6 @@ const LyrixNavbar = ({
             )}
           </Nav>
         </Navbar.Collapse>
-      {peeker}
     </Navbar>
   )
 }

@@ -20,23 +20,23 @@ const ToTopButton = () => {
 /**
  * Menu button for small screen
  */
-const MenuButton = ({ action, icon = <></> }) => {
-  let title = action[0].toUpperCase() + action.slice(1)
-  title = title.replace('-', ' ')
-
+const MenuButton = ({
+  action,
+  title,
+  entity = null
+}) => {
   const history = useHistory()
 
-  const handleMenuButtonClick = () => {
-    const url = `/${action}`
-    history.push(url)
+  const handleClick = () => {
+    history.push(action)
   }
 
-  const className = `btn btn-primary menu-button menu-button-${action}`
+  const icon = <Icon entity={entity} />
   return (
-    <button className={className}
-            data-action={action}
-            onClick={handleMenuButtonClick}>
-      {icon}{title}
+    <button
+      className="btn btn-primary menu-button"
+      onClick={handleClick}>
+        {icon} {title}
     </button>
   )
 }
