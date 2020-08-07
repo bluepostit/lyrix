@@ -63,21 +63,21 @@ const Artists = ({ loader }) => {
         shouldLoad={datasetShouldLoad}
         onLoadingComplete={onLoadingComplete}
       />
-      <ItemListPage title="Artists"
+      <ItemListPage
+        title="Artists"
         items={data.data}
-        actions={data.actions}
+        actions={navActions}
         loader={loader}
-        navActions={navActions}
         onItemClick={onArtistClick}
-        renderItem={renderArtist}
-      />
-      <ArtistModal
-        role="create"
-        title="Add an Artist"
-        show={showModal}
-        onSuccess={onSuccessfulCreate}
-        onDismiss={onModalDismiss}
-      />
+        renderItem={renderArtist}>
+        <ArtistModal
+          role="create"
+          title="Add an Artist"
+          show={showModal}
+          onSuccess={onSuccessfulCreate}
+          onDismiss={onModalDismiss}
+        />
+      </ItemListPage>
     </>
   )
 }
