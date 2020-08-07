@@ -47,23 +47,21 @@ const EditSongItem = ({ loader }) => {
     history.push(`/song-items/${id}`)
   }
 
-  const content =
-    <SongItemForm
-      song={songItem.song}
-      songItem={songItem}
-      setSongItem={setSongItem}
-      action={`/api/song-items/${songItem.id}`}
-      method='PUT'
-      loader={loader}
-      onSuccess={onUpdateSuccess} />
+  const titleEl = <SongItemPageTitle song={songItem.song} title={title} />
 
   return (
-    <div className="song-item-page">
-      <Page
-        content={content}
-        title={<SongItemPageTitle song={songItem.song} title={title} />}
-      />
-    </div>
+    <Page title={titleEl}>
+      <div className="pt-1">
+        <SongItemForm
+          song={songItem.song}
+          songItem={songItem}
+          setSongItem={setSongItem}
+          action={`/api/song-items/${songItem.id}`}
+          method='PUT'
+          loader={loader}
+          onSuccess={onUpdateSuccess} />
+      </div>
+    </Page>
   )
 }
 
