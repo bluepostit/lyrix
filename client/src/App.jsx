@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from "react-router-dom"
 import { RouterSwitch } from './components/routes'
 import { LoadingModal } from './components/modals'
 import { Loader } from './components/data'
+import DataSource from './data/data-source'
 
 const loader = new Loader('Loading...')
 
@@ -16,13 +17,13 @@ function App() {
   const onLoadEnd = () => {
     setLoading(false)
   }
-  loader.addListener('start', onLoadStart)
-  loader.addListener('stop', onLoadEnd)
+  DataSource.addListener('start', onLoadStart)
+  DataSource.addListener('stop', onLoadEnd)
 
   return (
     <>
       <Router>
-        <RouterSwitch loader={loader} />
+        <RouterSwitch loader={loader} dataSource={DataSource} />
       </Router>
       <LoadingModal
         loading={loading}
