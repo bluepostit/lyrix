@@ -1,5 +1,26 @@
 const debug = require('debug')('lyrix:data-source')
 
+const getArtistUrl = (baseUrl, params) => {
+  let url = baseUrl
+  if (params.artistId) {
+    url = `${baseUrl}/${params.artistId}`
+  }
+  return url
+}
+
+const getSongUrl = (baseUrl, params) => {
+  let url = `${baseUrl}/${params.songId}`
+  if (params.songlistId) {
+    url += `?context=songlist&contextId=${params.songlistId}`
+  } else if (params.artistId) {
+    url += '?context=artist'
+  } else {
+    url += '?context=songlist' // Assumed context: ALL songs
+  }
+  return url
+}
+
+
 const DataSource = (() => {
   const data = {}
   let error
@@ -10,6 +31,7 @@ const DataSource = (() => {
   }
 
   const URLS = {
+    artist: '/api/artists',
     songs: '/api/songs',
     song: '/api/songs'
   }
@@ -28,26 +50,17 @@ const DataSource = (() => {
     error = err
   }
 
-  const getSongUrl = (params) => {
-    let url = `${URLS.song}/${params.songId}`
-    if (params.songlistId) {
-      url += `?context=songlist&contextId=${params.songlistId}`
-    } else if (params.artistId) {
-      url += '?context=artist'
-    } else {
-      url += '?context=songlist' // Assumed context: ALL songs
-    }
-    return url
-  }
-
   const fetchData = async (entity, params) => {
     triggerEvent('start')
     let url = URLS[entity]
     if (!url) {
       throw `Invalid entity '${entity}'`
     }
+
     if (entity === 'song') {
-      url = getSongUrl(params)
+      url = getSongUrl(url, params)
+    } else if (entity === 'artist') {
+      url = getArtistUrl(url, (params))
     }
 
     fetch(url)

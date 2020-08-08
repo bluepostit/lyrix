@@ -84,7 +84,7 @@ router.get('/:id', validateId, async (req, res, next) => {
     res.json({
       status: StatusCodes.OK,
       actions: req.userActions,
-      data: artist
+      artist: artist
     })
   } catch (err) {
     return next(err)
