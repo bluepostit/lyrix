@@ -61,7 +61,7 @@ router.get('/', async (req, res, next) => {
       .groupBy('artists.id')
     res.json({
       status: StatusCodes.OK,
-      data: artists,
+      artists: artists,
       actions: req.userActions
     })
   } catch (error) {

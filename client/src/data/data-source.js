@@ -32,6 +32,7 @@ const DataSource = (() => {
 
   const URLS = {
     artist: '/api/artists',
+    artists: '/api/artists',
     songs: '/api/songs',
     song: '/api/songs'
   }

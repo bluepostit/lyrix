@@ -1,6 +1,22 @@
 import React from 'react'
 import { Icon } from './icons'
 
+const Artist = (artist) => {
+  return (
+    <div className="d-flex w-100 justify-content-between">
+      <div>
+        <Icon entity="artist" />
+        <span>{artist.name}</span>
+      </div>
+      <div>
+        <span className="badge badge-pill badge-info">
+          {artist.songCount}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 const Song = ({ song }) => {
   let artistName = song.artist.name || song.artist
   return (
@@ -46,4 +62,4 @@ const SongItem = ({ songItem }) => {
     </div>
   )
 }
-export { Song, SongItem }
+export { Artist, Song, SongItem }

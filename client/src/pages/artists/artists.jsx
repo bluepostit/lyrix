@@ -1,37 +1,14 @@
 import React, { useState } from 'react'
 import { useHistory } from "react-router-dom"
 import { ItemListPage } from '../item-list-page'
-import { Icon } from '../../components/icons'
+import { Artist } from '../../components/list-items'
 import { ArtistModal } from './modal'
-import { ListDataset } from '../../components/data'
 
 // A single artist list item
-const renderArtist = (artist) => {
-  return (
-    <div className="d-flex w-100 justify-content-between">
-      <div>
-        <Icon entity="artist" />
-        <span>{artist.name}</span>
-      </div>
-      <div>
-        <span className="badge badge-pill badge-info">
-          {artist.songCount}
-        </span>
-      </div>
-    </div>
-  )
-}
 
-const Artists = ({ loader }) => {
+const Artists = ({ data }) => {
   const history = useHistory()
-  const [datasetShouldLoad, setDatasetShouldLoad] = useState(true)
   const [showModal, setShowModal] = useState(false)
-  const [data, setData] = useState({ data: [], actions: {} })
-
-  const onLoadingComplete = (data) => {
-    setData(data)
-    setDatasetShouldLoad(false)
-  }
 
   const onArtistClick = (artist) => {
     history.push(`/artists/${artist.id}`)
@@ -41,9 +18,9 @@ const Artists = ({ loader }) => {
     setShowModal(true)
   }
 
-  const navActions = [{
+  const actions = [{
     name: 'new',
-    value: data.actions.create ? onNewClick : null
+    value: (data.actions && data.actions.create) ? onNewClick : null
   }]
 
   const onModalDismiss = () => {
@@ -52,33 +29,24 @@ const Artists = ({ loader }) => {
 
   const onSuccessfulCreate = () => {
     // Need to reload items!
-    setDatasetShouldLoad(true)
+    // setDatasetShouldLoad(true)
   }
 
   return (
-    <>
-      <ListDataset
-        url="/api/artists"
-        loader={loader}
-        shouldLoad={datasetShouldLoad}
-        onLoadingComplete={onLoadingComplete}
+    <ItemListPage
+      title="Artists"
+      items={data.artists}
+      actions={actions}
+      onItemClick={onArtistClick}
+      renderItem={Artist}>
+      <ArtistModal
+        role="create"
+        title="Add an Artist"
+        show={showModal}
+        onSuccess={onSuccessfulCreate}
+        onDismiss={onModalDismiss}
       />
-      <ItemListPage
-        title="Artists"
-        items={data.data}
-        actions={navActions}
-        loader={loader}
-        onItemClick={onArtistClick}
-        renderItem={renderArtist}>
-        <ArtistModal
-          role="create"
-          title="Add an Artist"
-          show={showModal}
-          onSuccess={onSuccessfulCreate}
-          onDismiss={onModalDismiss}
-        />
-      </ItemListPage>
-    </>
+    </ItemListPage>
   )
 }
 
