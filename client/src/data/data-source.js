@@ -35,6 +35,8 @@ const DataSource = (() => {
     songs: '/api/songs',
     songItem: '/api/song-items',
     songItems: '/api/song-items',
+    songlist: '/api/songlists',
+    songlists: '/api/songlists',
   }
 
   const triggerEvent = (event, ...params) => {
@@ -56,7 +58,7 @@ const DataSource = (() => {
     triggerEvent('start')
     let url = URLS[entity]
     if (!url) {
-      throw `Invalid entity '${entity}'`
+      throw new Error(`Invalid entity '${entity}'`)
     }
 
     if (entity === 'song') {

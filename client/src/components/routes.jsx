@@ -25,6 +25,9 @@ const SongPage = withSubscription(
 const SongsPage = withSubscription(
   Songs.Index, DataSource, 'songs'
 )
+const SonglistsPage = withSubscription(
+  Songlists.Index, DataSource, 'songlists'
+)
 const ArtistPage = withSubscription(
   Artists.Show, DataSource, 'artist', true
 )
@@ -73,7 +76,7 @@ const RouterSwitch = ({ loader }) => {
         <Songlists.Show loader={loader} />
       </Route>
       <Route path="/songlists">
-        <Songlists.Index loader={loader} />
+        <SonglistsPage />
       </Route>
 
       <Route path="/song-items/:id/edit">

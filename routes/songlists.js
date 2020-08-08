@@ -45,7 +45,7 @@ router.get('/', ensureLoggedIn,
 
       res.json({
         status: StatusCodes.OK,
-        data: songlists
+        songlists: songlists
       })
     } catch (e) {
       next(e)

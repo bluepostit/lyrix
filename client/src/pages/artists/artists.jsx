@@ -4,8 +4,6 @@ import { ItemListPage } from '../item-list-page'
 import { Artist } from '../../components/list-items'
 import { ArtistModal } from './modal'
 
-// A single artist list item
-
 const Artists = ({ data }) => {
   const history = useHistory()
   const [showModal, setShowModal] = useState(false)

@@ -62,4 +62,21 @@ const SongItem = ({ songItem }) => {
     </div>
   )
 }
-export { Artist, Song, SongItem }
+
+const Songlist = (songlist) => {
+  return (
+    <div className="d-flex w-100 justify-content-between">
+      <div>
+        <Icon entity="songlist" />
+        <span>{songlist.title}</span>
+      </div>
+      <div>
+        <span className="badge badge-pill badge-info">
+          {songlist.songs.length}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+export { Artist, Song, SongItem, Songlist }
