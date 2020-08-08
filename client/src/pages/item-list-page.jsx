@@ -30,7 +30,6 @@ const Item = ({
 const ItemListDiv = ({
   items = [],
   onItemClick,
-  show = true,
   renderItemMultiLine = false,
   renderItem = (item, index) => { }
 }) => {

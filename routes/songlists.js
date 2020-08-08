@@ -78,7 +78,7 @@ router.get('/:id', ensureLoggedIn, validateId, setSongList,
         .withGraphFetched('[songs.artist]')
       res.json({
         status: StatusCodes.OK,
-        data: songList
+        songlist: songList
       })
     })
 

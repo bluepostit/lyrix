@@ -12,38 +12,52 @@ const SongItemPage = withSubscription({
   dataEntity: 'songItem',
   useParams: true
 })
+
 const SongItemsPage = withSubscription({
   Component: SongItems.Index,
   dataSource: DataSource,
   dataEntity: 'songItems'
 })
+
 const SongPage = withSubscription({
   Component: Songs.Show,
   dataSource: DataSource,
   dataEntity: 'song',
   useRouteParams: true
 })
+
 const SongsPage = withSubscription({
   Component: Songs.Index,
   dataSource: DataSource,
   dataEntity: 'songs'
 })
+
 const SonglistsPage = withSubscription({
   Component: Songlists.Index,
   dataSource: DataSource,
   dataEntity: 'songlists'
 })
+
+const SonglistPage = withSubscription({
+  Component: Songlists.Show,
+  dataSource: DataSource,
+  dataEntity: 'songlist',
+  useRouteParams: true
+})
+
 const ArtistPage = withSubscription({
   Component: Artists.Show,
   dataSource: DataSource,
   dataEntity: 'artist',
   useRouteParams: true
 })
+
 const ArtistsPage = withSubscription({
   Component: Artists.Index,
   dataSource: DataSource,
   dataEntity: 'artists'
 })
+
 const ImporterPage = withSubscription({
   Component: withSearch({
     Component: SongImporter,
@@ -64,5 +78,6 @@ export {
   SongsPage,
   SongItemPage,
   SongItemsPage,
+  SonglistPage,
   SonglistsPage
 }

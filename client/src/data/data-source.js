@@ -75,6 +75,8 @@ const DataSource = (() => {
       url = parameterize(url, params)
     } else if (entity === 'songItem') {
       url = parameterize(url, params)
+    } else if (entity === 'songlist') {
+      url = parameterize(url, params)
     } else if (entity === 'importerSearch') {
       url = queryize(url, query)
     } else if (entity === 'importerImport') {

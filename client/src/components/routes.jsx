@@ -3,7 +3,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom"
-import { Home } from '../pages'
+import { Home, Page } from '../pages'
 import * as Auth from '../pages/auth'
 import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
@@ -48,7 +48,7 @@ const RouterSwitch = ({ loader }) => {
         <Songlists.New loader={loader} />
       </Route>
       <Route path="/songlists/:id">
-        <Songlists.Show loader={loader} />
+        <Pages.SonglistPage />
       </Route>
       <Route path="/songlists">
         <Pages.SonglistsPage />
