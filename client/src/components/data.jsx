@@ -105,5 +105,27 @@ class Loader {
   }
 }
 
+const Subscriber = (props) => {
+  const { Component, dataSource, dataEntity, ...rest } = props
+  const getData = () => dataSource.get(dataEntity)
+  const fetchData = () => dataSource.fetch(dataEntity)
+  const [data, setData] = useState(getData())
 
-export { ListDataset, Loader }
+  const handleDataChange = () => {
+    setData(getData())
+  }
+
+  // Trigger the loading of the data
+  useEffect(() => {
+    dataSource.addListener('change', handleDataChange)
+    fetchData()
+    // Cleanup:
+    return () => {
+      dataSource.removeListener('change', handleDataChange)
+    }
+  }, [])
+
+  return <Component data={data} {...rest} />
+}
+
+export { ListDataset, Loader, Subscriber }
