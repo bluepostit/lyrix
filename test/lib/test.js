@@ -1,5 +1,6 @@
 const path = require('path')
 const { execSync } = require('child_process')
+const { exit } = require('process')
 
 const MIGRATE_COMMAND = 'knex migrate:latest'
 const TEST_COMMAND = 'mocha --exit --recursive'
@@ -26,13 +27,9 @@ const run = (command) => {
 }
 
 const test = (target, args = '') => {
-  try {
-    run(MIGRATE_COMMAND)
-    run(`${TEST_COMMAND} ${target} ${args}`)
-    debug('Tests complete.')
-  } catch (error) {
-    debug(error.message)
-  }
+  run(MIGRATE_COMMAND)
+  run(`${TEST_COMMAND} ${target} ${args}`)
+  debug('Tests complete.')
 }
 
 

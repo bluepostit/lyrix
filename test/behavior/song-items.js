@@ -36,7 +36,7 @@ describe(BASE_URL, async () => {
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
       expect(res.body).not.to.haveOwnProperty('error')
-      expect(res.body.data).to.be.empty
+      expect(res.body.songItems).to.be.empty
     })
 
     it('should not return song items belonging to other users', async () => {
@@ -52,7 +52,7 @@ describe(BASE_URL, async () => {
 
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
-      expect(res.body.data).to.be.empty
+      expect(res.body.songItems).to.be.empty
     })
 
     it('should return song items belonging to the current user, ordered by song title', async () => {
@@ -69,7 +69,7 @@ describe(BASE_URL, async () => {
 
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
-      const data = res.body.data
+      const data = res.body.songItems
       expect(data.length).to.be.eql(items.length)
       data.forEach((o, index) => {
         expect(items[index].title).to.eql(o.title)
@@ -100,7 +100,7 @@ describe(BASE_URL, async () => {
       expect(res.body).to.be.an('object')
       expect(res.body).to.have.status(403)
       expect(res.body.error).to.not.be.empty
-      expect(res.body.data).to.be.undefined
+      expect(res.body.songItem).to.be.undefined
     })
 
     it('should return an error when no matching song item can be found', async () => {
@@ -123,7 +123,7 @@ describe(BASE_URL, async () => {
       agent.close()
 
       expect(res.body).to.have.status(200)
-      const data = res.body.data
+      const data = res.body.songItem
       expect(data).to.be.an('object')
       expect(data.title).to.eql(item.title)
       expect(data.text).to.eql(item.text)
@@ -301,15 +301,15 @@ describe(BASE_URL, async () => {
       const body = res.body
 
       expect(body).to.have.status(200)
-      expect(body.data).to.be.an('object')
-      expect(body.data.title).to.eql(data.title)
+      expect(body.songItem).to.be.an('object')
+      expect(body.songItem.title).to.eql(data.title)
 
       const countAfter = await SongItem.query().resultSize()
       expect(countAfter).to.eql(songItems.length)
     })
   })
 
-  describe('DELETE /song-items/:id', () => {
+  describe('DELETE /:id', () => {
     it('should return an error when not signed in', async () => {
       chai.request(app).delete(`${BASE_URL}/1`)
         .end((err, res) => {

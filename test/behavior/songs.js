@@ -79,7 +79,7 @@ describe(BASE_URL, () => {
             console.log(err)
           }
           expect(res.body).to.have.status(200)
-          const data = res.body.data
+          const data = res.body.song
           expect(data).to.be.an('object')
           expect(data.title).to.eql(song.title)
           expect(data.text).to.eql(song.text)
@@ -101,7 +101,7 @@ describe(BASE_URL, () => {
       agent.close()
 
       expect(res.body).to.have.status(200)
-      const data = res.body.data
+      const data = res.body.song
       expect(data).to.be.an('object')
       expect(data.songItems).to.be.an('array')
       expect(data.songItems.length).to.eql(items.length)
@@ -125,7 +125,7 @@ describe(BASE_URL, () => {
       agent.close()
 
       expect(res.body).to.have.status(200)
-      const data = res.body.data
+      const data = res.body.song
       expect(data).to.be.an('object')
       expect(data.songItems).to.be.an('array')
       expect(data.songItems.length).to.eql(items.length)
@@ -148,7 +148,7 @@ describe(BASE_URL, () => {
       const response = await chai.request(app)
         .get(`${BASE_URL}/${song0.id}?context=artist`)
 
-      const data = response.body.data
+      const data = response.body.song
       expect(data).to.be.an('object')
       expect(data.id).to.eql(song0.id)
       expect(data.nextSongId).to.eql(song1.id)
@@ -159,7 +159,7 @@ describe(BASE_URL, () => {
       const response = await chai.request(app)
         .get(`${BASE_URL}/${song1.id}?context=artist`)
 
-      const data = response.body.data
+      const data = response.body.song
       expect(data).to.be.an('object')
       expect(data.id).to.eql(song1.id)
       expect(data).not.to.haveOwnProperty('nextSongId')
@@ -185,7 +185,7 @@ describe(BASE_URL, () => {
     it("should return the song with a link to the next song from the given songlist", async () => {
       const response = await chai.request(app)
         .get(`${BASE_URL}/${songs[0].id}?context=songlist&contextId=${list.id}`)
-      const data = response.body.data
+      const data = response.body.song
       expect(data).to.be.an('object')
       expect(data.id).to.eql(songs[0].id)
       expect(data.nextSongId).to.eql(songs[1].id)
@@ -194,7 +194,7 @@ describe(BASE_URL, () => {
     it("should return the song with no link to a next song if this is the last song in the songlist", async () => {
       const response = await chai.request(app)
         .get(`${BASE_URL}/${songs[1].id}?context=songlist&contextId=${list.id}`)
-      const data = response.body.data
+      const data = response.body.song
       expect(data).to.be.an('object')
       expect(data.id).to.eql(songs[1].id)
       expect(data).not.to.haveOwnProperty('nextSongId')
@@ -214,7 +214,7 @@ describe(BASE_URL, () => {
     it("should return the song with a link to the next song from the list of all songs", async () => {
       const response = await chai.request(app)
         .get(`${BASE_URL}/${songs[0].id}?context=songlist`)
-      const data = response.body.data
+      const data = response.body.song
       expect(data).to.be.an('object')
       expect(data.id).to.eql(songs[0].id)
       expect(data.nextSongId).to.eql(songs[1].id)
@@ -225,7 +225,7 @@ describe(BASE_URL, () => {
 
       const response = await chai.request(app)
         .get(`${BASE_URL}/${lastSong.id}?context=songlist`)
-      const data = response.body.data
+      const data = response.body.song
       expect(data).to.be.an('object')
       expect(data.id).to.eql(lastSong.id)
       expect(data).not.to.haveOwnProperty('nextSongId')

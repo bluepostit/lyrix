@@ -45,8 +45,8 @@ describe(BASE_URL, async function () {
       agent.close()
 
       expect(res.body).to.have.status(200)
-      expect(res.body.data).to.be.an('object')
-      const songs = res.body.data.songs
+      const songs = res.body.songs
+      expect(songs).to.be.an('array')
       expect(songs.length).to.be.greaterThan(4)
 
       const song = songs[0]
@@ -67,7 +67,7 @@ describe(BASE_URL, async function () {
 
     const getSearchedSongs = async (agent, query) => {
       const res = await agent.get(`${BASE_URL}/search?q=${query}`)
-      return res.body.data.songs
+      return res.body.songs
     }
 
     it('should return an error if user is not signed in', async () => {

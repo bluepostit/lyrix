@@ -115,7 +115,7 @@ router.put('/:id', ensureLoggedIn, parseIds, validateId, ensureOwnership,
           .withGraphFetched('[song.artist, songItemType]')
         res.json({
           status: StatusCodes.OK,
-          data: songItem
+          songItem: songItem
         })
       } catch (error) {
         error.userMessage = "Couldn't update the song item"

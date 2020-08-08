@@ -44,7 +44,7 @@ describe(BASE_URL, async () => {
       expect(res.body).to.be.an('object')
       expect(res.body).not.to.haveOwnProperty('error')
 
-      const data = res.body.data
+      const data = res.body.songlists
       expect(data).to.be.an('array')
       expect(data.length).to.eql(songlists.length)
       expect(data[1].title).to.eql(songlists[1].title)
@@ -81,7 +81,7 @@ describe(BASE_URL, async () => {
       await agent.get(`${BASE_URL}/${lists[0].id}`)
         .then(res => {
           expect(res.body).to.have.status(200)
-          const data = res.body.data
+          const data = res.body.songlist
 
           expect(data.title).to.eql(lists[0].title)
           expect(data.songs).to.be.an('array')

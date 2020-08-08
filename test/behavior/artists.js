@@ -24,22 +24,18 @@ describe(BASE_URL, () => {
       await RecordManager.loadFixture('artists')
       const artists = await Artist.query().orderBy('name')
 
-      try {
-        const res = await chai.request(app)
-          .get(BASE_URL)
-        expect(res).to.have.status(200)
-        expect(res.body).to.be.an('object')
+      const res = await chai.request(app)
+        .get(BASE_URL)
+      expect(res).to.have.status(200)
+      expect(res.body).to.be.an('object')
 
-        const data = res.body.data
-        expect(data).to.be.an('array')
-        expect(data.length).to.eql(artists.length)
+      const data = res.body.artists
+      expect(data).to.be.an('array')
+      expect(data.length).to.eql(artists.length)
 
-        expect(data[0]).to.be.an('object')
-        expect(data[1]).to.be.an('object')
-        expect(data[0].name).to.eql(artists[0].name)
-      } catch (err) {
-        console.log(err)
-      }
+      expect(data[0]).to.be.an('object')
+      expect(data[1]).to.be.an('object')
+      expect(data[0].name).to.eql(artists[0].name)
     })
 
     it('should also return the amount of songs that the artist has', async () => {
@@ -56,7 +52,7 @@ describe(BASE_URL, () => {
           expect(res).to.have.status(200)
           expect(res.body).to.be.an('object')
 
-          const data = res.body.data
+          const data = res.body.artists
           expect(data.length).to.eql(1)
           const artist0 = data[0]
           expect(artist0).to.be.an('object')
@@ -74,7 +70,7 @@ describe(BASE_URL, () => {
           }
           expect(res).to.have.status(200)
           expect(res.body).to.be.an('object')
-          expect(res.body.data.length).to.eql(0)
+          expect(res.body.artists.length).to.eql(0)
         })
     })
   })
@@ -102,8 +98,8 @@ describe(BASE_URL, () => {
             console.log(err)
           }
           expect(res.body).to.have.status(200)
-          expect(res.body.data).to.be.an('object')
-          expect(res.body.data.name).to.eql('Brian')
+          expect(res.body.artist).to.be.an('object')
+          expect(res.body.artist.name).to.eql('Brian')
         })
     })
 
@@ -119,7 +115,7 @@ describe(BASE_URL, () => {
             console.log(err)
           }
           expect(res.body).to.have.status(200)
-          const artist = res.body.data
+          const artist = res.body.artist
           expect(artist).to.be.an('object')
           expect(artist.id).to.eql(1)
 
