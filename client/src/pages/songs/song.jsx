@@ -44,6 +44,12 @@ const buildActions = (data, editAction, deleteAction,
   return actions
 }
 
+const fetchNextSong = (params, nextSongId) => {
+  const nextParams = {...params}
+  nextParams.songId = nextSongId
+  DataSource.fetch('song', nextParams)
+}
+
 const Song = ({ data }) => {
   const history = useHistory()
   const location = useLocation()
@@ -62,8 +68,8 @@ const Song = ({ data }) => {
         /songs\/\d+/,
         `songs/${song.nextSongId}`)
       debug('nextLink: "%s"', nextLink)
-      // DataSource.invalidate('song')
       history.push(nextLink)
+      fetchNextSong(params, song.nextSongId)
     }
   }
 
