@@ -1,39 +1,44 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
 import { SongItemPageTitle } from '../../components/headers'
 import { Deleter } from '../../components/modals'
+import { EmptyPage } from '../empty-page'
 
-const getSongItem = (songItemId) => {
-  let url = `/api/song-items/${songItemId}`
-  return fetch(url)
-    .then(response => response.json())
-    .then((json) => {
-      if (json.error) {
-        throw json
-      }
-      return json
-    })
+const buildActions = (data, editAction, deleteAction,
+    artistAction, songAction) => {
+  let actions = []
+  const songItem = data.songItem
+  if (songItem) {
+    const hasEdit = data.actions.edit
+    const hasDelete = data.actions.delete
+
+    actions = [{
+      name: 'edit',
+      value: hasEdit ? editAction : null,
+      hasDivider: !hasDelete
+    }, {
+      name: 'delete',
+      value: hasDelete ? deleteAction : null,
+      hasDivider: true
+    }, {
+      name: 'artist',
+      title: data.songItem.song.artist.name,
+      value: artistAction
+    }, {
+      name: 'song',
+      title: data.songItem.song.title,
+      value: songAction
+    }]
+
+  }
+  return actions
 }
 
-const SongItem = ({ loader }) => {
-  const { id } = useParams()
-  const [data, setData] = useState({
-    title: null,
-    text: null,
-    data: {
-      song: {
-        title: '',
-        artist: {
-          name: ''
-        }
-      }
-    },
-    actions: {}
-  })
-  const [deleting, setDeleting] = useState(false)
+const SongItem = ({ data }) => {
   const history = useHistory()
+  const [deleting, setDeleting] = useState(false)
 
   const goToEdit = () => {
     history.push(`/song-items/${data.data.id}/edit`)
@@ -55,54 +60,25 @@ const SongItem = ({ loader }) => {
     history.replace('/song-items')
   }
 
-  const hasEdit = data.actions.edit
-  const hasDelete = data.actions.delete
+  const songItem = data.songItem
+  const actions = buildActions(data, goToEdit, handleDeleteClick,
+    goToArtist, goToSong)
 
-  const navActions = [{
-    name: 'edit',
-    value: hasEdit ? goToEdit : null,
-    hasDivider: !hasDelete
-  }, {
-    name: 'delete',
-    value: data.actions.delete ? handleDeleteClick : null,
-    hasDivider: true
-  }, {
-    name: 'artist',
-    title: data.data.song.artist.name,
-    value: goToArtist
-  }, {
-    name: 'song',
-    title: data.data.song.title,
-    value: goToSong
-  }]
+  if (!songItem) {
+    return <EmptyPage title={<h2>Lyrix</h2>} actions={actions} />
+  }
 
-  useEffect(() => {
-    loader.start('Loading Song Item...')
-    getSongItem(id)
-      .then((data) => {
-        setData(data)
-      })
-      .catch((e) => {
-        console.log('Something went wrong!')
-        console.log(e)
-      })
-      .finally(() => {
-        loader.stop()
-      })
-  }, [history, id]) // things to monitor for render
-    // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects)
-
-  const title = <SongItemPageTitle songItem={data.data} />
+  const title = <SongItemPageTitle songItem={songItem} />
   return (
-    <Page title={title} actions={navActions}>
+    <Page title={title} actions={actions}>
       <div className="song-item-text-display">
         <div className="song-item-text-box">
-          {data.data.text}
+          {songItem.text}
         </div>
       </div>
       <ToTopButton />
       <Deleter
-        entity={data.data}
+        entity={songItem}
         noun="song-item"
         show={deleting}
         setShow={setDeleting}

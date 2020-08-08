@@ -79,7 +79,7 @@ router.get('/:id', ensureLoggedIn, validateId, ensureOwnership,
 
         res.json({
           status: StatusCodes.OK,
-          data: songItem,
+          songItem: songItem,
           actions: req.userActions
         })
       } catch (err) {

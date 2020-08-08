@@ -1,11 +1,9 @@
 const debug = require('debug')('lyrix:data-source')
 
-const getArtistUrl = (baseUrl, params) => {
-  let url = baseUrl
-  if (params.artistId) {
-    url = `${baseUrl}/${params.artistId}`
-  }
-  return url
+const parameterize = (baseUrl, params) => {
+  debug('parameterize("%s", %o)', baseUrl, params)
+  const key = (Object.getOwnPropertyNames(params))[0]
+  return `${baseUrl}/${params[key]}`
 }
 
 const getSongUrl = (baseUrl, params) => {
@@ -35,6 +33,7 @@ const DataSource = (() => {
     artists: '/api/artists',
     song: '/api/songs',
     songs: '/api/songs',
+    songItem: '/api/song-items',
     songItems: '/api/song-items',
   }
 
@@ -53,6 +52,7 @@ const DataSource = (() => {
   }
 
   const fetchData = async (entity, params) => {
+    debug('fetchData("%s", %o)', entity, params)
     triggerEvent('start')
     let url = URLS[entity]
     if (!url) {
@@ -62,7 +62,9 @@ const DataSource = (() => {
     if (entity === 'song') {
       url = getSongUrl(url, params)
     } else if (entity === 'artist') {
-      url = getArtistUrl(url, (params))
+      url = parameterize(url, params)
+    } else if (entity === 'songItem') {
+      url = parameterize(url, params)
     }
 
     fetch(url)

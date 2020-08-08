@@ -13,6 +13,9 @@ import * as Songs from '../pages/songs'
 import { withSubscription } from './data'
 import DataSource from '../data/data-source'
 
+const SongItemPage = withSubscription(
+  SongItems.Show, DataSource, 'songItem', true
+)
 const SongItemsPage = withSubscription(
   SongItems.Index, DataSource, 'songItems'
 )
@@ -77,7 +80,7 @@ const RouterSwitch = ({ loader }) => {
         <SongItems.Edit loader={loader} />
       </Route>
       <Route path="/song-items/:id">
-        <SongItems.Show loader={loader} />
+        <SongItemPage />
       </Route>
       <Route path="/song-items">
         <SongItemsPage />
