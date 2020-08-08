@@ -1,5 +1,6 @@
 import React from 'react'
 import { Page } from './page'
+import { EmptyPage } from './empty-page'
 
 // A single list item
 const Item = ({
@@ -22,17 +23,6 @@ const Item = ({
     <button key={item.id} className={className} onClick={handleClick} >
         {renderItem(item, index)}
     </button>
-  )
-}
-
-const EmptyMessage = ({
-  show
-}) => {
-  let className = 'lyrix-list empty ' + (show ? '' : 'd-none')
-  return (
-    <div className={className}>
-      <h3>Nothing to show here, yet.</h3>
-    </div>
   )
 }
 
@@ -72,21 +62,18 @@ const ItemListDiv = ({
 const ItemListPage = ({
   items,
   actions,
-  loading,
-  noHeader,
   title,
   children,
    ...props
 }) => {
-  let contents = <EmptyMessage show={!loading} />
-  if (items.length > 0) {
-    contents = <ItemListDiv items={items} show={!loading} {...props} />
+  if (!items || items.length < 1) {
+    return <EmptyPage title={title} actions={actions} />
   }
 
   return (
     <Page title={title} actions={actions}>
       <div className="page-content list-page">
-        {contents}
+        <ItemListDiv items={items} {...props} />
         {children}
       </div>
     </Page>
