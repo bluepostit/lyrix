@@ -1,60 +1,62 @@
-import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation, useParams } from "react-router-dom"
+import React, { useState } from 'react'
+import { useHistory, useLocation } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
 import { Deleter, SongItemsModal } from '../../components/modals'
 import { pluralize } from '../../util'
+import { EmptyPage } from '../empty-page'
 
-const getSongData = (songId, songlistId, artistId) => {
-  let url = `/api/songs/${songId}`
-  if (songlistId) {
-    url += `?context=songlist&contextId=${songlistId}`
-  } else if (artistId) {
-    url += '?context=artist'
-  } else {
-    url += '?context=songlist' // Assumed context: ALL songs
+const buildActions = (data, location, editAction, deleteAction,
+    songItemsAction) => {
+  let actions = []
+  const song = data.song
+  if (song) {
+    const songItems = song.songItems || []
+    const songItemsTitle =
+      `You have ${pluralize(songItems.length, 'item')}`
+    const hasEdit = data.actions && data.actions.edit
+    const hasDelete = data.actions && data.actions.delete
+
+    let nextLink
+    if (song.nextSongId) {
+      nextLink = location.pathname.replace(
+        /songs\/\d+/,
+        `songs/${song.nextSongId}`)
+    }
+
+    actions = [{
+      name: 'artist',
+      title: song.artist.name,
+      value: `/artists/${song.artist.id}`,
+      hasDivider: !nextLink
+    }, {
+      name: 'next',
+      value: nextLink,
+      hasDivider: true
+    }, {
+      name: 'songItem',
+      title: songItemsTitle,
+      value: songItemsAction,
+      hasDivider: hasEdit || hasDelete
+    }, {
+      name: 'edit',
+      value: hasEdit ? editAction : null
+    }, {
+      name: 'delete',
+      value: hasDelete ? deleteAction : null
+    }]
   }
-  return fetch(url)
-    .then(response => response.json())
-    .then((json) => {
-      if (json.error) {
-        throw json
-      }
-      return json
-    })
+  return actions
 }
 
-const PageContent = (props) => {
-  return (
-    <div className="song-page-contents">
-      <div className="song-text">
-        {props.song.text}
-      </div>
-      <ToTopButton />
-    </div>
-  )
-}
-
-const Song = (props) => {
-  const loader = props.loader
-  const { artistId, songlistId, songId } = useParams()
-  const [data, setData] = useState({
-    data: {
-      title: null,
-      text: null,
-      artist: { id: '' },
-      songItems: []
-    },
-    actions: []
-  })
-  const [nextLink, setNextLink] = useState()
-  const [showSongItemsModal, setShowSongItemsModal] = useState(false)
-  const [deleting, setDeleting] = useState(false)
+const Song = ({ data }) => {
   const history = useHistory()
   const location = useLocation()
+  const [showSongItemsModal, setShowSongItemsModal] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const goToEdit = () => {
-    history.push(`/songs/${data.data.id}/edit`)
+    history.push(`/songs/${data.id}/edit`)
   }
 
   const handleDeleteClick = () => {
@@ -67,7 +69,7 @@ const Song = (props) => {
 
   const handleSongItemsModalClose = (value) => {
     if (value === 'new') {
-      history.push(`/songs/${data.data.id}/song-items/new`)
+      history.push(`/songs/${data.id}/song-items/new`)
     } else if (value) {
       history.push(`/song-items/${value.id}`)
     }
@@ -78,69 +80,28 @@ const Song = (props) => {
     history.replace('/songs')
   }
 
-  const songItems = data.data.songItems || []
-  const songItemsTitle =
-    `You have ${pluralize(songItems.length, 'item')}`
-  const hasEdit = data.actions.edit
-  const hasDelete = data.actions.delete
+  const song = data.song
+  const actions = buildActions(data, location, goToEdit, handleDeleteClick,
+    onSongItemsButtonClick)
 
-  const navActions = [{
-    name: 'artist',
-    title: data.data.artist.name,
-    value: `/artists/${data.data.artist.id}`,
-    hasDivider: !nextLink
-  }, {
-    name: 'next',
-    value: nextLink,
-    hasDivider: true
-    }, {
-    name: 'songItem',
-    title: songItemsTitle,
-    value: onSongItemsButtonClick,
-    hasDivider: hasEdit || hasDelete
-  },{
-    name: 'edit',
-    value: hasEdit ? goToEdit : null
-  }, {
-    name: 'delete',
-    value: hasDelete ? handleDeleteClick : null
-  }]
-
-  useEffect(() => {
-    loader.start('Loading song...')
-    getSongData(songId, songlistId, artistId)
-      .then((data) => {
-        setData(data)
-        if (data.data.nextSongId) {
-          setNextLink(location.pathname.replace(/songs\/\d+/, `songs/${data.data.nextSongId}`))
-        } else {
-          setNextLink(null)
-        }
-        loader.stop()
-      })
-      .catch((e) => {
-        console.log('Something went wrong!')
-        console.log(e)
-        history.push('/login')
-      })
-    }, [history, songId, artistId, songlistId, location.pathname]) // things to monitor for render
-    // See https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
-
+  if (!song) {
+    return <EmptyPage title={<h2>Lyrix</h2>} actions={actions} />
+  }
   return (
-    <Page title={data.data.title} actions={navActions}>
+    <Page title={song.title} actions={actions}>
       <div className="song-page-contents">
         <div className="song-text">
-          {data.data.text}
+          {song.text}
         </div>
         <ToTopButton />
       </div>
       <SongItemsModal title="Your Song Items"
-        songItems={songItems}
+        songItems={song.songItems || []}
         show={showSongItemsModal}
         handleClose={handleSongItemsModalClose}
       />
       <Deleter
-        entity={data.data}
+        entity={data}
         noun="song"
         show={deleting}
         setShow={setDeleting}
