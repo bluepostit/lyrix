@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
+const debug = require('debug')('lyrix:data')
 
 const ListDataset = ({
   url,
@@ -105,27 +106,41 @@ class Loader {
   }
 }
 
-const Subscriber = (props) => {
-  const { Component, dataSource, dataEntity, ...rest } = props
-  const getData = () => dataSource.get(dataEntity)
-  const fetchData = () => dataSource.fetch(dataEntity)
-  const [data, setData] = useState(getData())
-
-  const handleDataChange = () => {
-    setData(getData())
-  }
-
-  // Trigger the loading of the data
-  useEffect(() => {
-    dataSource.addListener('change', handleDataChange)
-    fetchData()
-    // Cleanup:
-    return () => {
-      dataSource.removeListener('change', handleDataChange)
+const withSubscription = (
+  Component,
+  dataSource,
+  dataEntity,
+  useRouteParams = false
+) => {
+  const Wrapper = (props) => {
+    const params = useParams()
+    const getData = () => dataSource.get(dataEntity)
+    const fetchData = () => {
+      debug('fetchData() for %s', dataEntity)
+      if (useRouteParams) {
+        dataSource.fetch(dataEntity, params)
+      } else {
+        dataSource.fetch(dataEntity)
+      }
     }
-  }, [])
+    const [data, setData] = useState(getData())
 
-  return <Component data={data} {...rest} />
+    const handleDataChange = () => {
+      setData(getData())
+    }
+
+    // Trigger the loading of the data
+    useEffect(() => {
+      dataSource.addListener('change', handleDataChange)
+      fetchData()
+      // Cleanup:
+      return () => {
+        dataSource.removeListener('change', handleDataChange)
+      }
+    }, [])
+    return <Component data={data} {...props} />
+  }
+  return Wrapper
 }
 
-export { ListDataset, Loader, Subscriber }
+export { ListDataset, Loader, withSubscription }
