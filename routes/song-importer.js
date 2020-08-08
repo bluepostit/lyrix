@@ -74,9 +74,7 @@ router.get('/search', ensureLoggedIn, validateSearchParam,
       const songs = await req.importer.search(req)
       res.json({
         status: StatusCodes.OK,
-        data: {
-          songs
-        }
+        songs: songs
       })
     })
 

@@ -149,7 +149,7 @@ router.get('/:id', validateId, setSong, setSongContext,
   async (req, res) => {
     res.json({
       status: StatusCodes.OK,
-      data: req.song,
+      song: req.song,
       actions: req.userActions
     })
   })

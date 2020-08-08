@@ -1,29 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useHistory, useParams } from "react-router-dom"
-import { ListDataset } from '../../components/data'
 import { ItemListPage } from '../item-list-page'
+import { SonglistSong } from '../../components/list-items'
 
-const renderSong = (song, index) => {
-  return (
-    <div className="d-flex w-100 align-items-center">
-      <div className="numbered-disc-bullet">{index + 1}</div>
-      <div className="content-multi-lines">
-        <div>{song.title}</div>
-        <div className="content-secondary">{song.artist.name}</div>
-      </div>
-    </div>
-  )
-}
-
-const Songlist = ({ loader }) => {
+const Songlist = ({ data }) => {
   const { id } = useParams()
-  const [data, setData] = useState({
-    data: {
-      title: '',
-      songs: []
-    },
-    actions: []
-  })
   const history = useHistory()
 
   const onSongClick = (song) => {
@@ -34,32 +15,24 @@ const Songlist = ({ loader }) => {
     history.push('/songs/new')
   }
 
-  const navActions = [{
+  const actions = [{
     name: 'new',
     value: onNewClick
   }]
 
-  const onLoadingComplete = (data) => {
-    setData(data)
-  }
+  const songlist = data.songlist
+  const title = songlist ? songlist.title : ''
+  const items = songlist ? songlist.songs : []
 
   return (
-    <>
-      <ListDataset
-        url={`/api/songlists/${id}`}
-        loader={loader}
-        onLoadingComplete={onLoadingComplete}
-      />
-      <ItemListPage
-        title={data.data.title}
-        items={data.data.songs}
-        actions={navActions}
-        loading={loader.loading}
-        onItemClick={onSongClick}
-        renderItem={renderSong}
-        renderItemMultiLine={true}
-      />
-    </>
+    <ItemListPage
+      title={title}
+      actions={actions}
+      items={items}
+      onItemClick={onSongClick}
+      renderItem={SonglistSong}
+      renderItemMultiLine={true}
+    />
   )
 }
 

@@ -3,13 +3,12 @@ import {
   Switch,
   Route,
 } from "react-router-dom"
-import { Home } from '../pages'
+import { Home, Page } from '../pages'
 import * as Auth from '../pages/auth'
-import * as Artists from '../pages/artists'
-import { SongImporter as Importer } from '../pages/song-importer'
 import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
+import * as Pages from '../pages/data-pages'
 
 const RouterSwitch = ({ loader }) => {
   return (
@@ -22,49 +21,51 @@ const RouterSwitch = ({ loader }) => {
       </Route>
 
       <Route path="/artists/:artistId/songs/:songId">
-        <Songs.Show loader={loader} />
+        <Pages.SongPage />
       </Route>
       <Route path="/artists/:artistId">
-        <Artists.Show loader={loader} />
+        <Pages.ArtistPage />
       </Route>
       <Route path="/artists">
-        <Artists.Index loader={loader} />
+        <Pages.ArtistsPage />
       </Route>
 
       <Route path="/songs/new" children={<Songs.New loader={loader} />} />
       <Route path="/songs/:songId/song-items/new"
         children={<SongItems.New loader={loader} />} />
       <Route path="/songs/:id/edit" children={<Songs.Edit loader={loader} />} />
-      <Route path="/songs/:songId" children={<Songs.Show loader={loader} />} />
+      <Route path="/songs/:songId">
+        <Pages.SongPage />
+      </Route>
       <Route path="/songs">
-        <Songs.Index loader={loader} />
+        <Pages.SongsPage />
       </Route>
 
       <Route path="/songlists/:songlistId/songs/:songId">
-        <Songs.Show loader={loader} />
+        <Pages.SongPage />
       </Route>
       <Route path="/songlists/new">
         <Songlists.New loader={loader} />
       </Route>
       <Route path="/songlists/:id">
-        <Songlists.Show loader={loader} />
+        <Pages.SonglistPage />
       </Route>
       <Route path="/songlists">
-        <Songlists.Index loader={loader} />
+        <Pages.SonglistsPage />
       </Route>
 
       <Route path="/song-items/:id/edit">
         <SongItems.Edit loader={loader} />
       </Route>
       <Route path="/song-items/:id">
-        <SongItems.Show loader={loader} />
+        <Pages.SongItemPage />
       </Route>
       <Route path="/song-items">
-        <SongItems.Index loader={loader} />
+        <Pages.SongItemsPage />
       </Route>
 
       <Route path="/import">
-        <Importer loader={loader}/>
+        <Pages.ImporterPage />
       </Route>
 
       <Route path="/">

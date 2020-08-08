@@ -45,7 +45,7 @@ router.get('/', ensureLoggedIn,
 
       res.json({
         status: StatusCodes.OK,
-        data: songlists
+        songlists: songlists
       })
     } catch (e) {
       next(e)
@@ -78,7 +78,7 @@ router.get('/:id', ensureLoggedIn, validateId, setSongList,
         .withGraphFetched('[songs.artist]')
       res.json({
         status: StatusCodes.OK,
-        data: songList
+        songlist: songList
       })
     })
 

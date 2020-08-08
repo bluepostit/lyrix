@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
+const debug = require('debug')('lyrix:data')
 
 const ListDataset = ({
   url,
@@ -105,5 +106,92 @@ class Loader {
   }
 }
 
+const withSubscription = ({
+  Component,
+  dataSource,
+  dataEntity,
+  useRouteParams = false,
+  noTrigger = false
+}) => {
+  const Wrapper = (props) => {
+    debug('Wrapper render')
+    const params = useParams()
+    const getData = () => dataSource.get(dataEntity)
+    const fetchData = () => {
+      debug('fetchData() for %s', dataEntity)
+      if (useRouteParams) {
+        dataSource.fetch(dataEntity, params)
+      } else {
+        dataSource.fetch(dataEntity)
+      }
+    }
+    const [data, setData] = useState(getData())
 
-export { ListDataset, Loader }
+    const handleDataChange = () => {
+      setData(getData())
+    }
+
+    // Trigger the loading of the data
+    useEffect(() => {
+      debug('Wrapper useEffect()')
+      dataSource.addListener('change', handleDataChange)
+      if (!noTrigger) {
+        fetchData()
+      }
+      // Cleanup:
+      return () => {
+        dataSource.removeListener('change', handleDataChange)
+      }
+    }, [])
+    return <Component data={data} {...props} />
+  }
+  return Wrapper
+}
+
+const withSearch = ({
+  Component,
+  dataSource,
+  dataEntity,
+  useRouteParams = false
+}) => {
+  const Wrapper = (props) => {
+    debug('Wrapper render')
+    const params = useParams()
+    const [error, setError] = useState(null)
+
+    const search = (query) => {
+      debug("search('%s') for %s", query, dataEntity)
+      if (useRouteParams) {
+        dataSource.fetch(dataEntity, params, query)
+      } else {
+        dataSource.fetch(dataEntity, null, query)
+      }
+    }
+
+    const handleChange = () => {
+      setError('')
+    }
+
+    const handleError = (error) => {
+      debug("Wrapper.handleError(%o)", error)
+      setError(error)
+    }
+
+    // Trigger the loading of the data
+    useEffect(() => {
+      debug('Wrapper useEffect()')
+      dataSource.addListener('error', handleError)
+      dataSource.addListener('change', handleChange)
+      // Cleanup:
+      return () => {
+        dataSource.removeListener('error', handleError)
+        dataSource.removeListener('change', handleChange)
+      }
+    }, [])
+
+    return <Component handleSearch={search} searchError={error} {...props} />
+  }
+  return Wrapper
+}
+
+export { ListDataset, Loader, withSearch, withSubscription }

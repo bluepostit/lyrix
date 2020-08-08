@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { useHistory, useParams } from "react-router-dom"
-import { ListDataset } from '../../components/data'
+import { useHistory } from "react-router-dom"
 import { ItemListPage } from '../item-list-page'
+import { EmptyPage } from '../empty-page'
 import { Icon } from '../../components/icons'
 import { Deleter } from '../../components/modals'
 
@@ -16,17 +16,25 @@ const renderSong = (song) => {
   )
 }
 
-const Artist = ({ loader }) => {
-  const { artistId } = useParams()
-  const [deleting, setDeleting] = useState(false)
-  const [data, setData] = useState({
-    data: {
-      name: '',
-      songs: []
-    },
-    actions: {}
-  })
+const buildActions = (data, newAction, deleteAction) => {
+  let actions = []
+  if (data.actions) {
+    actions = [
+      {
+        name: 'new',
+        value: data.actions.create ? newAction : null
+      }, {
+        name: 'delete',
+        value: data.actions.delete ? deleteAction : null
+      }
+    ]
+  }
+  return actions
+}
+
+const Artist = ({ data }) => {
   const history = useHistory()
+  const [deleting, setDeleting] = useState(false)
 
   const onNewClick = () => {
     history.push('/songs/new')
@@ -40,47 +48,32 @@ const Artist = ({ loader }) => {
     setDeleting(true)
   }
 
-  const onLoadingComplete = (data) => {
-    setData(data)
-  }
-
   const onDelete = () => {
     history.replace('/artists')
   }
 
-  const navActions = [
-    {
-      name: 'new',
-      value: data.actions.create ? onNewClick : null
-    }, {
-      name: 'delete',
-      value: data.actions.delete ? onDeleteClick : null
-    }
-  ]
+  const artist = data.artist
+  const actions = buildActions(data, onNewClick, onDeleteClick)
+
+  if (!artist) {
+    return <EmptyPage title={<h2>Lyrix</h2>} actions={actions} />
+  }
 
   return (
-    <>
-      <ListDataset
-        url={`/api/artists/${artistId}`}
-        loader={loader}
-        onLoadingComplete={onLoadingComplete}
+    <ItemListPage
+      title={artist.name}
+      items={artist.songs}
+      actions={actions}
+      onItemClick={onSongClick}
+      renderItem={renderSong}>
+      <Deleter
+        entity={data.data}
+        noun="artist"
+        show={deleting}
+        setShow={setDeleting}
+        onDelete={onDelete}
       />
-      <ItemListPage
-        title={data.data.name}
-        items={data.data.songs}
-        actions={navActions}
-        loading={loader.loading}
-        onItemClick={onSongClick}
-        renderItem={renderSong}>
-        <Deleter
-          entity={data.data}
-          noun="artist"
-          show={deleting}
-          setShow={setDeleting}
-          onDelete={onDelete}
-        />
-      </ItemListPage>
-    </>
+    </ItemListPage>
   )}
 
 export { Artist }

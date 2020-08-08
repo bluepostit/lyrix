@@ -8,7 +8,7 @@ const FormError = (props) => {
       </div>
     )
   } else {
-    return ''
+    return <></>
   }
 }
 

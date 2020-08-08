@@ -63,7 +63,7 @@ router.get('/', ensureLoggedIn, addUserActions,
 
       res.json({
         status: StatusCodes.OK,
-        data: songItems,
+        songItems: songItems,
         actions: req.userActions
     })
 })
@@ -79,7 +79,7 @@ router.get('/:id', ensureLoggedIn, validateId, ensureOwnership,
 
         res.json({
           status: StatusCodes.OK,
-          data: songItem,
+          songItem: songItem,
           actions: req.userActions
         })
       } catch (err) {
@@ -115,7 +115,7 @@ router.put('/:id', ensureLoggedIn, parseIds, validateId, ensureOwnership,
           .withGraphFetched('[song.artist, songItemType]')
         res.json({
           status: StatusCodes.OK,
-          data: songItem
+          songItem: songItem
         })
       } catch (error) {
         error.userMessage = "Couldn't update the song item"

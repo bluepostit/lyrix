@@ -7,71 +7,37 @@ import { Page } from '../page'
 import { Searcher } from './searcher'
 import { Song } from '../../components/list-items'
 import { FormError } from '../../components/forms'
+import DataSource from '../../data/data-source'
 
 const getFormData = (form) => {
   const data = new URLSearchParams(new FormData(form))
   return data.toString()
 }
 
-const SongImporter = ({ loader }) => {
+const SongImporter = (props) => {
+  const { data, ...rest } = props
   const title = 'Import a Song'
   const history = useHistory()
-  const action = '/api/song-importer/import'
-  const [songs, setSongs] = useState([])
-  const [error, setError] = useState('')
 
   const onImportSuccess = (song) => {
     history.push(`/songs/${song.id}`)
   }
 
-  const handleSearchStart = () => {
-    setSongs([])
-    setError('')
-  }
-
-  const onSearch = (res) => {
-    let songs = []
-    if (res.data && res.data.songs) {
-      songs = res.data.songs
-    }
-    setSongs(songs)
-  }
-
-  const getImportUrl = (form) => {
-    const queryString = getFormData(form)
-    const url = `${action}?${queryString}`
-    return url
-  }
-
   const handleSubmit = (event) => {
     event.preventDefault()
-    setError('')
-    const url = getImportUrl(event.currentTarget)
-    loader.start('Importing...')
-    fetch(url)
-      .then(res => res.json())
-      .then((json) => {
-        if (json.status !== 200) {
-          setError(json.error)
-        } else {
-          const song = json.data.song
-          onImportSuccess(song)
-        }
-      }).finally(() => {
-        loader.stop()
-      })
+    const query = getFormData(event.currentTarget)
+    DataSource.fetch('importerImport', null, query)
   }
+
+  const songs = data.songs || []
+  const error = data.error ? <FormError error={data.error} /> : <></>
 
   const content =
     <div className="container pt-2">
-      <Searcher
-        loader={loader}
-        onSearchStart={handleSearchStart}
-        onSearchComplete={onSearch}
-        action={'/api/song-importer/search'}
-      />
+      <Searcher {...rest} />
       <div>
-        <FormError error={error} />
+        {data.error}
+        {error}
         <Form onSubmit={handleSubmit}
           className="mt-2"
           id="song-importer-import-form">
@@ -91,7 +57,7 @@ const SongImporter = ({ loader }) => {
           </Form.Group>
           <div className="d-flex justify-content-end">
             <Button variant="primary" type="submit"
-              disabled={loader.loading} hidden={songs.length < 1}>
+              hidden={songs.length < 1}>
               Import!
             </Button>
           </div>

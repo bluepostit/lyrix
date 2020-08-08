@@ -72,6 +72,10 @@ module.exports = class Song extends Model {
       onlyId(builder) {
         const { ref } = Song;
         builder.select(ref('id'))
+      },
+
+      orderByTitle(builder) {
+        builder.orderBy('title')
       }
     }
   }

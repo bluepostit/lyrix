@@ -1,6 +1,22 @@
 import React from 'react'
 import { Icon } from './icons'
 
+const Artist = (artist) => {
+  return (
+    <div className="d-flex w-100 justify-content-between">
+      <div>
+        <Icon entity="artist" />
+        <span>{artist.name}</span>
+      </div>
+      <div>
+        <span className="badge badge-pill badge-info">
+          {artist.songCount}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 const Song = ({ song }) => {
   let artistName = song.artist.name || song.artist
   return (
@@ -46,4 +62,33 @@ const SongItem = ({ songItem }) => {
     </div>
   )
 }
-export { Song, SongItem }
+
+const Songlist = (songlist) => {
+  return (
+    <div className="d-flex w-100 justify-content-between">
+      <div>
+        <Icon entity="songlist" />
+        <span>{songlist.title}</span>
+      </div>
+      <div>
+        <span className="badge badge-pill badge-info">
+          {songlist.songs.length}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+const SonglistSong = (song, index) => {
+  return (
+    <div className="d-flex w-100 align-items-center">
+      <div className="numbered-disc-bullet">{index + 1}</div>
+      <div className="content-multi-lines">
+        <div>{song.title}</div>
+        <div className="content-secondary">{song.artist.name}</div>
+      </div>
+    </div>
+  )
+}
+
+export { Artist, Song, SongItem, Songlist, SonglistSong }

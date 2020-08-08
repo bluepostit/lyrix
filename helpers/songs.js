@@ -13,7 +13,7 @@ const SongsHelper = {
   getNextSongByArtist: async (song) => {
     const artist = await song
       .$relatedQuery('artist')
-      .withGraphFetched('songs(onlyId)')
+      .withGraphFetched('songs(onlyId,orderByTitle)')
     return getNextSong(song, artist.songs)
   },
   getNextSongBySonglist: async (song, songlistId) => {
