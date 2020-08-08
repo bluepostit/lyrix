@@ -106,13 +106,13 @@ class Loader {
   }
 }
 
-const withSubscription = (
+const withSubscription = ({
   Component,
   dataSource,
   dataEntity,
   useRouteParams = false,
   noTrigger = false
-) => {
+}) => {
   const Wrapper = (props) => {
     debug('Wrapper render')
     const params = useParams()
@@ -148,12 +148,12 @@ const withSubscription = (
   return Wrapper
 }
 
-const withSearch = (
+const withSearch = ({
   Component,
   dataSource,
   dataEntity,
   useRouteParams = false
-) => {
+}) => {
   const Wrapper = (props) => {
     debug('Wrapper render')
     const params = useParams()
