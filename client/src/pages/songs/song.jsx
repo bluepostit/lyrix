@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
-import { useHistory, useLocation } from "react-router-dom"
+import { useHistory, useParams, useLocation } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
 import { Deleter, SongItemsModal } from '../../components/modals'
 import { pluralize } from '../../util'
 import { EmptyPage } from '../empty-page'
+const debug = require('debug')('lyrix:song')
 
-const buildActions = (data, location, editAction, deleteAction,
-    songItemsAction) => {
+const buildActions = (data, editAction, deleteAction,
+    nextAction, songItemsAction) => {
   let actions = []
   const song = data.song
   if (song) {
@@ -17,21 +18,14 @@ const buildActions = (data, location, editAction, deleteAction,
     const hasEdit = data.actions && data.actions.edit
     const hasDelete = data.actions && data.actions.delete
 
-    let nextLink
-    if (song.nextSongId) {
-      nextLink = location.pathname.replace(
-        /songs\/\d+/,
-        `songs/${song.nextSongId}`)
-    }
-
     actions = [{
       name: 'artist',
       title: song.artist.name,
       value: `/artists/${song.artist.id}`,
-      hasDivider: !nextLink
+      hasDivider: !song.nextSongId
     }, {
       name: 'next',
-      value: nextLink,
+      value: song.nextSongId ? nextAction : null,
       hasDivider: true
     }, {
       name: 'songItem',
@@ -52,11 +46,24 @@ const buildActions = (data, location, editAction, deleteAction,
 const Song = ({ data }) => {
   const history = useHistory()
   const location = useLocation()
+  const params = useParams()
   const [showSongItemsModal, setShowSongItemsModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
   const goToEdit = () => {
     history.push(`/songs/${data.id}/edit`)
+  }
+
+  const nextAction = () => {
+    debug('nextAction()')
+    if (song.nextSongId) {
+      const nextLink = location.pathname.replace(
+        /songs\/\d+/,
+        `songs/${song.nextSongId}`)
+      debug('nextLink: "%s"', nextLink)
+      // DataSource.fetch('song', params)
+      history.push(nextLink)
+    }
   }
 
   const handleDeleteClick = () => {
@@ -81,8 +88,8 @@ const Song = ({ data }) => {
   }
 
   const song = data.song
-  const actions = buildActions(data, location, goToEdit, handleDeleteClick,
-    onSongItemsButtonClick)
+  const actions = buildActions(data, goToEdit,
+    handleDeleteClick, nextAction, onSongItemsButtonClick)
 
   if (!song) {
     return <EmptyPage title={<h2>Lyrix</h2>} actions={actions} />
