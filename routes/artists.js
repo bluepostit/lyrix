@@ -76,11 +76,6 @@ router.get('/:id', validateId, async (req, res, next) => {
       .query()
       .findById(req.params.id)
       .withGraphFetched('songs(orderByTitle)')
-      .modifiers({
-        orderByTitle(builder) {
-          builder.orderBy('title')
-        }
-      })
 
     if (artist == null) {
       return next({
