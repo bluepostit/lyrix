@@ -10,7 +10,7 @@ const SongItemPage = withSubscription({
   Component: SongItems.Show,
   dataSource: DataSource,
   dataEntity: 'songItem',
-  useParams: true
+  useRouteParams: true
 })
 
 const SongItemsPage = withSubscription({
