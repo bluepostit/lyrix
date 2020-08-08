@@ -1,53 +1,33 @@
 import React, { useState } from 'react'
 import { Button, Form } from "react-bootstrap"
 import { FormError } from '../../components/forms'
+const debug = require('debug')('lyrix:song-importer')
 
 const getFormData = (form) => {
   const data = new URLSearchParams(new FormData(form))
   return data.toString()
 }
 
-const Searcher = ({
-  loader,
-  onSearchStart,
-  onSearchComplete,
-  action
-}) => {
+const Searcher = ({ handleSearch, searchError }) => {
   const [query, setQuery] = useState('')
-  const [error, setError] = useState('')
 
   const handleChange = (event) => {
-    event.preventDefault()
-    setQuery(event.target.value)
-  }
-
-  const getSearchUrl = (form) => {
-    const queryString = getFormData(form)
-    const url = `${action}?${queryString}`
-    return url
+    const value = event.currentTarget.value
+    setQuery(value)
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    setError('')
-    const url = getSearchUrl(event.currentTarget)
-    loader.start('Searching for Songs...')
-    onSearchStart()
-    fetch(url)
-      .then(res => res.json())
-      .then((json) => {
-        onSearchComplete(json)
-        if (json.status !== 200) {
-          setError(json.error)
-        }
-      }).finally(() => {
-        loader.stop()
-      })
+    const query = getFormData(event.currentTarget)
+    handleSearch(query)
   }
 
+  const error = (searchError) ? <FormError className="x" error={searchError} /> : <></>
+  debug(searchError)
+  debug(error)
   return (
     <div className="container">
-      <FormError error={error} />
+      {error}
       <Form onSubmit={handleSubmit}
         className="mt-2"
         id="song-importer-search-form">
@@ -62,8 +42,7 @@ const Searcher = ({
             />
           </Form.Group>
         <div className="d-flex justify-content-end">
-          <Button variant="primary" type="submit"
-            disabled={loader.loading}>
+          <Button variant="primary" type="submit">
             Search
           </Button>
         </div>

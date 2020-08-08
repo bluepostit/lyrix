@@ -6,6 +6,10 @@ const parameterize = (baseUrl, params) => {
   return `${baseUrl}/${params[key]}`
 }
 
+const queryize = (baseUrl, query) => {
+  return `${baseUrl}?${query}`
+}
+
 const getSongUrl = (baseUrl, params) => {
   let url = `${baseUrl}/${params.songId}`
   if (params.songlistId) {
@@ -39,6 +43,8 @@ const DataSource = (() => {
     songItems: '/api/song-items',
     songlist: '/api/songlists',
     songlists: '/api/songlists',
+    importerSearch: '/api/song-importer/search',
+    importerImport: '/api/song-importer/import'
   }
 
   const triggerEvent = (event, ...params) => {
@@ -55,7 +61,7 @@ const DataSource = (() => {
     error = err
   }
 
-  const fetchData = async (entity, params) => {
+  const fetchData = async (entity, params, query) => {
     debug('fetchData("%s", %o)', entity, params)
     triggerEvent('start')
     let url = URLS[entity]
@@ -69,6 +75,10 @@ const DataSource = (() => {
       url = parameterize(url, params)
     } else if (entity === 'songItem') {
       url = parameterize(url, params)
+    } else if (entity === 'importerSearch') {
+      url = queryize(url, query)
+    } else if (entity === 'importerImport') {
+      url = queryize(url, query)
     }
 
     fetch(url)
@@ -76,7 +86,7 @@ const DataSource = (() => {
       .then((json) => {
         if (json.error) {
           setError(json)
-          triggerEvent('error')
+          triggerEvent('error', json.error)
         } else {
           setData(entity, json)
           triggerEvent('change', entity)
@@ -89,7 +99,7 @@ const DataSource = (() => {
   return {
     addListener: (event, listener) => {
       debug("adding listener for '%s'", event)
-      if (!['start', 'stop', 'change'].includes(event)) {
+      if (!['start', 'stop', 'change', 'error'].includes(event)) {
         throw Error('Invalid event type')
       }
       listeners[event].push(listener)
@@ -103,8 +113,8 @@ const DataSource = (() => {
       }
     },
 
-    fetch: (entity, params) => {
-      fetchData(entity, params)
+    fetch: (entity, params, query) => {
+      fetchData(entity, params, query)
     },
 
     get: (entity) => {
@@ -116,6 +126,11 @@ const DataSource = (() => {
       debug('all data: %O', data)
       debug('response: %O', response)
       return response
+    },
+
+    search: (entity, params, query) => {
+      debug(`get('${entity}')`)
+      fetchData(entity, params, query)
     }
   }
 })()

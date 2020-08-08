@@ -110,7 +110,8 @@ const withSubscription = (
   Component,
   dataSource,
   dataEntity,
-  useRouteParams = false
+  useRouteParams = false,
+  noTrigger = false
 ) => {
   const Wrapper = (props) => {
     debug('Wrapper render')
@@ -134,7 +135,9 @@ const withSubscription = (
     useEffect(() => {
       debug('Wrapper useEffect()')
       dataSource.addListener('change', handleDataChange)
-      fetchData()
+      if (!noTrigger) {
+        fetchData()
+      }
       // Cleanup:
       return () => {
         dataSource.removeListener('change', handleDataChange)
@@ -145,4 +148,50 @@ const withSubscription = (
   return Wrapper
 }
 
-export { ListDataset, Loader, withSubscription }
+const withSearch = (
+  Component,
+  dataSource,
+  dataEntity,
+  useRouteParams = false
+) => {
+  const Wrapper = (props) => {
+    debug('Wrapper render')
+    const params = useParams()
+    const [error, setError] = useState(null)
+
+    const search = (query) => {
+      debug("search('%s') for %s", query, dataEntity)
+      if (useRouteParams) {
+        dataSource.fetch(dataEntity, params, query)
+      } else {
+        dataSource.fetch(dataEntity, null, query)
+      }
+    }
+
+    const handleChange = () => {
+      setError('')
+    }
+
+    const handleError = (error) => {
+      debug("Wrapper.handleError(%o)", error)
+      setError(error)
+    }
+
+    // Trigger the loading of the data
+    useEffect(() => {
+      debug('Wrapper useEffect()')
+      dataSource.addListener('error', handleError)
+      dataSource.addListener('change', handleChange)
+      // Cleanup:
+      return () => {
+        dataSource.removeListener('error', handleError)
+        dataSource.removeListener('change', handleChange)
+      }
+    }, [])
+
+    return <Component handleSearch={search} searchError={error} {...props} />
+  }
+  return Wrapper
+}
+
+export { ListDataset, Loader, withSearch, withSubscription }

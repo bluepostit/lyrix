@@ -6,11 +6,11 @@ import {
 import { Home } from '../pages'
 import * as Auth from '../pages/auth'
 import * as Artists from '../pages/artists'
-import { SongImporter as Importer } from '../pages/song-importer'
+import { SongImporter } from '../pages/song-importer'
 import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
-import { withSubscription } from './data'
+import { withSearch, withSubscription } from './data'
 import DataSource from '../data/data-source'
 
 const SongItemPage = withSubscription(
@@ -33,6 +33,15 @@ const ArtistPage = withSubscription(
 )
 const ArtistsPage = withSubscription(
   Artists.Index, DataSource, 'artists'
+)
+const ImporterPage = withSubscription(
+  withSearch(
+    SongImporter, DataSource, 'importerSearch'
+  ),
+  DataSource,
+  'importerSearch',
+  false,
+  true
 )
 
 const RouterSwitch = ({ loader }) => {
@@ -90,7 +99,7 @@ const RouterSwitch = ({ loader }) => {
       </Route>
 
       <Route path="/import">
-        <Importer loader={loader}/>
+        <ImporterPage />
       </Route>
 
       <Route path="/">
