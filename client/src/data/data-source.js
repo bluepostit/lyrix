@@ -21,7 +21,6 @@ const getSongUrl = (baseUrl, params) => {
 
 const DataSource = (() => {
   const data = {}
-  const invalidData = []
 
   let error
   const listeners = {
@@ -80,23 +79,11 @@ const DataSource = (() => {
           triggerEvent('error')
         } else {
           setData(entity, json)
-          validate(entity)
           triggerEvent('change', entity)
         }
       }).finally(() => {
         triggerEvent('stop')
       })
-  }
-
-  const validate = (entity) => {
-    const index = invalidData.indexOf(entity)
-    if (index >= 0) {
-      invalidData.splice(index, 1)
-    }
-  }
-
-  const isInvalidated = (entity) => {
-    return invalidData.indexOf(entity) >= 0
   }
 
   return {
@@ -116,12 +103,6 @@ const DataSource = (() => {
       }
     },
 
-    invalidate: (entity) => {
-      if (data[entity] && invalidData.indexOf(entity) < 0) {
-        invalidData.push(entity)
-      }
-    },
-
     fetch: (entity, params) => {
       fetchData(entity, params)
     },
@@ -129,9 +110,7 @@ const DataSource = (() => {
     get: (entity) => {
       debug(`get('${entity}')`)
       let response = {}
-      if (isInvalidated(entity)) {
-        response = null
-      } else if (data[entity]) {
+      if (data[entity]) {
         response = data[entity]
       }
       debug('all data: %O', data)
