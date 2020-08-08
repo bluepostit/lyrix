@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router } from "react-router-dom"
 import { RouterSwitch } from './components/routes'
 import { LoadingModal } from './components/modals'
@@ -17,13 +17,21 @@ function App() {
   const onLoadEnd = () => {
     setLoading(false)
   }
-  DataSource.addListener('start', onLoadStart)
-  DataSource.addListener('stop', onLoadEnd)
+
+  useEffect(() => {
+    DataSource.addListener('start', onLoadStart)
+    DataSource.addListener('stop', onLoadEnd)
+
+    return () => {
+      DataSource.removeListener('start', onLoadStart)
+      DataSource.removeListener('stop', onLoadEnd)
+    }
+  }, [])
 
   return (
     <>
       <Router>
-        <RouterSwitch loader={loader} dataSource={DataSource} />
+        <RouterSwitch loader={loader} />
       </Router>
       <LoadingModal
         loading={loading}
