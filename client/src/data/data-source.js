@@ -33,8 +33,9 @@ const DataSource = (() => {
   const URLS = {
     artist: '/api/artists',
     artists: '/api/artists',
+    song: '/api/songs',
     songs: '/api/songs',
-    song: '/api/songs'
+    songItems: '/api/song-items',
   }
 
   const triggerEvent = (event, ...params) => {

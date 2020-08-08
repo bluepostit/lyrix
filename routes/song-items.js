@@ -63,7 +63,7 @@ router.get('/', ensureLoggedIn, addUserActions,
 
       res.json({
         status: StatusCodes.OK,
-        data: songItems,
+        songItems: songItems,
         actions: req.userActions
     })
 })
