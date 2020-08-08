@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Form, Modal, Alert } from 'react-bootstrap'
+import DataSource from '../../data/data-source'
 
 const getFormData = (form) => {
   const data = new URLSearchParams(new FormData(form))
@@ -31,6 +32,7 @@ const ArtistModal = ({
     onDismiss()
     setError('')
     setModalArtist({ name: '' })
+    DataSource.fetch('artists')
   }
 
   const handleSubmit = async (event) => {
