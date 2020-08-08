@@ -1,3 +1,5 @@
+const debug = require('debug')('lyrix:data-source')
+
 const DataSource = (() => {
   const data = {}
   let error
@@ -8,14 +10,17 @@ const DataSource = (() => {
   }
 
   const URLS = {
-    songs: '/api/songs'
+    songs: '/api/songs',
+    song: '/api/songs'
   }
 
   const triggerEvent = (event, ...params) => {
+    debug('%s event triggered. params: %o', event, params)
     listeners[event].forEach(listener => listener(params))
   }
 
   const setData = (entity, newData) => {
+    debug("setting data for '%s:' %O", entity, newData)
     data[entity] = newData
   }
 
@@ -23,12 +28,28 @@ const DataSource = (() => {
     error = err
   }
 
-  const fetchData = async (entity) => {
+  const getSongUrl = (params) => {
+    let url = `${URLS.song}/${params.songId}`
+    if (params.songlistId) {
+      url += `?context=songlist&contextId=${params.songlistId}`
+    } else if (params.artistId) {
+      url += '?context=artist'
+    } else {
+      url += '?context=songlist' // Assumed context: ALL songs
+    }
+    return url
+  }
+
+  const fetchData = async (entity, params) => {
     triggerEvent('start')
-    const url = URLS[entity]
+    let url = URLS[entity]
     if (!url) {
       throw `Invalid entity '${entity}'`
     }
+    if (entity === 'song') {
+      url = getSongUrl(params)
+    }
+
     fetch(url)
       .then(res => res.json())
       .then((json) => {
@@ -37,7 +58,6 @@ const DataSource = (() => {
           triggerEvent('error')
         } else {
           setData(entity, json)
-          console.log(data)
           triggerEvent('change', entity)
         }
       }).finally(() => {
@@ -47,7 +67,7 @@ const DataSource = (() => {
 
   return {
     addListener: (event, listener) => {
-      console.log('adding listener...')
+      debug("adding listener for '%s'", event)
       if (!['start', 'stop', 'change'].includes(event)) {
         throw Error('Invalid event type')
       }
@@ -55,23 +75,25 @@ const DataSource = (() => {
     },
 
     removeListener: (event, listener) => {
-      console.log('removing listener...')
+      debug("removing listener for '%s'", event)
       const index = listeners[event].indexOf(listener)
       if (index >= 0) {
-        console.log('removed!')
         listeners[event].splice(index, 1)
       }
     },
 
-    fetch: (entity) => {
-      fetchData(entity)
+    fetch: (entity, params) => {
+      fetchData(entity, params)
     },
 
     get: (entity) => {
-      let response = { data: [], actions: [] }
+      debug(`get('${entity}')`)
+      let response = {}
       if (data[entity]) {
         response = data[entity]
       }
+      debug('all data: %O', data)
+      debug('response: %O', response)
       return response
     }
   }
