@@ -1,13 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useHistory } from "react-router-dom"
-import { ListDataset } from '../../components/data'
 import { ItemListPage } from '../item-list-page'
 import { Song } from '../../components/list-items'
 
-const Songs = ({ loader }) => {
+const Songs = ({ data }) => {
   const history = useHistory()
-  const [data, setData] = useState({ data: [], actions: {} })
-
   let title = "Songs"
 
   const renderSong = (song) => {
@@ -24,28 +21,16 @@ const Songs = ({ loader }) => {
 
   const navActions = [{
     name: 'new',
-    value: data.actions.create ? onNewClick : null
+    value: (data.actions && data.actions.create) ? onNewClick : null
   }]
 
-  const onLoadingComplete = (data) => {
-    setData(data)
-  }
-
   return (
-    <>
-      <ListDataset
-        url="/api/songs"
-        loader={loader}
-        onLoadingComplete={onLoadingComplete}
-      />
-      <ItemListPage title={title}
-        items={data.data}
-        actions={navActions}
-        loading={loader.loading}
-        onItemClick={onSongClick}
-        renderItem={renderSong}
-      />
-    </>
+    <ItemListPage title={title}
+      items={data.data}
+      actions={navActions}
+      onItemClick={onSongClick}
+      renderItem={renderSong}
+    />
   )
 }
 

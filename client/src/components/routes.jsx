@@ -10,8 +10,9 @@ import { SongImporter as Importer } from '../pages/song-importer'
 import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
+import { Subscriber } from './data'
 
-const RouterSwitch = ({ loader }) => {
+const RouterSwitch = ({ loader, dataSource }) => {
   return (
     <Switch>
       <Route path="/login">
@@ -37,7 +38,11 @@ const RouterSwitch = ({ loader }) => {
       <Route path="/songs/:id/edit" children={<Songs.Edit loader={loader} />} />
       <Route path="/songs/:songId" children={<Songs.Show loader={loader} />} />
       <Route path="/songs">
-        <Songs.Index loader={loader} />
+        <Subscriber
+          Component={Songs.Index}
+          dataSource={dataSource}
+          dataEntity="songs"
+        />
       </Route>
 
       <Route path="/songlists/:songlistId/songs/:songId">
