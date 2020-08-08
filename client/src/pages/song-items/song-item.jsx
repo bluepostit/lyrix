@@ -41,15 +41,15 @@ const SongItem = ({ data }) => {
   const [deleting, setDeleting] = useState(false)
 
   const goToEdit = () => {
-    history.push(`/song-items/${data.data.id}/edit`)
+    history.push(`/song-items/${data.songItem.id}/edit`)
   }
 
   const goToArtist = () => {
-    history.push(`/artists/${data.data.song.artist.id}`)
+    history.push(`/artists/${data.songItem.song.artist.id}`)
   }
 
   const goToSong = () => {
-    history.push(`/songs/${data.data.song.id}`)
+    history.push(`/songs/${data.songItem.song.id}`)
   }
 
   const handleDeleteClick = () => {

@@ -11,7 +11,7 @@ const fetchSong = async (id) => {
       if (json.error) {
         throw json
       }
-      return json.data
+      return json.song
     })
 }
 

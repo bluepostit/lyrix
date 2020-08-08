@@ -51,6 +51,7 @@ const fetchNextSong = (params, nextSongId) => {
 }
 
 const Song = ({ data }) => {
+  const song = data.song
   const history = useHistory()
   const location = useLocation()
   const params = useParams()
@@ -58,7 +59,7 @@ const Song = ({ data }) => {
   const [deleting, setDeleting] = useState(false)
 
   const goToEdit = () => {
-    history.push(`/songs/${data.id}/edit`)
+    history.push(`/songs/${song.id}/edit`)
   }
 
   const nextAction = () => {
@@ -83,7 +84,7 @@ const Song = ({ data }) => {
 
   const handleSongItemsModalClose = (value) => {
     if (value === 'new') {
-      history.push(`/songs/${data.id}/song-items/new`)
+      history.push(`/songs/${song.id}/song-items/new`)
     } else if (value) {
       history.push(`/song-items/${value.id}`)
     }
@@ -94,7 +95,6 @@ const Song = ({ data }) => {
     history.replace('/songs')
   }
 
-  const song = data.song
   const actions = buildActions(data, goToEdit,
     handleDeleteClick, nextAction, onSongItemsButtonClick)
 
@@ -115,7 +115,7 @@ const Song = ({ data }) => {
         handleClose={handleSongItemsModalClose}
       />
       <Deleter
-        entity={data}
+        entity={song}
         noun="song"
         show={deleting}
         setShow={setDeleting}
