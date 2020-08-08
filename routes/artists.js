@@ -13,6 +13,7 @@ const {
 } = require('./common')
 const { errorHandler } = require('../helpers/errors')
 const songsRouter = require('./artist-songs.js')
+const debug = require('debug')('lyrix:route:artists')
 
 const ARTIST_ATTRIBUTES = ['artists.id', 'artists.name']
 const SONG_ATTRIBUTES = ['id', 'title', 'text']
@@ -74,7 +75,12 @@ router.get('/:id', validateId, async (req, res, next) => {
     const artist = await Artist
       .query()
       .findById(req.params.id)
-      .withGraphFetched('songs')
+      .withGraphFetched('songs(orderByTitle)')
+      .modifiers({
+        orderByTitle(builder) {
+          builder.orderBy('title')
+        }
+      })
 
     if (artist == null) {
       return next({
