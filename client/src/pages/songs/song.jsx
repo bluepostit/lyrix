@@ -5,6 +5,7 @@ import { ToTopButton } from '../../components'
 import { Deleter, SongItemsModal } from '../../components/modals'
 import { pluralize } from '../../util'
 import { EmptyPage } from '../empty-page'
+import DataSource from '../../data/data-source'
 const debug = require('debug')('lyrix:song')
 
 const buildActions = (data, editAction, deleteAction,
@@ -61,7 +62,7 @@ const Song = ({ data }) => {
         /songs\/\d+/,
         `songs/${song.nextSongId}`)
       debug('nextLink: "%s"', nextLink)
-      // DataSource.fetch('song', params)
+      // DataSource.invalidate('song')
       history.push(nextLink)
     }
   }

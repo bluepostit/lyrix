@@ -113,6 +113,7 @@ const withSubscription = (
   useRouteParams = false
 ) => {
   const Wrapper = (props) => {
+    debug('Wrapper render')
     const params = useParams()
     const getData = () => dataSource.get(dataEntity)
     const fetchData = () => {
@@ -131,6 +132,7 @@ const withSubscription = (
 
     // Trigger the loading of the data
     useEffect(() => {
+      debug('Wrapper useEffect()')
       dataSource.addListener('change', handleDataChange)
       fetchData()
       // Cleanup:
