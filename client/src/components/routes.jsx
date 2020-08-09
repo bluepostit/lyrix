@@ -6,10 +6,9 @@ import {
 import { Home } from '../pages'
 import * as Auth from '../pages/auth'
 import * as Songlists from '../pages/songlists'
-import * as SongItems from '../pages/song-items'
 import * as Pages from '../pages/data-pages'
 
-const RouterSwitch = ({ loader }) => {
+const RouterSwitch = () => {
   return (
     <Switch>
       <Route path="/login">

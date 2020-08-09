@@ -19,7 +19,6 @@ const SongForm = ({
   lyricsData,
   handleLyricsSearch
 }) => {
-  debug('songId: %s', songId)
   const history = useHistory()
   const params = useParams()
   const [song, setSong] = useState({})

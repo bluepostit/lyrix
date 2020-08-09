@@ -4,6 +4,7 @@ import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
 import DataSource from '../../data/data-source'
 import { EmptyPage } from '../empty-page'
+const debug = require('debug')('lyrix:song-items')
 
 const SongItemForm = ({
   songItemId,
@@ -76,7 +77,7 @@ const SongItemForm = ({
     }
   }
 
-  const hasEntityData = song || songItem
+  const hasEntityData = (song && song.songItem) || songItem
   const hasSecondaryData = songItemTypes && (songItemTypes.length > 0)
   if (!(hasEntityData && hasSecondaryData)) {
     return <EmptyPage message="Not enough data to create a song item." />
@@ -89,7 +90,6 @@ const SongItemForm = ({
   return (
     <div className="container">
       <FormError error={error} />
-      {song.title}
       <Form noValidate validated={validated}
             onSubmit={handleSubmit}
             className="mt-2"

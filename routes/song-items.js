@@ -89,6 +89,7 @@ router.get('/:id', ensureLoggedIn, validateId, ensureOwnership,
 
 router.post('/', ensureLoggedIn, parseIds,
   validateSongItemData, checkForDuplicates, sanitize,
+  addUserActions,
     async (req, res, next) => {
       try {
         const songItem = await req.user
@@ -106,7 +107,7 @@ router.post('/', ensureLoggedIn, parseIds,
   })
 
 router.put('/:id', ensureLoggedIn, parseIds, validateId, ensureOwnership,
-  validateSongItemData, sanitize,
+  validateSongItemData, sanitize, addUserActions,
     async (req, res, next) => {
       try {
         const songItem = await SongItem
@@ -115,7 +116,8 @@ router.put('/:id', ensureLoggedIn, parseIds, validateId, ensureOwnership,
           .withGraphFetched('[song.artist, songItemType]')
         res.json({
           status: StatusCodes.OK,
-          songItem: songItem
+          songItem: songItem,
+          actions: req.userActions
         })
       } catch (error) {
         error.userMessage = "Couldn't update the song item"

@@ -5,6 +5,7 @@ import { ToTopButton } from '../../components'
 import { SongItemPageTitle } from '../../components/headers'
 import { Deleter } from '../../components/modals'
 import { EmptyPage } from '../empty-page'
+const debug = require('debug')('lyrix:song-items')
 
 const buildActions = (data, editAction, deleteAction,
     artistAction, songAction) => {

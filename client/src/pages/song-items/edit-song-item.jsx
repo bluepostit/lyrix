@@ -3,12 +3,21 @@ import { useHistory, useParams } from "react-router-dom"
 import DataSource from '../../data/data-source'
 import { Page } from '../page'
 import { SongItemForm } from './form'
+import { SongItemPageTitle } from '../../components/headers'
+const debug = require('debug')('lyrix:song-items')
 
 const EditSongItem = ({ songItemTypesData }) => {
   const title = 'Editing Song Item'
   const history = useHistory()
   const { id } = useParams()
   const songItemTypes = songItemTypesData.songItemTypes
+  const [songItem, setSongItem] = useState()
+
+  const onSongItemLoad = () => {
+    const songItem = DataSource.get('songItem')
+    debug('setting songItem: %o', songItem.songItem)
+    setSongItem(songItem.songItem)
+  }
 
   const onSuccess = () => {
     history.push(`/song-items/${id}`)
@@ -16,15 +25,20 @@ const EditSongItem = ({ songItemTypesData }) => {
 
   useEffect(() => {
     DataSource.addListener('operate', onSuccess)
+    DataSource.addListener('change', onSongItemLoad)
     return () => {
       DataSource.removeListener('operate', onSuccess)
+      DataSource.removeListener('change', onSongItemLoad)
     }
   })
 
-  // const titleEl = <SongItemPageTitle song={songItem.song} title={title} />
+  let titleEl
+  if (songItem && songItem.song) {
+    titleEl = <SongItemPageTitle song={songItem.song} title={title} />
+  }
 
   return (
-    <Page title={title}>
+    <Page title={titleEl || title}>
       <div className="pt-1">
         <SongItemForm
           role="edit"
