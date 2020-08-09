@@ -124,6 +124,19 @@ describe(BASE_URL, async () => {
           })
       })
 
+      it('should return an error when an empty title is given',
+      async () => {
+        const user = await RecordManager.insertUser()
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent
+          .post(BASE_URL)
+          .send({ title: '' })
+
+        expect(res.body).to.have.status(400)
+        expect(res.body.error).to.not.be.empty
+      })
+
     it('should return an error when a songlist with this name already exists',
       async () => {
         const user = await RecordManager.insertUser({ id: 1 })
