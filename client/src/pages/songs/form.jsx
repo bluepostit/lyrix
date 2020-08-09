@@ -2,18 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
-import { LoadingModal } from '../../components/modals'
-
-const fetchArtists = async () => {
-  return fetch('/api/artists')
-    .then(response => response.json())
-    .then((json) => {
-      if (json.error) {
-        throw json
-      }
-      return json.artists
-    })
-}
+import DataSource from '../../data/data-source'
+import { EmptyPage } from '../empty-page'
+const debug = require('debug')('lyrix:songs-form')
 
 const getFormData = (form) => {
   const data = new URLSearchParams(new FormData(form))
@@ -21,18 +12,21 @@ const getFormData = (form) => {
 }
 
 const SongForm = ({
-  song,
-  setSong,
-  action,
-  method,
-  loader,
+  songEntity = {
+    title: '',
+    text: '',
+    artist: { id: '' }
+  },
+  error,
+  role,
+  artists,
+  lyricsData,
+  handleLyricsSearch,
   onSuccess
 }) => {
   const history = useHistory()
-
-  const [artists, setArtists] = useState([])
+  const [song, setSong] = useState(songEntity)
   const [validated, setValidated] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
   const getArtist = (id) => {
     return artists.find(item => item.id === id)
@@ -49,6 +43,18 @@ const SongForm = ({
     setSong(songCopy)
   }
 
+  useEffect(() => {
+    if (lyricsData && lyricsData.lyrics) {
+      if ((lyricsData.artist === song.artist.name)
+        && lyricsData.lyrics) {
+          updateSong({
+            text: lyricsData.lyrics,
+            title: lyricsData.title
+          })
+      }
+    }
+  }, [lyricsData])
+
   const handleChange = (event) => {
     let key = event.target.name
     let value = event.target.value
@@ -61,77 +67,35 @@ const SongForm = ({
   }
 
   const searchLyrics = async () => {
-    setErrorMessage('')
-    loader.start('Searching for lyrics...')
     const query = new URLSearchParams({
       artist_id: song.artist.id,
       title: song.title
     })
-    const url = `/api/lyrics?${query.toString()}`
-    fetch(url)
-      .then(res => res.json())
-      .then((json) => {
-        if (json.error) {
-          setErrorMessage(json.error)
-        } else {
-          updateSong({
-            title: json.data.title,
-            text: json.data.lyrics
-          })
-        }
-      }).finally(() => {
-        loader.stop()
-      })
+    handleLyricsSearch(query)
   }
 
   const handleSubmit = async (event) => {
-    setErrorMessage('')
     event.preventDefault()
     const form = event.currentTarget
+    if (role === 'create') {
+      DataSource.post('song', null, getFormData(form))
+    }
     // setValidated(true)
-
-    loader.start('Saving song...')
-    fetch(action, {
-      method,
-      body: getFormData(form),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      }
-    }).then(response => response.json())
-      .then((json) => {
-        if (json.error) {
-          setErrorMessage(json.error)
-        } else {
-          onSuccess()
-        }
-      }).finally(() => {
-        loader.stop()
-      })
   }
 
-  useEffect(() => {
-    loader.start('Loading artists...')
-    fetchArtists()
-      .then((artists) => {
-        setArtists(artists)
-      })
-      .catch((e) => {
-        console.log('Something went wrong!')
-        console.log(e)
-        history.push('/login')
-      }).finally(() => {
-        loader.stop()
-      })
-  }, [history, artists.length]) // things to monitor for render
+  if (!artists || artists.length < 1) {
+    return (
+      <EmptyPage message="There are no artists yet!" />
+    )
+  }
 
   return (
     <div className="container">
-      <FormError error={errorMessage} />
+      <FormError error={error} />
       <Form noValidate validated={validated}
-        onSubmit={handleSubmit} method="post"
+        onSubmit={handleSubmit}
         className="mt-2"
-        id="song-form"
-        action={action}>
+        id="song-form">
         <Form.Group controlId="songTitle">
           <Form.Label>Title</Form.Label>
           <Form.Control
@@ -163,7 +127,10 @@ const SongForm = ({
         <Form.Group controlId="songText">
           <div>
             <Form.Label>Lyrics</Form.Label>
-            <Button variant="secondary" size="sm" className="ml-2" onClick={searchLyrics}>Search!</Button>
+            <Button variant="secondary" size="sm" className="ml-2"
+              onClick={searchLyrics}>
+                Search!
+            </Button>
           </div>
           <Form.Control
             as="textarea"

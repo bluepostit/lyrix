@@ -111,7 +111,8 @@ const withSubscription = ({
   dataSource,
   dataEntity,
   useRouteParams = false,
-  noTrigger = false
+  noTrigger = false,
+  dataAttrName = 'data'
 }) => {
   const Wrapper = (props) => {
     debug('Wrapper render')
@@ -143,7 +144,8 @@ const withSubscription = ({
         dataSource.removeListener('change', handleDataChange)
       }
     }, [])
-    return <Component data={data} {...props} />
+    const dataProp = { [dataAttrName]: data }
+    return <Component {...dataProp} {...props} />
   }
   return Wrapper
 }

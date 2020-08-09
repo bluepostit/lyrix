@@ -70,10 +70,28 @@ const ImporterPage = withSubscription({
   noTrigger: true
 })
 
+const NewSongPage = withSubscription({
+  Component: withSearch({
+    Component: withSubscription({
+      Component: Songs.New,
+      dataSource: DataSource,
+      dataEntity: 'lyrics',
+      dataAttrName: 'lyricsData',
+      lyricsNoTrigger: true
+    }),
+    dataSource: DataSource,
+    dataEntity: 'lyrics',
+  }),
+  dataSource: DataSource,
+  dataEntity: 'artists',
+  dataAttrName: 'artistsData',
+})
+
 export {
   ArtistPage,
   ArtistsPage,
   ImporterPage,
+  NewSongPage,
   SongPage,
   SongsPage,
   SongItemPage,

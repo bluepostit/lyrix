@@ -44,12 +44,13 @@ const DataSource = (() => {
     songlist: '/api/songlists',
     songlists: '/api/songlists',
     importerSearch: '/api/song-importer/search',
-    importerImport: '/api/song-importer/import'
+    importerImport: '/api/song-importer/import',
+    lyrics: '/api/lyrics',
   }
 
   const triggerEvent = (event, ...params) => {
-    debug('%s event triggered. params: %o', event, params)
-    listeners[event].forEach(listener => listener(params))
+    debug('%s event triggered. params: %o', event, ...params)
+    listeners[event].forEach(listener => listener(...params))
   }
 
   const setData = (entity, newData) => {
@@ -57,8 +58,43 @@ const DataSource = (() => {
     data[entity] = newData
   }
 
+  const clearData = (entity) => {
+    debug("clearing data for '%s'", entity)
+    delete data[entity]
+  }
+
   const setError = (err) => {
     error = err
+  }
+
+  const postData = async (entity, params, body) => {
+    debug('postData("%s", %o)', entity, body)
+    triggerEvent('start')
+    let url = URLS[entity]
+    if (!url) {
+      throw new Error(`Invalid entity '${entity}'`)
+    }
+
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }
+    const method = 'POST'
+    fetch(url, {
+      method,
+      body,
+      headers
+    }).then(res => res.json())
+      .then((json) => {
+        if (json.error) {
+          setError(json)
+          triggerEvent('error', json.error)
+        } else {
+          setData(entity, json)
+          triggerEvent('change', entity)
+        }
+      }).finally(() => {
+        triggerEvent('stop')
+      })
   }
 
   const fetchData = async (entity, params, query) => {
@@ -80,6 +116,8 @@ const DataSource = (() => {
     } else if (entity === 'importerSearch') {
       url = queryize(url, query)
     } else if (entity === 'importerImport') {
+      url = queryize(url, query)
+    } else if (entity === 'lyrics') {
       url = queryize(url, query)
     }
 
@@ -121,6 +159,9 @@ const DataSource = (() => {
 
     get: (entity) => {
       debug(`get('${entity}')`)
+      if (entity === undefined) {
+        console.trace()
+      }
       let response = {}
       if (data[entity]) {
         response = data[entity]
@@ -132,7 +173,12 @@ const DataSource = (() => {
 
     search: (entity, params, query) => {
       debug(`get('${entity}')`)
+      clearData(entity)
       fetchData(entity, params, query)
+    },
+
+    post: (entity, params, body) => {
+      postData(entity, params, body)
     }
   }
 })()
