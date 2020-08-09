@@ -3,7 +3,10 @@ import { SongImporter } from '../pages/song-importer'
 import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
-import { withSearch, withSubscription } from '../components/data'
+import {
+  withSearch,
+  withSubscription
+} from '../components/data'
 import DataSource from '../data/data-source'
 
 const SongItemPage = withSubscription({
@@ -70,10 +73,71 @@ const ImporterPage = withSubscription({
   noTrigger: true
 })
 
+const withSongForm = (component) => {
+  return withSubscription({
+    Component: withSearch({
+      Component: withSubscription({
+        Component: component,
+        dataSource: DataSource,
+        dataEntity: 'lyrics',
+        dataAttrName: 'lyricsData',
+        lyricsNoTrigger: true
+      }),
+      dataSource: DataSource,
+      dataEntity: 'lyrics',
+    }),
+    dataSource: DataSource,
+    dataEntity: 'artists',
+    dataAttrName: 'artistsData',
+  })
+}
+
+const NewSongPage = withSongForm(Songs.New)
+const EditSongPage = withSubscription({
+  Component: withSongForm(Songs.Edit),
+  dataSource: DataSource,
+  dataEntity: 'song',
+  dataAttrName: 'songData',
+  useRouteParams: true
+})
+
+const withSongItemForm = (component) => {
+  return withSubscription({
+    Component: withSubscription({
+      Component: component,
+      dataSource: DataSource,
+      dataEntity: 'song',
+      dataAttrName: 'songData',
+      useRouteParams: true
+    }),
+    dataSource: DataSource,
+    dataEntity: 'songItemTypes',
+    dataAttrName: 'songItemTypesData'
+  })
+}
+
+const NewSongItemPage = withSongItemForm(SongItems.New)
+const EditSongItemPage = withSubscription({
+  Component: withSubscription({
+    Component: SongItems.Edit,
+    dataSource: DataSource,
+    dataEntity: 'songItemTypes',
+    dataAttrName: 'songItemTypesData'
+  }),
+  dataSource: DataSource,
+  dataEntity: 'songItem',
+  dataAttrName: 'songItemData',
+  useRouteParams: true
+})
+
 export {
   ArtistPage,
   ArtistsPage,
   ImporterPage,
+  NewSongPage,
+  EditSongPage,
+  NewSongItemPage,
+  EditSongItemPage,
   SongPage,
   SongsPage,
   SongItemPage,

@@ -3,14 +3,12 @@ import {
   Switch,
   Route,
 } from "react-router-dom"
-import { Home, Page } from '../pages'
+import { Home } from '../pages'
 import * as Auth from '../pages/auth'
 import * as Songlists from '../pages/songlists'
-import * as SongItems from '../pages/song-items'
-import * as Songs from '../pages/songs'
 import * as Pages from '../pages/data-pages'
 
-const RouterSwitch = ({ loader }) => {
+const RouterSwitch = () => {
   return (
     <Switch>
       <Route path="/login">
@@ -30,10 +28,15 @@ const RouterSwitch = ({ loader }) => {
         <Pages.ArtistsPage />
       </Route>
 
-      <Route path="/songs/new" children={<Songs.New loader={loader} />} />
-      <Route path="/songs/:songId/song-items/new"
-        children={<SongItems.New loader={loader} />} />
-      <Route path="/songs/:id/edit" children={<Songs.Edit loader={loader} />} />
+      <Route path="/songs/new">
+        <Pages.NewSongPage />
+      </Route>
+      <Route path="/songs/:songId/song-items/new">
+        <Pages.NewSongItemPage />
+      </Route>
+      <Route path="/songs/:id/edit">
+        <Pages.EditSongPage />
+      </Route>
       <Route path="/songs/:songId">
         <Pages.SongPage />
       </Route>
@@ -45,7 +48,7 @@ const RouterSwitch = ({ loader }) => {
         <Pages.SongPage />
       </Route>
       <Route path="/songlists/new">
-        <Songlists.New loader={loader} />
+        <Songlists.New />
       </Route>
       <Route path="/songlists/:id">
         <Pages.SonglistPage />
@@ -55,7 +58,7 @@ const RouterSwitch = ({ loader }) => {
       </Route>
 
       <Route path="/song-items/:id/edit">
-        <SongItems.Edit loader={loader} />
+        <Pages.EditSongItemPage />
       </Route>
       <Route path="/song-items/:id">
         <Pages.SongItemPage />

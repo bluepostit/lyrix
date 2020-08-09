@@ -111,7 +111,8 @@ const withSubscription = ({
   dataSource,
   dataEntity,
   useRouteParams = false,
-  noTrigger = false
+  noTrigger = false,
+  dataAttrName = 'data'
 }) => {
   const Wrapper = (props) => {
     debug('Wrapper render')
@@ -120,6 +121,7 @@ const withSubscription = ({
     const fetchData = () => {
       debug('fetchData() for %s', dataEntity)
       if (useRouteParams) {
+        debug('using params: %o', params)
         dataSource.fetch(dataEntity, params)
       } else {
         dataSource.fetch(dataEntity)
@@ -143,7 +145,8 @@ const withSubscription = ({
         dataSource.removeListener('change', handleDataChange)
       }
     }, [])
-    return <Component data={data} {...props} />
+    const dataProp = { [dataAttrName]: data }
+    return <Component {...dataProp} {...props} />
   }
   return Wrapper
 }
