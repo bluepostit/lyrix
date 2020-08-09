@@ -3,11 +3,10 @@ import {
   Switch,
   Route,
 } from "react-router-dom"
-import { Home, Page } from '../pages'
+import { Home } from '../pages'
 import * as Auth from '../pages/auth'
 import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
-import * as Songs from '../pages/songs'
 import * as Pages from '../pages/data-pages'
 
 const RouterSwitch = ({ loader }) => {

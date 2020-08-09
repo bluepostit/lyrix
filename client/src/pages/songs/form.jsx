@@ -12,18 +12,17 @@ const getFormData = (form) => {
 }
 
 const SongForm = ({
-  songData = { song: {} },
-  setSongData,
+  songId,
   error,
   role,
   artists,
   lyricsData,
   handleLyricsSearch
 }) => {
-  debug('songEntity: %o', songData)
+  debug('songId: %s', songId)
   const history = useHistory()
   const params = useParams()
-  const song = songData.song
+  const [song, setSong] = useState({})
   const [validated, setValidated] = useState(false)
 
   const getArtist = (id) => {
@@ -38,9 +37,15 @@ const SongForm = ({
         songCopy[key] = value
       }
     }
-    const songDataCopy = { ...songData }
-    songDataCopy.song = songCopy
-    setSongData(songDataCopy)
+    setSong(songCopy)
+  }
+
+  const onSongLoad = (entity) => {
+    if (entity === 'song') {
+      debug('song has loaded! hurrah')
+      const songData = DataSource.get('song')
+      setSong(songData.song)
+    }
   }
 
   useEffect(() => {
@@ -54,6 +59,18 @@ const SongForm = ({
       }
     }
   }, [lyricsData])
+
+  useEffect(() => {
+    if (songId) {
+      debug('going to fetch the song!')
+      DataSource.addListener('change', onSongLoad)
+      DataSource.fetch('song', params)
+
+      return () => {
+        DataSource.removeListener('change', onSongLoad)
+      }
+    }
+  }, [songId])
 
   const handleChange = (event) => {
     let key = event.target.name

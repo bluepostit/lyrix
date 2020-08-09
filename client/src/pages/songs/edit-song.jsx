@@ -5,8 +5,6 @@ import { SongForm } from './form'
 import DataSource from '../../data/data-source'
 
 const EditSong = ({
-  songData,
-  setSongData,
   artistsData,
   lyricsData,
   handleSearch,
@@ -16,24 +14,19 @@ const EditSong = ({
   const history = useHistory()
   const { id } = useParams()
 
-  const onUpdateSuccess = () => {
-    history.push(`/songs/${id}`)
-  }
-
-  const handleSongUpdate = (entity) => {
+  const handleSuccess = (entity) => {
     if (entity === 'song') {
-      onUpdateSuccess()
+      history.push(`/songs/${id}`)
     }
   }
 
   useEffect(() => {
-    DataSource.addListener('operate', handleSongUpdate)
+    DataSource.addListener('operate', handleSuccess)
     return () => {
-      DataSource.removeListener('operate', handleSongUpdate)
+      DataSource.removeListener('operate', handleSuccess)
     }
   })
 
-  const song = songData.song
   const error = artistsData.error || lyricsData.error || searchError
 
   return (
@@ -41,8 +34,7 @@ const EditSong = ({
       <div className="pt-1 song-page">
         <SongForm
           role="edit"
-          songData={songData}
-          setSongData={setSongData}
+          songId={id}
           error={error}
           artists={artistsData.artists}
           lyricsData={lyricsData.data}

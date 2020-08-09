@@ -4,7 +4,6 @@ import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
 import {
-  withEditing,
   withSearch,
   withSubscription
 } from '../components/data'
@@ -94,32 +93,12 @@ const withSongForm = (component) => {
 }
 
 const NewSongPage = withSongForm(Songs.New)
-
-const EditSongPage = withSongForm(
-  withEditing({
-    Component: Songs.Edit,
-    dataSource: DataSource,
-    dataEntity: 'song',
-    dataAttrName: 'songData',
-    useRouteParams: true
-  })
-)
-
-withSubscription({
-  Component: withSearch({
-    Component: withSubscription({
-      Component: Songs.Edit,
-      dataSource: DataSource,
-      dataEntity: 'lyrics',
-      dataAttrName: 'lyricsData',
-      lyricsNoTrigger: true
-    }),
-    dataSource: DataSource,
-    dataEntity: 'lyrics',
-  }),
+const EditSongPage = withSubscription({
+  Component: withSongForm(Songs.Edit),
   dataSource: DataSource,
-  dataEntity: 'artists',
-  dataAttrName: 'artistsData',
+  dataEntity: 'song',
+  dataAttrName: 'songData',
+  useRouteParams: true
 })
 
 export {
