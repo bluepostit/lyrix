@@ -66,7 +66,11 @@ const ItemListPage = ({
    ...props
 }) => {
   if (!items || items.length < 1) {
-    return <EmptyPage title={title} actions={actions} />
+    return (
+      <EmptyPage title={title} actions={actions}>
+        {children}
+      </EmptyPage>
+    )
   }
 
   return (

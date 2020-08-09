@@ -67,7 +67,7 @@ const Artist = ({ data }) => {
       onItemClick={onSongClick}
       renderItem={renderSong}>
       <Deleter
-        entity={data.data}
+        entity={artist}
         noun="artist"
         show={deleting}
         setShow={setDeleting}
