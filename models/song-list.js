@@ -55,8 +55,8 @@ module.exports = class SongList extends Model {
       required: ['title'],
 
       properties: {
-        name: {
-          type: 'title',
+        title: {
+          type: 'string',
           minLength: 1,
           maxLength: 30
         }
