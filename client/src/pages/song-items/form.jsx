@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
 import DataSource from '../../data/data-source'
@@ -11,6 +11,7 @@ const SongItemForm = ({
   songItemTypes,
   role
 }) => {
+  const params = useParams()
   const [songItem, setSongItem] = useState({})
   const [error, setError] = useState('')
   const [validated, setValidated] = useState(false)
@@ -19,9 +20,27 @@ const SongItemForm = ({
     return songItemTypes.find(item => item.id === id)
   }
 
+  const onSongItemLoad = (entity) => {
+    if (entity === 'songItem') {
+      const songItemData = DataSource.get('songItem')
+      setSongItem(songItemData.songItem)
+    }
+  }
+
   const onError = (error) => {
     setError(error)
   }
+
+  useEffect(() => {
+    if (songItemId) {
+      DataSource.addListener('change', onSongItemLoad)
+      DataSource.fetch('songItem', { id: songItemId })
+
+      return () => {
+        DataSource.removeListener('change', onSongItemLoad)
+      }
+    }
+  }, [songItemId])
 
   useEffect(() => {
     DataSource.addListener('error', onError)
@@ -52,23 +71,32 @@ const SongItemForm = ({
     // setValidated(true)
     if (role === 'create') {
       DataSource.create('songItem', null, getFormData(form))
+    } else if (role === 'edit') {
+      DataSource.edit('songItem', params, getFormData(form))
     }
   }
 
-  if (!song || !songItemTypes || songItemTypes.length < 1) {
+  const hasEntityData = song || songItem
+  const hasSecondaryData = songItemTypes && (songItemTypes.length > 0)
+  if (!(hasEntityData && hasSecondaryData)) {
     return <EmptyPage message="Not enough data to create a song item." />
+  }
+
+  if (songItem) {
+    song = songItem.song
   }
 
   return (
     <div className="container">
       <FormError error={error} />
+      {song.title}
       <Form noValidate validated={validated}
             onSubmit={handleSubmit}
             className="mt-2"
             id="song-item-form">
         <input type="hidden"
                name="song_id"
-               value={song.id}
+               value={song ? song.id : ''}
                />
         <Form.Group controlId="songItemTitle">
           <Form.Label>Title</Form.Label>

@@ -59,7 +59,7 @@ const RouterSwitch = ({ loader }) => {
       </Route>
 
       <Route path="/song-items/:id/edit">
-        <SongItems.Edit loader={loader} />
+        <Pages.EditSongItemPage />
       </Route>
       <Route path="/song-items/:id">
         <Pages.SongItemPage />

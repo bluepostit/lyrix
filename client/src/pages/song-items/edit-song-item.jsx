@@ -1,65 +1,36 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
+import DataSource from '../../data/data-source'
 import { Page } from '../page'
 import { SongItemForm } from './form'
-import { SongItemPageTitle } from '../../components/headers'
 
-const fetchSongItem = async (id) => {
-  let url = `/api/song-items/${id}`
-  return fetch(url)
-    .then(response => response.json())
-    .then((json) => {
-      if (json.error) {
-        throw json
-      }
-      return json.songItem
-    })
-}
-
-const EditSongItem = ({ loader }) => {
+const EditSongItem = ({ songItemTypesData }) => {
   const title = 'Editing Song Item'
   const history = useHistory()
-  const [songItem, setSongItem] = useState({
-    id: '',
-    title: '',
-    songItemType: { id: '', name: '' },
-    song: { id: '' }
-  })
-
   const { id } = useParams()
+  const songItemTypes = songItemTypesData.songItemTypes
 
-  useEffect(() => {
-    loader.start('Loading...')
-    fetchSongItem(id)
-      .then(songItem => setSongItem(songItem))
-      .catch((e) => {
-        console.log('Something went wrong!')
-        console.log(e)
-        history.push('/login')
-      })
-      .finally(() => {
-        loader.stop()
-      })
-  }, [history, id]) // things to monitor for render
-
-
-  const onUpdateSuccess = () => {
+  const onSuccess = () => {
     history.push(`/song-items/${id}`)
   }
 
-  const titleEl = <SongItemPageTitle song={songItem.song} title={title} />
+  useEffect(() => {
+    DataSource.addListener('operate', onSuccess)
+    return () => {
+      DataSource.removeListener('operate', onSuccess)
+    }
+  })
+
+  // const titleEl = <SongItemPageTitle song={songItem.song} title={title} />
 
   return (
-    <Page title={titleEl}>
+    <Page title={title}>
       <div className="pt-1">
         <SongItemForm
-          song={songItem.song}
-          songItem={songItem}
-          setSongItem={setSongItem}
-          action={`/api/song-items/${songItem.id}`}
-          method='PUT'
-          loader={loader}
-          onSuccess={onUpdateSuccess} />
+          role="edit"
+          songItemTypes={songItemTypes}
+          songItemId={id}
+        />
       </div>
     </Page>
   )

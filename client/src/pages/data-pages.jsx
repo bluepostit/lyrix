@@ -101,19 +101,34 @@ const EditSongPage = withSubscription({
   useRouteParams: true
 })
 
-const NewSongItemPage = withSubscription({
-  Component: withSubscription({
-    Component: SongItems.New,
+const withSongItemForm = (component) => {
+  return withSubscription({
+    Component: withSubscription({
+      Component: component,
+      dataSource: DataSource,
+      dataEntity: 'song',
+      dataAttrName: 'songData',
+      useRouteParams: true
+    }),
     dataSource: DataSource,
-    dataEntity: 'song',
-    dataAttrName: 'songData',
-    useRouteParams: true
+    dataEntity: 'songItemTypes',
+    dataAttrName: 'songItemTypesData'
+  })
+}
+
+const NewSongItemPage = withSongItemForm(SongItems.New)
+const EditSongItemPage = withSubscription({
+  Component: withSubscription({
+    Component: SongItems.Edit,
+    dataSource: DataSource,
+    dataEntity: 'songItemTypes',
+    dataAttrName: 'songItemTypesData'
   }),
   dataSource: DataSource,
-  dataEntity: 'songItemTypes',
-  dataAttrName: 'songItemTypeData'
+  dataEntity: 'songItem',
+  dataAttrName: 'songItemData',
+  useRouteParams: true
 })
-
 
 export {
   ArtistPage,
@@ -122,6 +137,7 @@ export {
   NewSongPage,
   EditSongPage,
   NewSongItemPage,
+  EditSongItemPage,
   SongPage,
   SongsPage,
   SongItemPage,

@@ -5,11 +5,11 @@ import { SongItemForm } from './form'
 import { SongItemPageTitle } from '../../components/headers'
 import DataSource from '../../data/data-source'
 
-const NewSongItem = ({ songData, songItemTypeData }) => {
+const NewSongItem = ({ songData, songItemTypesData }) => {
   const title = 'Add a Song Item'
   const history = useHistory()
   const song = songData.song
-  const songItemTypes = songItemTypeData.songItemTypes
+  const songItemTypes = songItemTypesData.songItemTypes
 
   const onSongClick = () => {
     history.push(`/songs/${song.id}`)
