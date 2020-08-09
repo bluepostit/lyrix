@@ -15,7 +15,7 @@ router.get('/', async (req, res, next) => {
       .orderBy('name')
     res.json({
       status: StatusCodes.OK,
-      data: songItemTypes
+      songItemTypes: songItemTypes
     })
   } catch (error) {
     next(error)

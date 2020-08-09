@@ -2,25 +2,33 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
+import DataSource from '../../data/data-source'
+import { EmptyPage } from '../empty-page'
 
 const SongItemForm = ({
-  songItem,
-  setSongItem,
+  songItemId,
   song,
-  action,
-  method,
-  loader,
-  onSuccess
+  songItemTypes,
+  role
 }) => {
-  const history = useHistory()
-
-  const [itemTypes, setItemTypes] = useState([])
+  const [songItem, setSongItem] = useState({})
+  const [error, setError] = useState('')
   const [validated, setValidated] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
   const getItemType = (id) => {
-    return itemTypes.find(item => item.id === id)
+    return songItemTypes.find(item => item.id === id)
   }
+
+  const onError = (error) => {
+    setError(error)
+  }
+
+  useEffect(() => {
+    DataSource.addListener('error', onError)
+    return () => {
+      DataSource.removeListener('error', onError)
+    }
+  })
 
   const handleChange = (event) => {
     const songItemCopy = { ...songItem }
@@ -39,64 +47,25 @@ const SongItemForm = ({
   }
 
   const handleSubmit = async (event) => {
-    setErrorMessage('')
     event.preventDefault()
     const form = event.currentTarget
     // setValidated(true)
-
-    loader.start('Saving Song Item...')
-    fetch(action, {
-      method,
-      body: getFormData(form),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      }
-    }).then(response => response.json())
-      .then((json) => {
-        if (json.error) {
-          setErrorMessage(json.error)
-        } else {
-          onSuccess()
-        }
-      })
-      .finally(() => {
-        loader.stop()
-      })
+    if (role === 'create') {
+      DataSource.create('songItem', null, getFormData(form))
+    }
   }
 
-  const fetchSongItemTypes = async () => {
-    return fetch('/api/song-item-types')
-      .then(response => response.json())
-      .then((json) => {
-        if (json.error) {
-          throw json
-        }
-        return json.data
-      })
+  if (!song || !songItemTypes || songItemTypes.length < 1) {
+    return <EmptyPage message="Not enough data to create a song item." />
   }
-
-  useEffect(() => {
-    loader.start('Loading...')
-    fetchSongItemTypes()
-      .then(itemTypes => setItemTypes(itemTypes))
-      .catch((e) => {
-        console.log('Something went wrong!')
-        console.log(e)
-        history.push('/login')
-      })
-      .finally(() => {
-        loader.stop()
-      })
-  }, [history, itemTypes.length]) // things to monitor for render
 
   return (
     <div className="container">
-      <FormError error={errorMessage} />
+      <FormError error={error} />
       <Form noValidate validated={validated}
-            onSubmit={handleSubmit} method="post"
+            onSubmit={handleSubmit}
             className="mt-2"
-            id="song-item-form"
-            action={action}>
+            id="song-item-form">
         <input type="hidden"
                name="song_id"
                value={song.id}
@@ -116,10 +85,10 @@ const SongItemForm = ({
           <Form.Control
             as="select"
             name="song_item_type_id"
-            value={songItem.songItemType.id}
+            value={songItem.songItemType ? songItem.songItemType.id : ''}
             onChange={handleChange} >
               {
-                itemTypes.map((itemType, index) =>
+                songItemTypes.map((itemType, index) =>
                   <option value={itemType.id} key={index}>
                     {itemType.name}
                   </option>

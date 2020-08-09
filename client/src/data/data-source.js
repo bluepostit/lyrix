@@ -43,6 +43,7 @@ const DataSource = (() => {
     songs: '/api/songs',
     songItem: '/api/song-items',
     songItems: '/api/song-items',
+    songItemTypes: '/api/song-item-types',
     songlist: '/api/songlists',
     songlists: '/api/songlists',
     importerSearch: '/api/song-importer/search',

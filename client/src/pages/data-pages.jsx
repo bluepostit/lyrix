@@ -101,12 +101,27 @@ const EditSongPage = withSubscription({
   useRouteParams: true
 })
 
+const NewSongItemPage = withSubscription({
+  Component: withSubscription({
+    Component: SongItems.New,
+    dataSource: DataSource,
+    dataEntity: 'song',
+    dataAttrName: 'songData',
+    useRouteParams: true
+  }),
+  dataSource: DataSource,
+  dataEntity: 'songItemTypes',
+  dataAttrName: 'songItemTypeData'
+})
+
+
 export {
   ArtistPage,
   ArtistsPage,
   ImporterPage,
   NewSongPage,
   EditSongPage,
+  NewSongItemPage,
   SongPage,
   SongsPage,
   SongItemPage,
