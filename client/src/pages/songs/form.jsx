@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
 import DataSource from '../../data/data-source'
 import { EmptyPage } from '../empty-page'
-const debug = require('debug')('lyrix:songs-form')
+const debug = require('debug')('lyrix:song-form')
 
 const getFormData = (form) => {
   const data = new URLSearchParams(new FormData(form))
@@ -12,20 +12,18 @@ const getFormData = (form) => {
 }
 
 const SongForm = ({
-  songEntity = {
-    title: '',
-    text: '',
-    artist: { id: '' }
-  },
+  songData = { song: {} },
+  setSongData,
   error,
   role,
   artists,
   lyricsData,
-  handleLyricsSearch,
-  onSuccess
+  handleLyricsSearch
 }) => {
+  debug('songEntity: %o', songData)
   const history = useHistory()
-  const [song, setSong] = useState(songEntity)
+  const params = useParams()
+  const song = songData.song
   const [validated, setValidated] = useState(false)
 
   const getArtist = (id) => {
@@ -40,7 +38,9 @@ const SongForm = ({
         songCopy[key] = value
       }
     }
-    setSong(songCopy)
+    const songDataCopy = { ...songData }
+    songDataCopy.song = songCopy
+    setSongData(songDataCopy)
   }
 
   useEffect(() => {
@@ -78,7 +78,9 @@ const SongForm = ({
     event.preventDefault()
     const form = event.currentTarget
     if (role === 'create') {
-      DataSource.post('song', null, getFormData(form))
+      DataSource.create('song', null, getFormData(form))
+    } else if (role === 'edit') {
+      DataSource.edit('song', params, getFormData(form))
     }
     // setValidated(true)
   }
@@ -102,7 +104,7 @@ const SongForm = ({
             type="text"
             placeholder="Write your title here"
             name="title"
-            value={song.title}
+            value={song && song.title ? song.title : ''}
             onChange={handleChange}
           />
         </Form.Group>
@@ -111,7 +113,7 @@ const SongForm = ({
           <Form.Control
             as="select"
             name="artist_id"
-            value={song.artist.id}
+            value={song && song.artist ? song.artist.id : ''}
             onChange={handleChange} >
               <option value=""></option>
               {
@@ -136,8 +138,8 @@ const SongForm = ({
             as="textarea"
             rows="5"
             name="text"
-            value={song.text}
-            className="song-item-text-box"
+            value={song && song.text ? song.text : ''}
+            className="song-text-box"
             placeholder="Write the song's lyrics here"
             onChange={handleChange}
           />

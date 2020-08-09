@@ -11,7 +11,8 @@ const queryize = (baseUrl, query) => {
 }
 
 const getSongUrl = (baseUrl, params) => {
-  let url = `${baseUrl}/${params.songId}`
+  let songId = params.songId || params.id
+  let url = `${baseUrl}/${songId}`
   if (params.songlistId) {
     url += `?context=songlist&contextId=${params.songlistId}`
   } else if (params.artistId) {
@@ -31,7 +32,8 @@ const DataSource = (() => {
     'start': [],
     'stop': [],
     'error': [],
-    'change': []
+    'change': [],
+    'operate': []
   }
 
   const URLS = {
@@ -67,7 +69,7 @@ const DataSource = (() => {
     error = err
   }
 
-  const postData = async (entity, params, body) => {
+  const postData = async (entity, params, body, method = 'POST') => {
     debug('postData("%s", %o)', entity, body)
     triggerEvent('start')
     let url = URLS[entity]
@@ -75,10 +77,13 @@ const DataSource = (() => {
       throw new Error(`Invalid entity '${entity}'`)
     }
 
+    if (params) {
+      url = parameterize(url, params)
+    }
+
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
     }
-    const method = 'POST'
     fetch(url, {
       method,
       body,
@@ -90,7 +95,7 @@ const DataSource = (() => {
           triggerEvent('error', json.error)
         } else {
           setData(entity, json)
-          triggerEvent('change', entity)
+          triggerEvent('operate', entity)
         }
       }).finally(() => {
         triggerEvent('stop')
@@ -139,7 +144,7 @@ const DataSource = (() => {
   return {
     addListener: (event, listener) => {
       debug("adding listener for '%s'", event)
-      if (!['start', 'stop', 'change', 'error'].includes(event)) {
+      if (!Object.getOwnPropertyNames(listeners).includes(event)) {
         throw Error('Invalid event type')
       }
       listeners[event].push(listener)
@@ -177,8 +182,12 @@ const DataSource = (() => {
       fetchData(entity, params, query)
     },
 
-    post: (entity, params, body) => {
+    create: (entity, params, body) => {
       postData(entity, params, body)
+    },
+
+    edit: (entity, params, body) => {
+      postData(entity, params, body, 'PUT')
     }
   }
 })()

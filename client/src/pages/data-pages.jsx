@@ -3,7 +3,11 @@ import { SongImporter } from '../pages/song-importer'
 import * as Songlists from '../pages/songlists'
 import * as SongItems from '../pages/song-items'
 import * as Songs from '../pages/songs'
-import { withSearch, withSubscription } from '../components/data'
+import {
+  withEditing,
+  withSearch,
+  withSubscription
+} from '../components/data'
 import DataSource from '../data/data-source'
 
 const SongItemPage = withSubscription({
@@ -70,10 +74,41 @@ const ImporterPage = withSubscription({
   noTrigger: true
 })
 
-const NewSongPage = withSubscription({
+const withSongForm = (component) => {
+  return withSubscription({
+    Component: withSearch({
+      Component: withSubscription({
+        Component: component,
+        dataSource: DataSource,
+        dataEntity: 'lyrics',
+        dataAttrName: 'lyricsData',
+        lyricsNoTrigger: true
+      }),
+      dataSource: DataSource,
+      dataEntity: 'lyrics',
+    }),
+    dataSource: DataSource,
+    dataEntity: 'artists',
+    dataAttrName: 'artistsData',
+  })
+}
+
+const NewSongPage = withSongForm(Songs.New)
+
+const EditSongPage = withSongForm(
+  withEditing({
+    Component: Songs.Edit,
+    dataSource: DataSource,
+    dataEntity: 'song',
+    dataAttrName: 'songData',
+    useRouteParams: true
+  })
+)
+
+withSubscription({
   Component: withSearch({
     Component: withSubscription({
-      Component: Songs.New,
+      Component: Songs.Edit,
       dataSource: DataSource,
       dataEntity: 'lyrics',
       dataAttrName: 'lyricsData',
@@ -92,6 +127,7 @@ export {
   ArtistsPage,
   ImporterPage,
   NewSongPage,
+  EditSongPage,
   SongPage,
   SongsPage,
   SongItemPage,

@@ -13,16 +13,16 @@ const NewSong = ({
   const title = 'Add a Song'
   const history = useHistory()
 
-  const handleSongsChange = (entity) => {
+  const handleSongCreate = (entity) => {
     if (entity === 'song') {
       onCreateSuccess()
     }
   }
 
   useEffect(() => {
-    DataSource.addListener('change', handleSongsChange)
+    DataSource.addListener('operate', handleSongCreate)
     return () => {
-      DataSource.removeListener('change', handleSongsChange)
+      DataSource.removeListener('operate', handleSongCreate)
     }
   })
 

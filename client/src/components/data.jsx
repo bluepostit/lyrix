@@ -106,6 +106,57 @@ class Loader {
   }
 }
 
+const withEditing = ({
+  Component,
+  dataSource,
+  dataEntity,
+  useRouteParams = false,
+  noTrigger = false,
+  dataAttrName = 'data'
+}) => {
+  const Wrapper = (props) => {
+    debug('Wrapper render')
+    const params = useParams()
+    const getData = () => dataSource.get(dataEntity)
+    const fetchData = () => {
+      debug('fetchData() for %s', dataEntity)
+      if (useRouteParams) {
+        debug('using params: %o', params)
+        dataSource.fetch(dataEntity, params)
+      } else {
+        dataSource.fetch(dataEntity)
+      }
+    }
+    const [data, setData] = useState(getData())
+
+    const handleDataChange = () => {
+      setData(getData())
+    }
+
+    // Trigger the loading of the data
+    useEffect(() => {
+      debug('Wrapper useEffect()')
+      dataSource.addListener('change', handleDataChange)
+      if (!noTrigger) {
+        fetchData()
+      }
+      // Cleanup:
+      return () => {
+        dataSource.removeListener('change', handleDataChange)
+      }
+    }, [])
+
+    const setDataAttrName =
+      'set' + dataAttrName[0].toUpperCase() + dataAttrName.slice(1)
+    const dataProps = {
+      [dataAttrName]: data,
+      [setDataAttrName] : setData
+    }
+    return <Component {...dataProps} {...props} />
+  }
+  return Wrapper
+}
+
 const withSubscription = ({
   Component,
   dataSource,
@@ -121,6 +172,7 @@ const withSubscription = ({
     const fetchData = () => {
       debug('fetchData() for %s', dataEntity)
       if (useRouteParams) {
+        debug('using params: %o', params)
         dataSource.fetch(dataEntity, params)
       } else {
         dataSource.fetch(dataEntity)
@@ -196,4 +248,4 @@ const withSearch = ({
   return Wrapper
 }
 
-export { ListDataset, Loader, withSearch, withSubscription }
+export { ListDataset, Loader, withEditing, withSearch, withSubscription }
