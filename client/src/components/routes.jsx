@@ -21,7 +21,7 @@ const RouterSwitch = () => {
         <Auth.SignUp />
       </Route>
 
-      <Route path="/artists/:artistId/songs/:songId">
+      <Route path="/artists/:artistId/songs/:id">
         {/* Need to send params with swr if we convert it! */}
         <Pages.SongPage />
       </Route>

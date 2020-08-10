@@ -11,9 +11,12 @@ import { EmptyPage } from '../empty-page'
 const Songlist = () => {
   const { id } = useParams()
   const history = useHistory()
+  const [deletingItem, setDeletingItem] = useState()
   const [showDeleter, setShowDeleter] = useState(false)
+  const [showItemDeleter, setShowItemDeleter] = useState(false)
   const { user, isLoading: userIsLoading } = useUser()
-  const { songlist, isLoading, error, actions } = useSonglist(id)
+  const { songlist, isLoading, error, actions,
+    mutate: mutateSonglist } = useSonglist(id)
 
   if (user && !user.authenticated) {
     history.replace('/login')
@@ -40,8 +43,17 @@ const Songlist = () => {
     setShowDeleter(true)
   }
 
+  const onItemDeleteClick = (songItem) => {
+    setDeletingItem(songItem)
+    setShowItemDeleter(true)
+  }
+
   const onDelete = () => {
     history.push('/songlists')
+  }
+
+  const onItemDelete = () => {
+    mutateSonglist()
   }
 
   const hasDelete = actions && actions.delete
@@ -56,20 +68,32 @@ const Songlist = () => {
   const title = songlist ? songlist.title : ''
   const items = songlist ? songlist.songs : []
 
+  let itemDeleter = <></>
+  if (deletingItem) {
+    itemDeleter = <Deleter
+      entity={{ id: deletingItem.songListSongId }}
+      noun="songlist-song"
+      show={showItemDeleter}
+      setShow={setShowItemDeleter}
+      onDelete={onItemDelete} />
+  }
+
   return (
     <ItemListPage
       title={title}
       actions={pageActions}
       items={items}
       onItemClick={onSongClick}
+      onItemDeleteClick={(item) => onItemDeleteClick(item)}
       renderItem={SonglistSong}
       renderItemMultiLine={true}>
-        <Deleter
-          entity={songlist}
-          noun="songlist"
-          show={showDeleter}
-          setShow={setShowDeleter}
-          onDelete={onDelete} />
+      <Deleter
+        entity={songlist}
+        noun="songlist"
+        show={showDeleter}
+        setShow={setShowDeleter}
+        onDelete={onDelete} />
+      {itemDeleter}
       </ItemListPage>
   )
 }

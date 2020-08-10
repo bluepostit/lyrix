@@ -1,39 +1,47 @@
 import React from 'react'
 import { Icon } from './icons'
 
-const Artist = (artist) => {
+const Artist = (artist, index, onClick) => {
   return (
-    <div className="d-flex w-100 justify-content-between">
-      <div>
-        <Icon entity="artist" />
-        <span>{artist.name}</span>
+    <button key={index}
+        className="list-group-item lyrix-list-item"
+        onClick={(e) => onClick(artist)}>
+      <div className="d-flex w-100 justify-content-between">
+        <div>
+          <Icon entity="artist" />
+          <span>{artist.name}</span>
+        </div>
+        <div>
+          <span className="badge badge-pill badge-info">
+            {artist.songCount}
+          </span>
+        </div>
       </div>
-      <div>
-        <span className="badge badge-pill badge-info">
-          {artist.songCount}
-        </span>
-      </div>
-    </div>
+    </button>
   )
 }
 
-const Song = ({ song }) => {
+const Song = (song, index, onClick) => {
   let artistName = song.artist.name || song.artist
   return (
-    <div className="d-flex w-100 justify-content-between">
-      <div>
-        <Icon entity="song" />
-        <span>{song.title}</span> <em><small>&ndash; {artistName}</small></em>
+    <button key={index}
+        className="list-group-item lyrix-list-item"
+        onClick={(e) => onClick(song)}>
+      <div className="d-flex w-100 justify-content-between">
+        <div>
+          <Icon entity="song" />
+          <span>{song.title}</span> <em><small>&ndash; {artistName}</small></em>
+        </div>
+        <div>
+          {/* <span className="badge badge-pill badge-info">
+          </span> */}
+        </div>
       </div>
-      <div>
-        {/* <span className="badge badge-pill badge-info">
-        </span> */}
-      </div>
-    </div>
+    </button>
   )
 }
 
-const SongItem = ({ songItem }) => {
+const SongItem = (songItem, index, onClick) => {
   let lines = [ songItem.title, '']
   if (songItem.song && songItem.song.title) {
     lines[1] = lines[0]
@@ -41,51 +49,68 @@ const SongItem = ({ songItem }) => {
   }
 
   return (
-    <div className="song-item-row">
-      <div className="info">
-
-        <div className="song-item-text content-multi-lines">
-          <div>
-            <Icon entity="songItem" className="mt-3" />
-            <span>{lines[0]}</span>
-          </div>
-          <div className="content-secondary">
-            {lines[1]}
+    <button key={index}
+        className="list-group-item lyrix-list-item"
+        onClick={(e) => onClick(songItem)}>
+      <div className="song-item-row">
+        <div className="info">
+          <div className="song-item-text content-multi-lines">
+            <div>
+              <Icon entity="songItem" className="mt-3" />
+              <span>{lines[0]}</span>
+            </div>
+            <div className="content-secondary">
+              {lines[1]}
+            </div>
           </div>
         </div>
+        <div className="badges">
+          <span className="badge badge-pill badge-info">
+            {songItem.songItemType.name}
+          </span>
+        </div>
       </div>
-      <div className="badges">
-        <span className="badge badge-pill badge-info">
-          {songItem.songItemType.name}
-        </span>
-      </div>
-    </div>
+    </button>
   )
 }
 
-const Songlist = (songlist) => {
+const Songlist = (songlist, index, onClick) => {
   return (
-    <div className="d-flex w-100 justify-content-between">
-      <div>
-        <Icon entity="songlist" />
-        <span>{songlist.title}</span>
+    <button key={index}
+        className="list-group-item lyrix-list-item"
+        onClick={(e) => onClick(songlist)}>
+      <div className="d-flex w-100 justify-content-between">
+        <div>
+          <Icon entity="songlist" />
+          <span>{songlist.title}</span>
+        </div>
+        <div>
+          <span className="badge badge-pill badge-info">
+            {songlist.songs.length}
+          </span>
+        </div>
       </div>
-      <div>
-        <span className="badge badge-pill badge-info">
-          {songlist.songs.length}
-        </span>
-      </div>
-    </div>
+    </button>
   )
 }
 
-const SonglistSong = (song, index) => {
+const SonglistSong = (song, index, onClick, onDeleteClick) => {
   return (
-    <div className="d-flex w-100 align-items-center">
-      <div className="numbered-disc-bullet">{index + 1}</div>
-      <div className="content-multi-lines">
-        <div>{song.title}</div>
-        <div className="content-secondary">{song.artist.name}</div>
+    <div key={index}
+        className="list-group-item lyrix-list-item multi-line d-flex w-100 align-items-center">
+      <button
+        className="list-group-item item-button"
+        onClick={(e) => onClick(song)}>
+
+        <div className="numbered-disc-bullet">{index + 1}</div>
+        <div className="content-multi-lines">
+          <div>{song.title}</div>
+          <div className="content-secondary">{song.artist.name}</div>
+        </div>
+      </button>
+      <div className="action-button ml-auto p-2"
+          onClick={ e => onDeleteClick(song) }>
+        <Icon entity="delete" />
       </div>
     </div>
   )
