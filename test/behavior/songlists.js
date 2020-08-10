@@ -166,4 +166,92 @@ describe(BASE_URL, async () => {
       agent.close()
     })
   })
+
+  describe('POST /:id/add-song', () => {
+    const setupUserAndSonglists = async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('songlists.with-user-id-1')
+      const agent = await SessionManager.loginAsUser(app, user)
+      return agent
+    }
+
+    const getFirstSonglist = async () => {
+      const songlist = await SongList
+        .query()
+        .first()
+        .withGraphFetched('songs')
+      return songlist
+    }
+
+    it('should return an error if the user is not signed in', async () => {
+      await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('songlists.with-user-id-1')
+      const songlist = await getFirstSonglist()
+      const songId = songlist.songs[0].id
+
+      const res = await chai.request(app)
+        .post(`${BASE_URL}/${songlist.id}/add-song`)
+        .send({ songId: songId })
+      const body = res.body
+      expect(body).to.have.status(401)
+      expect(body.error).not.to.be.empty
+    })
+
+    it('should return an error if the songlist doesn\'t exist', async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post(`${BASE_URL}/1/add-song`)
+      const body = res.body
+      expect(body).to.have.status(404)
+      expect(body.error).not.to.be.empty
+    })
+
+    it('should return an error if the songlist belongs to another user',
+      async () => {
+        await RecordManager.loadFixture('songlists.only-other-user')
+        const songlist = await getFirstSonglist()
+        const songId = songlist.songs[0].id
+        const user = await RecordManager.insertUser()
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent
+          .post(`${BASE_URL}/${songlist.id}/add-song`)
+          .send({ songId: songId })
+        const body = res.body
+        expect(body).to.have.status(403)
+        expect(body.error).not.to.be.empty
+      })
+
+    it('should return an error if no song is given', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('songlists.with-user-id-1')
+      const songlist = await getFirstSonglist()
+      const songId = songlist.songs[0].id
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent
+        .post(`${BASE_URL}/${songlist.id}/add-song`)
+        .send({ })
+      const body = res.body
+      expect(body).to.have.status(400)
+      expect(body.error).not.to.be.empty
+    })
+
+    it('should return an error if the song doesn\'t exist', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('songlists.with-user-id-1.no-songs')
+      const songlist = await getFirstSonglist()
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent
+        .post(`${BASE_URL}/${songlist.id}/add-song`)
+        .send({ songId: 1 })
+      const body = res.body
+      expect(body).to.have.status(404)
+      expect(body.error).not.to.be.empty
+    })
+    it('should add the song to the songlist, returning the songlist')
+  })
 })

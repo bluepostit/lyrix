@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { SongList } = require('../models')
+const { SongList, Song } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 const {
   StatusCodes,
@@ -10,6 +10,7 @@ const {
   validateDataForEntity
 } = require('./common')
 const { errorHandler } = require('../helpers/errors')
+const debug = require('debug')('lyrix:route:songlists')
 
 const SONGLIST_ATTRIBUTES = [
   'title',
@@ -24,14 +25,33 @@ const checkForDuplicates = checkForDuplicatesForEntity({
   fields: ['title']
 })
 
-const setSongList = async (req, res, next) => {
-  const songList = await SongList
+const validateBodySongId = async (req, res, next) => {
+  if (!req.body.songId) {
+    return next({
+      statusCode: StatusCodes.BAD_REQUEST,
+      userMessage: 'You must provide a song'
+    })
+  }
+  const song = await Song
+    .query()
+    .findById(req.body.songId)
+  if (!song) {
+    return next({
+      statusCode: StatusCodes.NOT_FOUND,
+      userMessage: 'Song not found'
+    })
+  }
+  next()
+}
+
+const setSonglist = async (req, res, next) => {
+  const songlist = await SongList
     .query()
     .findById(req.params.id)
     .allowGraph('[songs.artist]')
     .withGraphFetched('[songs.artist]')
 
-  req.songList = songList
+  req.songlist = songlist
   next()
 }
 
@@ -68,17 +88,12 @@ router.get('/count', ensureLoggedIn,
     }
   })
 
-router.get('/:id', ensureLoggedIn, validateId, setSongList,
+router.get('/:id', ensureLoggedIn, validateId, setSonglist,
   ensureOwnership,
     async (req, res, next) => {
-      const songList = await SongList
-        .query()
-        .findById(req.params.id)
-        .allowGraph('[songs.artist]')
-        .withGraphFetched('[songs.artist]')
       res.json({
         status: StatusCodes.OK,
-        songlist: songList
+        songlist: req.songlist
       })
     })
 
@@ -99,6 +114,9 @@ router.post('/', ensureLoggedIn, validateSongListData, checkForDuplicates,
       next(error)
     }
   })
+
+router.post('/:id/add-song', ensureLoggedIn, validateId,
+  setSonglist, ensureOwnership, validateBodySongId)
 
 router.use(errorHandler('song list'))
 
