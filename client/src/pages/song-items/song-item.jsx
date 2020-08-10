@@ -43,7 +43,7 @@ const SongItem = ({ data }) => {
   const [deleting, setDeleting] = useState(false)
   const { user, isLoading: userIsLoading } = useUser()
 
-  if (!userIsLoading && !user.isAuthenticated) {
+  if (!userIsLoading && !user.authenticated) {
     history.replace('/login')
   }
 

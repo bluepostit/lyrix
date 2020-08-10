@@ -13,7 +13,7 @@ const NewSongItem = ({ songData, songItemTypesData }) => {
   const song = songData.song
   const songItemTypes = songItemTypesData.songItemTypes
 
-  if (!userIsLoading && !user.isAuthenticated) {
+  if (!userIsLoading && !user.authenticated) {
     history.replace('/login')
   }
 

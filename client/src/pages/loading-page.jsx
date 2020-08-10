@@ -1,19 +1,19 @@
 import React from 'react'
 import { Page } from './page'
+import { Spinner } from 'react-bootstrap'
 
-const EmptyPage = ({
+const LoadingPage = ({
   title = <h2>Lyrix</h2>,
   actions,
-  children,
-  message = "Nothing to show here, yet."
+  message = "Loading..."
 }) => {
   return (
     <Page title={title} actions={actions}>
       <div className="page-content list-page">
         <div className="lyrix-list empty">
-          <div className="container text-center">
-            <h3>{message}</h3>
-            {children}
+          <div className="d-flex">
+            <Spinner animation="border" role="status" />
+            <h3 className="container">{message}</h3>
           </div>
         </div>
       </div>
@@ -21,4 +21,4 @@ const EmptyPage = ({
   )
 }
 
-export { EmptyPage }
+export default LoadingPage

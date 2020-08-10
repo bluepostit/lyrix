@@ -15,7 +15,7 @@ const EditSongItem = ({ songItemTypesData }) => {
   const [songItem, setSongItem] = useState()
   const { user, isLoading: userIsLoading } = useUser()
 
-  if (!userIsLoading && !user.isAuthenticated) {
+  if (!userIsLoading && !user.authenticated) {
     history.replace('/login')
   }
 

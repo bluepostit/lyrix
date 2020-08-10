@@ -137,7 +137,8 @@ router.post('/sign-up', signUpValidation, async (req, res, next) => {
 router.get('/status', async (req, res, next) => {
   res.json({
     status: StatusCodes.OK,
-    authenticated: req.isAuthenticated()
+    authenticated: req.isAuthenticated(),
+    admin: req.user ? req.user.admin : false
   })
 })
 
