@@ -52,9 +52,9 @@
 }
 
 
-// Don't show on medium+ screens
+// Handle medium+ screens
 @media (min-width: 576px) {
   .page-content .home-page, .page-content .menu-title, .page-content .menu-buttons {
-    display: none;
+    padding: 0 30%;
   }
 }

@@ -9,14 +9,18 @@ h1, h2, h3, h4, h5 {
 }
 
 .lyrix-page {
-  max-height: 100vh;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
   background-color: $bg-beige;
 }
 
+.lyrix-page.lyrix-page.has-navbar {
+  padding-top: $navbar-height;
+}
+
 .lyrix-page .content-wrapper {
-  height: 100vh - $navbar-height !important;
-  margin-top: $navbar-height;
-  overflow-y: scroll;
+  flex-grow: 1;
 }
 
 .list-page, .text-page {
@@ -24,11 +28,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .lyrix-page.has-navbar .page-content {
-  // max-height: 100vh - $navbar-height !important;
-  // padding-top: $navbar-height;
   display: flex;
   flex-direction: column;
-  max-height: 100vh;
   height: 100%;
 }
 
@@ -41,9 +42,4 @@ h1, h2, h3, h4, h5 {
     justify-content: center;
     text-align: center;
   }
-}
-
-.song-page-contents {
-  position: relative;
-  overflow: scroll;
 }
