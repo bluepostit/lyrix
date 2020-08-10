@@ -1,62 +1,61 @@
 import React, { useState } from 'react'
-import { useHistory } from "react-router-dom"
-import { Page } from '../page'
+import { useHistory, useParams } from "react-router-dom"
+import { Page, EmptyPage, LoadingPage } from '../'
 import { ToTopButton } from '../../components'
 import { SongItemPageTitle } from '../../components/headers'
 import { Deleter } from '../../components/modals'
-import { EmptyPage } from '../empty-page'
+import { useSongItem } from '../../data/song-items'
 import useUser from '../../data/users'
 const debug = require('debug')('lyrix:song-items')
 
-const buildActions = (data, editAction, deleteAction,
-    artistAction, songAction) => {
-  let actions = []
-  const songItem = data.songItem
-  if (songItem) {
-    const hasEdit = data.actions.edit
-    const hasDelete = data.actions.delete
+const buildActions = (songItem, actions, editAction,
+    deleteAction, artistAction, songAction) => {
 
-    actions = [{
-      name: 'edit',
-      value: hasEdit ? editAction : null,
-      hasDivider: !hasDelete
-    }, {
-      name: 'delete',
-      value: hasDelete ? deleteAction : null,
-      hasDivider: true
-    }, {
-      name: 'artist',
-      title: data.songItem.song.artist.name,
-      value: artistAction
-    }, {
-      name: 'song',
-      title: data.songItem.song.title,
-      value: songAction
-    }]
-
-  }
-  return actions
+  return [{
+    name: 'edit',
+    value: actions.edit ? editAction : null,
+    hasDivider: !actions.delete
+  }, {
+    name: 'delete',
+    value: actions.delete ? deleteAction : null,
+    hasDivider: true
+  }, {
+    name: 'artist',
+    title: songItem.song.artist.name,
+    value: artistAction
+  }, {
+    name: 'song',
+    title: songItem.song.title,
+    value: songAction
+  }]
 }
 
-const SongItem = ({ data }) => {
+const SongItem = () => {
   const history = useHistory()
+  const params = useParams()
   const [deleting, setDeleting] = useState(false)
   const { user, isLoading: userIsLoading } = useUser()
+  const { songItem, error, actions, isLoading } = useSongItem(params.id)
+
+  if (isLoading)
+    return <LoadingPage />
+  if (error)
+    return <EmptyPage message={error.toString()} />
 
   if (!userIsLoading && !user.authenticated) {
     history.replace('/login')
   }
 
   const goToEdit = () => {
-    history.push(`/song-items/${data.songItem.id}/edit`)
+    history.push(`/song-items/${songItem.id}/edit`)
   }
 
   const goToArtist = () => {
-    history.push(`/artists/${data.songItem.song.artist.id}`)
+    history.push(`/artists/${songItem.song.artist.id}`)
   }
 
   const goToSong = () => {
-    history.push(`/songs/${data.songItem.song.id}`)
+    history.push(`/songs/${songItem.song.id}`)
   }
 
   const handleDeleteClick = () => {
@@ -67,9 +66,8 @@ const SongItem = ({ data }) => {
     history.replace('/song-items')
   }
 
-  const songItem = data.songItem
-  const actions = buildActions(data, goToEdit, handleDeleteClick,
-    goToArtist, goToSong)
+  const pageActions = buildActions(songItem, actions,
+    goToEdit, handleDeleteClick, goToArtist, goToSong)
 
   if (!songItem) {
     return <EmptyPage actions={actions} />
@@ -77,7 +75,7 @@ const SongItem = ({ data }) => {
 
   const title = <SongItemPageTitle songItem={songItem} />
   return (
-    <Page title={title} actions={actions}>
+    <Page title={title} actions={pageActions}>
       <div className="song-item-text-display">
         <div className="song-item-text-box">
           {songItem.text}
