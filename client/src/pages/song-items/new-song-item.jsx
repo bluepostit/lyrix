@@ -4,12 +4,18 @@ import { Page } from '../page'
 import { SongItemForm } from './form'
 import { SongItemPageTitle } from '../../components/headers'
 import DataSource from '../../data/data-source'
+import useUser from '../../data/users'
 
 const NewSongItem = ({ songData, songItemTypesData }) => {
   const title = 'Add a Song Item'
   const history = useHistory()
+  const { user, isLoading: userIsLoading } = useUser()
   const song = songData.song
   const songItemTypes = songItemTypesData.songItemTypes
+
+  if (!userIsLoading && !user.isAuthenticated) {
+    history.replace('/login')
+  }
 
   const onSongClick = () => {
     history.push(`/songs/${song.id}`)

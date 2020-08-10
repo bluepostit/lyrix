@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import DataSource from '../../data/data-source'
+import useUser from '../../data/users'
 import { Page } from '../page'
 import { SongItemForm } from './form'
 import { SongItemPageTitle } from '../../components/headers'
@@ -12,6 +13,11 @@ const EditSongItem = ({ songItemTypesData }) => {
   const { id } = useParams()
   const songItemTypes = songItemTypesData.songItemTypes
   const [songItem, setSongItem] = useState()
+  const { user, isLoading: userIsLoading } = useUser()
+
+  if (!userIsLoading && !user.isAuthenticated) {
+    history.replace('/login')
+  }
 
   const onSongItemLoad = () => {
     const songItem = DataSource.get('songItem')

@@ -5,6 +5,7 @@ import { ToTopButton } from '../../components'
 import { SongItemPageTitle } from '../../components/headers'
 import { Deleter } from '../../components/modals'
 import { EmptyPage } from '../empty-page'
+import useUser from '../../data/users'
 const debug = require('debug')('lyrix:song-items')
 
 const buildActions = (data, editAction, deleteAction,
@@ -40,6 +41,11 @@ const buildActions = (data, editAction, deleteAction,
 const SongItem = ({ data }) => {
   const history = useHistory()
   const [deleting, setDeleting] = useState(false)
+  const { user, isLoading: userIsLoading } = useUser()
+
+  if (!userIsLoading && !user.isAuthenticated) {
+    history.replace('/login')
+  }
 
   const goToEdit = () => {
     history.push(`/song-items/${data.songItem.id}/edit`)
