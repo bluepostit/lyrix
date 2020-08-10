@@ -44,7 +44,7 @@ const Login = () => {
   }
 
   return (
-    <Page title={<h2>Lyrix</h2>}>
+    <Page title="Lyrix">
       <div className="container page-content text-page">
         <h3>Login</h3>
         <form action="/api/user/login" method="post" onSubmit={onSubmit}>

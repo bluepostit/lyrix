@@ -4,7 +4,7 @@ import { MenuButton } from '../components/buttons'
 
 const Home = () => {
   return (
-    <Page title={<h2>Lyrix</h2>}>
+    <Page title="Lyrix">
       <div className="page-content home-page">
         <div className="menu-buttons">
           <MenuButton action="/artists" entity="artist" title="Artists" />

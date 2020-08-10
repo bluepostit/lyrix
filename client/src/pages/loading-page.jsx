@@ -3,7 +3,7 @@ import { Page } from './page'
 import { Spinner } from 'react-bootstrap'
 
 const LoadingPage = ({
-  title = <h2>Lyrix</h2>,
+  title = 'Lyrix',
   actions,
   message = "Loading..."
 }) => {

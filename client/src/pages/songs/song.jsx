@@ -105,7 +105,7 @@ const Song = ({ data }) => {
     handleDeleteClick, nextAction, onSongItemsButtonClick)
 
   if (!song) {
-    return <EmptyPage title={<h2>Lyrix</h2>} actions={actions} />
+    return <EmptyPage actions={actions} />
   }
   return (
     <Page title={song.title} actions={actions}>

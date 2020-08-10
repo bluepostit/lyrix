@@ -72,7 +72,7 @@ const SongItem = ({ data }) => {
     goToArtist, goToSong)
 
   if (!songItem) {
-    return <EmptyPage title={<h2>Lyrix</h2>} actions={actions} />
+    return <EmptyPage actions={actions} />
   }
 
   const title = <SongItemPageTitle songItem={songItem} />
