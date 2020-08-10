@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Button, ListGroup, Modal, Alert, Spinner } from 'react-bootstrap'
-import { SongItem } from '../components/list-items'
+import { SongItem, Songlist } from '../components/list-items'
 import { Icon } from '../components/icons'
+import { useSonglists } from '../data/songlists'
 
 const SongItemsModalListItem = ({
   songItem,
@@ -187,5 +188,61 @@ const Deleter = ({
   )
 }
 
+const SelectSonglistModal = ({ show, setShow, onSelect, onDismiss }) => {
+  const { songlists, isLoading, error} = useSonglists()
+  const [songlist, setSonglist] = useState()
+  const title = 'Select a Songlist'
 
-export { Deleter, ConfirmModal, LoadingModal, SongItemsModal }
+  const onSonglistClick = (songlist) => {
+    onSelect(songlist)
+    handleClose()
+  }
+
+  const handleClose = () => {
+    setShow(false)
+  }
+
+  let body
+  if (isLoading) {
+    body = <div className = "modal-spinner" >
+      <Spinner animation="border" variant="primary" />
+    </div >
+  } else if (error) {
+    body = <Alert variant="danger">{error}</Alert>
+  } else {
+    console.log(songlists)
+    body = (
+      <ListGroup>
+        {songlists.map((item, index) =>
+          <ListGroup.Item
+            key={index + 1}
+            onClick={(e) => onSonglistClick(item)}>
+              <Icon entity="songlist" /> {item.title}
+          </ListGroup.Item>
+        )}
+      </ListGroup>
+    )
+  }
+
+  return (
+    <Modal show={show} onHide={handleClose}
+      className="song-items-modal"
+      aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal.Header>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div>{body}</div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary"
+          onClick={handleClose}>
+          Cancel
+        </Button>
+      </Modal.Footer>
+    </Modal >
+  )
+}
+
+
+export { Deleter, ConfirmModal, LoadingModal, SongItemsModal, SelectSonglistModal }

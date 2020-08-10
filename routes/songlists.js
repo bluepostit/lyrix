@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { SongList } = require('../models')
+const { SongList, Song } = require('../models')
 const { ensureLoggedIn } = require('../authentication')
 const {
   StatusCodes,
@@ -10,6 +10,7 @@ const {
   validateDataForEntity
 } = require('./common')
 const { errorHandler } = require('../helpers/errors')
+const debug = require('debug')('lyrix:route:songlists')
 
 const SONGLIST_ATTRIBUTES = [
   'title',
@@ -24,14 +25,39 @@ const checkForDuplicates = checkForDuplicatesForEntity({
   fields: ['title']
 })
 
-const setSongList = async (req, res, next) => {
-  const songList = await SongList
+const validateBodySongId = async (req, res, next) => {
+  if (!req.body.songId) {
+    debug(req.body)
+    return next({
+      statusCode: StatusCodes.BAD_REQUEST,
+      userMessage: 'You must provide a song'
+    })
+  }
+  const song = await Song
     .query()
-    .findById(req.params.id)
+    .findById(req.body.songId)
+  if (!song) {
+    return next({
+      statusCode: StatusCodes.NOT_FOUND,
+      userMessage: 'Song not found'
+    })
+  }
+  req.song = song
+  next()
+}
+
+const getSonglist = async (id) => {
+  const songlist = await SongList
+    .query()
+    .findById(id)
     .allowGraph('[songs.artist]')
     .withGraphFetched('[songs.artist]')
+  return songlist
+}
 
-  req.songList = songList
+const setSonglist = async (req, res, next) => {
+  const songlist = await getSonglist(req.params.id)
+  req.songlist = songlist
   next()
 }
 
@@ -68,17 +94,12 @@ router.get('/count', ensureLoggedIn,
     }
   })
 
-router.get('/:id', ensureLoggedIn, validateId, setSongList,
+router.get('/:id', ensureLoggedIn, validateId, setSonglist,
   ensureOwnership,
     async (req, res, next) => {
-      const songList = await SongList
-        .query()
-        .findById(req.params.id)
-        .allowGraph('[songs.artist]')
-        .withGraphFetched('[songs.artist]')
       res.json({
         status: StatusCodes.OK,
-        songlist: songList
+        songlist: req.songlist
       })
     })
 
@@ -98,6 +119,27 @@ router.post('/', ensureLoggedIn, validateSongListData, checkForDuplicates,
       error.userMessage = "Couldn't create the songlist"
       next(error)
     }
+  })
+
+router.post('/:id/add-song', ensureLoggedIn, validateId,
+  setSonglist, ensureOwnership, validateBodySongId,
+  async (req, res, next) => {
+    const query = req.songlist
+      .$relatedQuery('songs')
+      .relate({
+        id: req.song.id,
+        position: 0
+      })
+    debug(query.toKnexQuery().toSQL().toNative())
+    await query
+
+    const songlist = await getSonglist(req.songlist.id)
+
+    res.json({
+      status: StatusCodes.OK,
+      songlist: songlist
+    })
+
   })
 
 router.use(errorHandler('song list'))
