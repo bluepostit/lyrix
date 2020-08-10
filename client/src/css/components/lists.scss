@@ -39,7 +39,7 @@
   border-left: none;
   border-right: none;
 
-  &:active {
+  &:active, &:active .item-button {
     background-color: $primary;
     color: #fff;
   }
@@ -56,7 +56,27 @@
     flex-direction: column;
     align-items: flex-start;
     line-height: 1.4rem;
+    text-align: left;
   }
+}
+
+.lyrix-list-item .item-button {
+  flex-grow: 1;
+  justify-content: flex-start;
+  display: flex;
+  align-items: flex-start;
+  background-color: $bg-beige;
+  border: none;
+  padding: 0.2rem;
+
+  &:active {
+    background-color: $primary;
+    color: #fff;
+  }
+}
+
+.lyrix-list-item .action-button {
+  cursor: pointer;
 }
 
 .lyrix-list-item .content-secondary {
