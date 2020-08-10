@@ -1,40 +1,47 @@
 import React, { useState } from 'react'
-import { useHistory } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
+import { useArtist } from '../../data/artists'
 import { ItemListPage } from '../item-list-page'
 import { EmptyPage } from '../empty-page'
+import LoadingPage from '../loading-page'
 import { Icon } from '../../components/icons'
 import { Deleter } from '../../components/modals'
 
-const renderSong = (song) => {
+const renderSong = (song, index, onClick) => {
   return (
-    <div className="d-flex w-100 justify-content-between">
-      <div>
-        <Icon entity="song" />
-        <span>{song.title}</span>
+    <button key={index}
+      className="list-group-item lyrix-list-item"
+      onClick={(e) => onClick(song)}>
+      <div className="d-flex w-100 justify-content-between">
+        <div>
+          <Icon entity="song" />
+          <span>{song.title}</span>
+        </div>
       </div>
-    </div>
+    </button>
   )
 }
 
-const buildActions = (data, newAction, deleteAction) => {
-  let actions = []
-  if (data.actions) {
-    actions = [
-      {
-        name: 'new',
-        value: data.actions.create ? newAction : null
-      }, {
-        name: 'delete',
-        value: data.actions.delete ? deleteAction : null
-      }
-    ]
-  }
-  return actions
+const buildActions = (actions, newAction, deleteAction) => {
+  return [{
+    name: 'new',
+    value: actions.create ? newAction : null
+  }, {
+    name: 'delete',
+    value: actions.delete ? deleteAction : null
+  }]
 }
 
-const Artist = ({ data }) => {
+const Artist = () => {
   const history = useHistory()
+  const { id } = useParams()
   const [deleting, setDeleting] = useState(false)
+  const { artist, isLoading, actions, error } = useArtist(id)
+
+  if (isLoading)
+    return <LoadingPage />
+  if (error)
+    return <EmptyPage message={error.toString()} />
 
   const onNewClick = () => {
     history.push('/songs/new')
@@ -52,18 +59,13 @@ const Artist = ({ data }) => {
     history.replace('/artists')
   }
 
-  const artist = data.artist
-  const actions = buildActions(data, onNewClick, onDeleteClick)
-
-  if (!artist) {
-    return <EmptyPage actions={actions} />
-  }
+  const pageActions = buildActions(actions, onNewClick, onDeleteClick)
 
   return (
     <ItemListPage
       title={artist.name}
       items={artist.songs}
-      actions={actions}
+      actions={pageActions}
       onItemClick={onSongClick}
       renderItem={renderSong}>
       <Deleter
