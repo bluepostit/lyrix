@@ -32,7 +32,8 @@ module.exports = class SongList extends Model {
           through: {
             modelClass: SongListSong,
             from: 'song_list_songs.song_list_id',
-            to: 'song_list_songs.song_id'
+            to: 'song_list_songs.song_id',
+            extra: ['position']
           },
           to: 'songs.id'
         }

@@ -252,6 +252,28 @@ describe(BASE_URL, async () => {
       expect(body).to.have.status(404)
       expect(body.error).not.to.be.empty
     })
-    it('should add the song to the songlist, returning the songlist')
+
+    it('should add the song to the songlist, returning the songlist',
+      async () => {
+        const user = await RecordManager.insertUser({ id: 1 })
+        await RecordManager.loadFixture('songlists.with-user-id-1')
+        const songlist = await getFirstSonglist()
+        const lengthBefore = songlist.songs.length
+        const songId = songlist.songs[0].id
+
+        const agent = await SessionManager.loginAsUser(app, user)
+        const res = await agent
+          .post(`${BASE_URL}/${songlist.id}/add-song`)
+          .send({ songId })
+        const body = res.body
+        expect(body).to.have.status(200)
+        expect(body.songlist.songs.length).to.eql(lengthBefore + 1)
+
+        const updatedSonglist = await SongList
+          .query()
+          .findById(songlist.id)
+          .withGraphFetched('songs')
+        expect(updatedSonglist.songs.length).to.eql(lengthBefore + 1)
+      })
   })
 })
