@@ -128,7 +128,7 @@ router.get('/', async (req, res, next) => {
 
   res.json({
     status: StatusCodes.OK,
-    data: songs,
+    songs: songs,
     actions: req.userActions
   })
 })
