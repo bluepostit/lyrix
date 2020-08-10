@@ -1,6 +1,32 @@
 import React, { useEffect } from 'react'
 import { Navbar } from '../components'
 import { useHistory } from 'react-router-dom'
+import useUser from '../data/users'
+
+const addAuthAction = (user, isLoading, error, actions,
+    logoutAction, loginAction) => {
+
+  if (isLoading || error) {
+    return
+  }
+  if (actions.length > 0) {
+    (actions[actions.length - 1]).hasDivider = true
+  }
+  let action
+
+  if (user.authenticated) {
+    action = {
+      name: 'logout',
+      value: logoutAction
+    }
+  } else {
+    action = {
+      name: 'login',
+      value: loginAction
+    }
+  }
+  actions.push(action)
+}
 
 /**
  * Props:
@@ -19,12 +45,6 @@ const Page = ({
   children
 }) => {
   const history = useHistory()
-  const getIsLoggedIn = async () => {
-    const res = await fetch('/api/user/status')
-    const json = await res.json()
-    const status = json.authenticated
-    return status
-  }
 
   const logoutAction = async () => {
     const res = await fetch('/api/user/logout')
@@ -35,30 +55,8 @@ const Page = ({
     history.push('/login')
   }
 
-  const addAuthAction = async () => {
-    const loggedIn = await getIsLoggedIn()
-    if (actions.length > 0) {
-      (actions[actions.length - 1]).hasDivider = true
-    }
-    let action
-
-    if (loggedIn) {
-      action = {
-        name: 'logout',
-        value: logoutAction
-      }
-    } else {
-      action = {
-        name: 'login',
-        value: loginAction
-      }
-    }
-    actions.push(action)
-  }
-
-  useEffect(() => {
-    addAuthAction()
-  })
+  const { user, isLoading, error } = useUser()
+  addAuthAction(user, isLoading, error, actions, logoutAction, loginAction)
 
   let header
   if (!noNavbar) {

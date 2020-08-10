@@ -3,6 +3,9 @@ import { useHistory } from "react-router-dom"
 import { Page } from '../page'
 import { SongForm } from './form'
 import DataSource from '../../data/data-source'
+import useUser from '../../data/users'
+import { EmptyPage } from '../empty-page'
+import LoadingPage from '../loading-page'
 
 const NewSong = ({
   artistsData,
@@ -12,6 +15,7 @@ const NewSong = ({
  }) => {
   const title = 'Add a Song'
   const history = useHistory()
+  const { user, isLoading: userIsLoading } = useUser()
 
   const handleSongCreate = (entity) => {
     if (entity === 'song') {
@@ -25,6 +29,15 @@ const NewSong = ({
       DataSource.removeListener('operate', handleSongCreate)
     }
   })
+
+  if (userIsLoading) {
+    return <LoadingPage />
+  }
+  if (!user.authenticated) {
+    history.replace('/login')
+  } else if (!user.admin) {
+    return <EmptyPage message="You aren't authorized to create songs" />
+  }
 
   const onCreateSuccess = () => {
     history.push('/songs')

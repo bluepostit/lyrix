@@ -8,6 +8,7 @@ import { Searcher } from './searcher'
 import { Song } from '../../components/list-items'
 import { FormError } from '../../components/forms'
 import DataSource from '../../data/data-source'
+import useUser from '../../data/users'
 
 const getFormData = (form) => {
   const data = new URLSearchParams(new FormData(form))
@@ -18,6 +19,11 @@ const SongImporter = (props) => {
   const { data, ...rest } = props
   const title = 'Import a Song'
   const history = useHistory()
+  const { user, isLoading: userIsLoading } = useUser()
+
+  if (!userIsLoading && !user.authenticated) {
+    history.replace('/login')
+  }
 
   const onImportSuccess = (song) => {
     history.push(`/songs/${song.id}`)

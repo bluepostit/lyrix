@@ -2,10 +2,16 @@ import React from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import { ItemListPage } from '../item-list-page'
 import { SonglistSong } from '../../components/list-items'
+import useUser from '../../data/users'
 
 const Songlist = ({ data }) => {
   const { id } = useParams()
   const history = useHistory()
+  const { user, isLoading: userIsLoading } = useUser()
+
+  if (!userIsLoading && !user.authenticated) {
+    history.replace('/login')
+  }
 
   const onSongClick = (song) => {
     history.push(`/songlists/${id}/songs/${song.id}`)

@@ -6,6 +6,7 @@ import { Deleter, SongItemsModal } from '../../components/modals'
 import { pluralize } from '../../util'
 import { EmptyPage } from '../empty-page'
 import DataSource from '../../data/data-source'
+import useUser from '../../data/users'
 const debug = require('debug')('lyrix:song')
 
 const buildActions = (data, editAction, deleteAction,
@@ -57,6 +58,7 @@ const Song = ({ data }) => {
   const params = useParams()
   const [showSongItemsModal, setShowSongItemsModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const { user } = useUser()
 
   const goToEdit = () => {
     history.push(`/songs/${song.id}/edit`)
@@ -79,7 +81,11 @@ const Song = ({ data }) => {
   }
 
   const onSongItemsButtonClick = () => {
-    setShowSongItemsModal(true)
+    if (user.authenticated) {
+      setShowSongItemsModal(true)
+    } else {
+      history.push('/login')
+    }
   }
 
   const handleSongItemsModalClose = (value) => {
