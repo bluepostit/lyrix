@@ -72,17 +72,17 @@ class SongImporter {
       throw 'Song id not found in cache!'
     }
 
-    const artist = await selectOrInsertArtist(cachedSong.artist)
-    const title = cachedSong.title
     const lyrics = await getLyrics(this.genius, cachedSong.id)
+    const title = cachedSong.title
 
-    if (!artist || !title ||!lyrics) {
+    if (!title ||!lyrics) {
       throw {
         userMessage: "Couldn't find all required data to import. "
-          + "Please try again."
+        + "Please try again."
       }
     }
 
+    const artist = await selectOrInsertArtist(cachedSong.artist)
     const query = artist
       .$relatedQuery('songs')
       .insert({
