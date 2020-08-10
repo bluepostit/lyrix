@@ -1,0 +1,27 @@
+import useSWR, { mutate } from 'swr'
+import { fetcher } from './common'
+
+const useArtists = () => {
+  const { data, error } = useSWR(`/api/artists`, fetcher)
+
+  return {
+    artists: data ? data.artists : data,
+    actions: data ? data.actions : [],
+    isLoading: !data && !error,
+    error,
+    mutate: () => mutate('/api/artists')
+  }
+}
+
+const useArtist = (id) => {
+  const { data, error } = useSWR(`/api/artists/${id}`, fetcher)
+
+  return {
+    artist: data ? data.artist : null,
+    actions: data ? data.actions : [],
+    isLoading: !data && !error,
+    error
+  }
+}
+
+export { useArtist, useArtists }

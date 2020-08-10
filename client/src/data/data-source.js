@@ -177,13 +177,10 @@ const DataSource = (() => {
       if (data[entity]) {
         response = data[entity]
       }
-      debug('all data: %O', data)
-      debug('response: %O', response)
       return response
     },
 
     search: (entity, params, query) => {
-      debug(`get('${entity}')`)
       clearData(entity)
       fetchData(entity, params, query)
     },
