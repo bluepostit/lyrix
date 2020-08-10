@@ -12,8 +12,16 @@ const useSongs = () => {
   }
 }
 
-const useSong = (id) => {
-  const { data, error } = useSWR(`/api/songs/${id}`, fetcher)
+const useSong = ({id, artistId, songlistId}) => {
+  let url = `/api/songs/${id}`
+  if (songlistId) {
+    url += `?context=songlist&contextId=${songlistId}`
+  } else if (artistId) {
+    url += '?context=artist'
+  } else {
+    url += '?context=songlist' // Assumed context: ALL songs
+  }
+  const { data, error } = useSWR(url, fetcher)
 
   return {
     song: data ? data.song : null,

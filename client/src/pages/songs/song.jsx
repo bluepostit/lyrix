@@ -58,7 +58,7 @@ const Song = () => {
   const [showAddToSonglistModal, setShowAddToSonglistModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const { user } = useUser()
-  const { song, actions, error, isLoading } = useSong(params.id)
+  const { song, actions, error, isLoading } = useSong(params)
 
   if (isLoading)
     return <LoadingPage />
