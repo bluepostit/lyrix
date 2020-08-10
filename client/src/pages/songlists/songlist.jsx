@@ -3,20 +3,32 @@ import { useHistory, useParams } from "react-router-dom"
 import { ItemListPage } from '../item-list-page'
 import { SonglistSong } from '../../components/list-items'
 import useUser from '../../data/users'
-import DataSource from '../../data/data-source'
+import { useSonglist } from '../../data/songlists'
 import { Deleter } from '../../components/modals'
+import LoadingPage from '../loading-page'
+import { EmptyPage } from '../empty-page'
 
-const Songlist = ({ data }) => {
+const Songlist = () => {
   const { id } = useParams()
   const history = useHistory()
   const [showDeleter, setShowDeleter] = useState(false)
   const { user, isLoading: userIsLoading } = useUser()
+  const { songlist, isLoading, error, actions } = useSonglist(id)
 
-  if (!userIsLoading && !user.authenticated) {
+  if (user && !user.authenticated) {
     history.replace('/login')
   }
 
+  if (isLoading) {
+    return <LoadingPage />
+  }
+
+  if (error) {
+    return <EmptyPage message={error.toString()} />
+  }
+
   const onSongClick = (song) => {
+    console.log('clicked the song - time to go!')
     history.push(`/songlists/${id}/songs/${song.id}`)
   }
 
@@ -32,9 +44,8 @@ const Songlist = ({ data }) => {
     history.push('/songlists')
   }
 
-  const hasDelete = data.actions && data.actions.delete
-
-  const actions = [{
+  const hasDelete = actions && actions.delete
+  const pageActions = [{
     name: 'new',
     value: onNewClick
   }, {
@@ -42,14 +53,13 @@ const Songlist = ({ data }) => {
     value: hasDelete ? onDeleteClick : null
   }]
 
-  const songlist = data.songlist
   const title = songlist ? songlist.title : ''
   const items = songlist ? songlist.songs : []
 
   return (
     <ItemListPage
       title={title}
-      actions={actions}
+      actions={pageActions}
       items={items}
       onItemClick={onSongClick}
       renderItem={SonglistSong}
