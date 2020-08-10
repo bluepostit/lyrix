@@ -27,6 +27,7 @@ const checkForDuplicates = checkForDuplicatesForEntity({
 
 const validateBodySongId = async (req, res, next) => {
   if (!req.body.songId) {
+    debug(req.body)
     return next({
       statusCode: StatusCodes.BAD_REQUEST,
       userMessage: 'You must provide a song'

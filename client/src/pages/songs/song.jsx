@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useHistory, useParams, useLocation } from "react-router-dom"
 import { Page } from '../page'
 import { ToTopButton } from '../../components'
-import { Deleter, SongItemsModal } from '../../components/modals'
+import { Deleter, SongItemsModal, SelectSonglistModal } from '../../components/modals'
 import { pluralize } from '../../util'
 import { EmptyPage } from '../empty-page'
 import DataSource from '../../data/data-source'
@@ -10,7 +10,7 @@ import useUser from '../../data/users'
 const debug = require('debug')('lyrix:song')
 
 const buildActions = (data, editAction, deleteAction,
-    nextAction, songItemsAction) => {
+    nextAction, songItemsAction, addToSonglistAction) => {
   let actions = []
   const song = data.song
   if (song) {
@@ -28,6 +28,11 @@ const buildActions = (data, editAction, deleteAction,
     }, {
       name: 'next',
       value: song.nextSongId ? nextAction : null,
+      hasDivider: true
+    }, {
+      name: 'add',
+      title: 'Add to songlist...',
+      value: addToSonglistAction,
       hasDivider: true
     }, {
       name: 'songItem',
@@ -57,6 +62,7 @@ const Song = ({ data }) => {
   const location = useLocation()
   const params = useParams()
   const [showSongItemsModal, setShowSongItemsModal] = useState(false)
+  const [showAddToSonglistModal, setShowAddToSonglistModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const { user } = useUser()
 
@@ -101,8 +107,25 @@ const Song = ({ data }) => {
     history.replace('/songs')
   }
 
+  const addToSonglistAction = () => {
+    setShowAddToSonglistModal(true)
+  }
+
+  const onSonglistSelect = (songlist) => {
+    debug('selected songlist! %o', songlist)
+    const createParams = {
+      id: songlist.id
+    }
+    const body = new URLSearchParams({ songId: song.id }).toString()
+    DataSource.addListener('operate', () => {
+      history.push(`/songlists/${songlist.id}`)
+    })
+    DataSource.create('addToSonglist', createParams, body)
+  }
+
   const actions = buildActions(data, goToEdit,
-    handleDeleteClick, nextAction, onSongItemsButtonClick)
+    handleDeleteClick, nextAction, onSongItemsButtonClick,
+    addToSonglistAction)
 
   if (!song) {
     return <EmptyPage actions={actions} />
@@ -126,6 +149,11 @@ const Song = ({ data }) => {
         show={deleting}
         setShow={setDeleting}
         onDelete={onDelete}
+      />
+      <SelectSonglistModal
+        show={showAddToSonglistModal}
+        setShow={setShowAddToSonglistModal}
+        onSelect={onSonglistSelect}
       />
     </Page>
   )

@@ -41,6 +41,7 @@ const DataSource = (() => {
     artists: '/api/artists',
     song: '/api/songs',
     songs: '/api/songs',
+    addToSonglist: '/api/songlists',
     songItem: '/api/song-items',
     songItems: '/api/song-items',
     songItemTypes: '/api/song-item-types',
@@ -71,7 +72,7 @@ const DataSource = (() => {
   }
 
   const postData = async (entity, params, body, method = 'POST') => {
-    debug('postData("%s", %o)', entity, body)
+    debug('postData("%s", %o, %o)', entity, params, body)
     triggerEvent('start')
     let url = URLS[entity]
     if (!url) {
@@ -80,6 +81,10 @@ const DataSource = (() => {
 
     if (params) {
       url = parameterize(url, params)
+    }
+
+    if (entity === 'addToSonglist') {
+      url += '/add-song'
     }
 
     const headers = {
