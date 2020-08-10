@@ -136,7 +136,7 @@ const Song = () => {
         <ToTopButton />
       </div>
       <SongItemsModal title="Your Song Items"
-        songItems={song.songItems || []}
+        songItems={song.songItems}
         show={showSongItemsModal}
         handleClose={handleSongItemsModalClose}
       />

@@ -55,7 +55,7 @@ const SongImporter = (props) => {
                 songs.map((song, index) =>
                   <ToggleButton value={song.id} key={index + 1}
                     variant="outline" className="lyrix-list-item">
-                    <Song song={song} />
+                    {Song(song, index, () => {})}
                   </ToggleButton>
                 )
               }

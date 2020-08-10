@@ -4,22 +4,6 @@ import { SongItem } from '../components/list-items'
 import { Icon } from '../components/icons'
 import { useSonglists } from '../data/songlists'
 
-const SongItemsModalListItem = ({
-  songItem,
-  onClick
-}) => {
-  const handleClick = () => {
-    onClick(songItem)
-  }
-  return (
-    <ListGroup.Item
-      action
-      onClick={handleClick}>
-        <SongItem songItem={songItem} />
-    </ListGroup.Item>
-  )
-}
-
 const SongItemsModal = ({
   title = 'Song Items',
   songItems,
@@ -51,11 +35,8 @@ const SongItemsModal = ({
             <Icon entity="new" /> Create new song item...
           </ListGroup.Item>
           {songItems.map((item, index) =>
-            <SongItemsModalListItem
-              songItem={item}
-              key={index + 1}
-              onClick={onSongItemClick}
-            />
+              <SongItem songItem={item} key={index}
+                onClick={() => onSongItemClick(item)} />
           )}
         </ListGroup>
       </Modal.Body>

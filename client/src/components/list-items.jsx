@@ -1,5 +1,6 @@
 import React from 'react'
 import { Icon } from './icons'
+import { ListGroupItem } from 'react-bootstrap'
 
 const Artist = (artist, index, onClick) => {
   return (
@@ -41,7 +42,7 @@ const Song = (song, index, onClick) => {
   )
 }
 
-const SongItem = (songItem, index, onClick) => {
+const SongItem = ({songItem, index, onClick}) => {
   let lines = [ songItem.title, '']
   if (songItem.song && songItem.song.title) {
     lines[1] = lines[0]
@@ -49,8 +50,7 @@ const SongItem = (songItem, index, onClick) => {
   }
 
   return (
-    <button key={index}
-        className="list-group-item lyrix-list-item"
+    <ListGroupItem action key={index}
         onClick={(e) => onClick(songItem)}>
       <div className="song-item-row">
         <div className="info">
@@ -70,7 +70,7 @@ const SongItem = (songItem, index, onClick) => {
           </span>
         </div>
       </div>
-    </button>
+    </ListGroupItem>
   )
 }
 
