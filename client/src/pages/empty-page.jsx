@@ -2,7 +2,7 @@ import React from 'react'
 import { Page } from './page'
 
 const EmptyPage = ({
-  title = <h2>Lyrix</h2>,
+  title = 'Lyrix',
   actions,
   children,
   message = "Nothing to show here, yet."

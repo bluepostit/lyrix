@@ -56,7 +56,7 @@ const Artist = ({ data }) => {
   const actions = buildActions(data, onNewClick, onDeleteClick)
 
   if (!artist) {
-    return <EmptyPage title={<h2>Lyrix</h2>} actions={actions} />
+    return <EmptyPage actions={actions} />
   }
 
   return (
