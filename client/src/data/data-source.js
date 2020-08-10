@@ -194,6 +194,10 @@ const DataSource = (() => {
 
     edit: (entity, params, body) => {
       postData(entity, params, body, 'PUT')
+    },
+
+    delete: (entity, params) => {
+      postData(entity, params, null, 'DELETE')
     }
   }
 })()

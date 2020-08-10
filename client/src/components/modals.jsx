@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Button, ListGroup, Modal, Alert, Spinner } from 'react-bootstrap'
-import { SongItem, Songlist } from '../components/list-items'
+import { SongItem } from '../components/list-items'
 import { Icon } from '../components/icons'
 import { useSonglists } from '../data/songlists'
 
