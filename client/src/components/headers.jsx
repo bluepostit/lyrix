@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useHistory } from "react-router-dom"
 import { NavbarButton } from '../components/buttons'
 import { Icon } from '../components/icons'
-import { Nav, Navbar } from 'react-bootstrap'
+import { Nav, Navbar, NavDropdown } from 'react-bootstrap'
 
 const SongItemPageTitle = ({
   songItem = { title: '' },
@@ -42,20 +42,26 @@ const LyrixNavbar = ({ title, actions = [] }) => {
 
   return (
     <Navbar collapseOnSelect variant="light" fixed="top"
-        className="lyrix-navbar" expand="md">
-      <Navbar.Brand>{title}</Navbar.Brand>
+        className="lyrix-navbar justify-content-between" expand="md">
+      <Nav.Link onClick={goHome} >
+        <Icon entity="home" />
+      </Nav.Link>
+      <Navbar.Brand className="mr-auto">{title}</Navbar.Brand>
 
       <Navbar.Toggle aria-controls="lyrix-navbar-links" />
       <Navbar.Collapse id="lyrix-navbar-links">
         <Nav className="mr-auto">
-          <Nav.Link onClick={goHome} >
-            <Icon entity="home" /><strong> Lyrix</strong>
-          </Nav.Link>
-          {visibleActions.map((action, index) =>
-            <NavbarButton action={action}
-              onClick={handleActionClick}
-              key={index + 1} />
-          )}
+        </Nav>
+        <Nav className="mr-auto">
+          <NavDropdown title="Actions" id="nav-actions-dropdown">
+            {visibleActions.map((action, index) =>
+              <NavDropdown.Item>
+                <NavbarButton action={action}
+                  onClick={handleActionClick}
+                  key={index + 1} />
+              </NavDropdown.Item>
+            )}
+          </NavDropdown>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
