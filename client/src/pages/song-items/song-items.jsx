@@ -30,7 +30,8 @@ const SongItems = () => {
       title={title}
       items={songItems}
       onItemClick={onSongItemClick}
-      renderItem={SongItem}
+      renderItem={(item, index, onClick) =>
+        SongItem({songItem: item, index, onClick})}
     />
   )
 }
