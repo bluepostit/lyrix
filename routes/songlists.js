@@ -142,6 +142,21 @@ router.post('/:id/add-song', ensureLoggedIn, validateId,
 
   })
 
+router.delete('/:id', ensureLoggedIn, validateId,
+  setSonglist, ensureOwnership, async (req, res, next) => {
+    try {
+      await SongList
+        .query()
+        .deleteById(req.songlist.id)
+      res.json({
+        status: StatusCodes.NO_CONTENT
+      })
+    } catch (error) {
+      error.userMessage = "Couldn't delete the songlist"
+      next(error)
+    }
+  })
+
 router.use(errorHandler('song list'))
 
 module.exports = router

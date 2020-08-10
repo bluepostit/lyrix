@@ -27,8 +27,13 @@ const run = (command) => {
 }
 
 const test = (target, args = '') => {
-  run(MIGRATE_COMMAND)
-  run(`${TEST_COMMAND} ${target} ${args}`)
+  try {
+    run(MIGRATE_COMMAND)
+    run(`${TEST_COMMAND} ${target} ${args}`)
+  } catch (e) {
+    console.log(e.message)
+    exit(-1)
+  }
   debug('Tests complete.')
 }
 
