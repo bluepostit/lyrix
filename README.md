@@ -14,7 +14,6 @@ Lyrix is a song collection app which helps you keep track of the songs you like 
 - For sessions, it uses [Redis](https://redis.io/) and [connect-redis](https://github.com/tj/connect-redis)
 - For authentication, it uses [Passport](http://www.passportjs.org/).
 - Colorful, namespaced error logging with [debug](https://www.npmjs.com/package/debug)
-- Data subscription/fetching with [SWR](https://swr.vercel.app/)
 
 **Server testing:**
 - Good coverage of both system and unit testing with the [Mocha](https://mochajs.org/) test framework and the [Chai](https://www.chaijs.com/) assertion library
@@ -23,6 +22,7 @@ Lyrix is a song collection app which helps you keep track of the songs you like 
 **Client technologies:**
 - The client is a [React](https://reactjs.org/) app, using [React Router](https://reacttraining.com/react-router/) for routing.
 - It uses [Bootstrap](https://getbootstrap.com/) (both stand-alone and through [React Bootstrap](https://react-bootstrap.github.io/)) and [FontAwesome](https://fontawesome.com/) for graphical goodness.
+- Graceful data subscription/fetching with [SWR](https://swr.vercel.app/)
 
 ## Build
 1. Install requirements by running `yarn`
