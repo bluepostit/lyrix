@@ -7,7 +7,7 @@ const useSonglists = () => {
   return {
     songlists: data ? data.songlists : data,
     isLoading: !data && !error,
-    error
+    error: error || (data ? data.error : null)
   }
 }
 

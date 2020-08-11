@@ -8,7 +8,7 @@ const useSongItems = () => {
     songItems: data ? data.songItems : data,
     actions: data ? data.actions : [],
     isLoading: !data && !error,
-    error
+    error: error || (data ? data.error : null)
   }
 }
 

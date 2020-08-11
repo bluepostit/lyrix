@@ -4,7 +4,7 @@ import { ItemListPage } from '../item-list-page'
 import { Songlist } from '../../components/list-items'
 import { useSonglists } from '../../data/songlists'
 import useUser from '../../data/users'
-import LoadingPage from '../loading-page'
+import { EmptyPage, LoadingPage } from '../'
 
 const Songlists = () => {
   const history = useHistory()
@@ -20,7 +20,7 @@ const Songlists = () => {
   }
 
   if (error) {
-    console.log(error)
+    return <EmptyPage messag={error.toString()} />
   }
 
   const onSonglistClick = (songlist) => {
