@@ -1,4 +1,4 @@
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import { fetcher } from './common'
 
 const useSongs = () => {
@@ -21,12 +21,14 @@ const useSong = ({id, artistId, songlistId}) => {
   } else {
     url += '?context=songlist' // Assumed context: ALL songs
   }
-  const { data, error } = useSWR(url, fetcher)
+  const shouldFetch = id
+  const { data, error, mutate } = useSWR(shouldFetch ? url : null, fetcher)
 
   return {
     song: data ? data.song : null,
     actions: data ? data.actions : [],
-    isLoading: !data && !error,
+    isLoading: shouldFetch && !data && !error,
+    mutate,
     error
   }
 }
