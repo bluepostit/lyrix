@@ -14,12 +14,14 @@ const SongItems = () => {
 
   if (userIsLoading || isLoading)
     return <LoadingPage />
-  if (error)
-    return <EmptyPage message={error.toString()} />
 
   if (!userIsLoading && !user.authenticated) {
     history.replace('/login')
   }
+
+  if (error)
+    return <EmptyPage message={error.toString()} />
+
 
   const onSongItemClick = (songItem) => {
     history.push(`/song-items/${songItem.id}`)

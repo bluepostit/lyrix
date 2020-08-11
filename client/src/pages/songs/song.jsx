@@ -120,6 +120,15 @@ const Song = () => {
     handleDeleteClick, nextAction, onSongItemsButtonClick,
     addToSonglistAction)
 
+  let modal
+  if (song.songItems) {
+    modal = <SongItemsModal title="Your Song Items"
+      songItems={song.songItems}
+      show={showSongItemsModal}
+      handleClose={handleSongItemsModalClose}
+    />
+  }
+
   return (
     <Page title={song.title} actions={pageActions}>
       <div className="song-page-contents">
@@ -128,11 +137,7 @@ const Song = () => {
         </div>
         <ToTopButton />
       </div>
-      <SongItemsModal title="Your Song Items"
-        songItems={song.songItems}
-        show={showSongItemsModal}
-        handleClose={handleSongItemsModalClose}
-      />
+      {modal}
       <Deleter
         entity={song}
         noun="song"
