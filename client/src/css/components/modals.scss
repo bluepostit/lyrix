@@ -6,6 +6,8 @@
   background-color: $bg-beige;
 }
 
-.song-items-modal .list-group-item.active {
+.song-items-modal .list-group-item.active,
+.song-items-modal .list-group-item:active {
   background-color: $primary;
+  color: #fff;
 }

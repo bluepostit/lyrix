@@ -171,7 +171,6 @@ const Deleter = ({
 
 const SelectSonglistModal = ({ show, setShow, onSelect, onDismiss }) => {
   const { songlists, isLoading, error} = useSonglists()
-  const [songlist, setSonglist] = useState()
   const title = 'Select a Songlist'
 
   const onSonglistClick = (songlist) => {
@@ -195,6 +194,7 @@ const SelectSonglistModal = ({ show, setShow, onSelect, onDismiss }) => {
       <ListGroup>
         {songlists.map((item, index) =>
           <ListGroup.Item
+            action
             key={index + 1}
             onClick={(e) => onSonglistClick(item)}>
               <Icon entity="songlist" /> {item.title}
