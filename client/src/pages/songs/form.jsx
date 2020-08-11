@@ -63,8 +63,6 @@ const SongForm = ({
 
   if (isLoading)
     return <LoadingPage />
-  if (error)
-    return <EmptyPage message={error.toString()} />
 
   const handleChange = (event) => {
     let key = event.target.name
