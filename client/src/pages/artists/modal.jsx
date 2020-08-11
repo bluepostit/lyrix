@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Button, Form, Modal, Alert } from 'react-bootstrap'
-import DataSource from '../../data/data-source'
 import { useArtists } from '../../data/artists'
 
 const getFormData = (form) => {

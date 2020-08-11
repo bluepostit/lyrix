@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
 import DataSource from '../../data/data-source'
 import { useSong } from '../../data/songs'
 import { EmptyPage, LoadingPage } from '../'
-const debug = require('debug')('lyrix:song-form')
+// const debug = require('debug')('lyrix:song-form')
 
 const getFormData = (form) => {
   const data = new URLSearchParams(new FormData(form))
@@ -20,13 +20,11 @@ const SongForm = ({
   lyricsData,
   handleLyricsSearch
 }) => {
-  const history = useHistory()
   const params = useParams()
   const [song, setSong] = useState({})
   const {
-    song: origSong, isLoading, error: loadingError,
+    song: origSong, isLoading
   } = useSong({ id: songId })
-  const [validated, setValidated] = useState(false)
 
   const getArtist = (id) => {
     return artists.find(item => item.id === id)
@@ -103,7 +101,7 @@ const SongForm = ({
   return (
     <div className="container">
       <FormError error={error} />
-      <Form noValidate validated={validated}
+      <Form noValidate
         onSubmit={handleSubmit}
         className="mt-2"
         id="song-form">

@@ -26,8 +26,6 @@ const getSongUrl = (baseUrl, params) => {
 
 const DataSource = (() => {
   const data = {}
-
-  let error
   const listeners = {
     'start': [],
     'stop': [],
@@ -67,10 +65,6 @@ const DataSource = (() => {
     delete data[entity]
   }
 
-  const setError = (err) => {
-    error = err
-  }
-
   const postData = async (entity, params, body, method = 'POST') => {
     debug('postData("%s", %o, %o)', entity, params, body)
     triggerEvent('start')
@@ -97,7 +91,6 @@ const DataSource = (() => {
     }).then(res => res.json())
       .then((json) => {
         if (json.error) {
-          setError(json)
           triggerEvent('error', json.error)
         } else {
           setData(entity, json)
@@ -136,7 +129,6 @@ const DataSource = (() => {
       .then(res => res.json())
       .then((json) => {
         if (json.error) {
-          setError(json)
           triggerEvent('error', json.error)
         } else {
           setData(entity, json)

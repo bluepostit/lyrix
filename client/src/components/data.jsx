@@ -1,51 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 const debug = require('debug')('lyrix:data')
-
-const ListDataset = ({
-  url,
-  loader,
-  shouldLoad,
-  onLoadingComplete
-}) => {
-  const [data, setData] = useState([])
-  const [error, setError] = useState('')
-
-  const fetchData = () => {
-    loader && loader.start()
-    fetch(url)
-      .then(res => res.json())
-      .then((json) => {
-        if (json.error) {
-          setError(json)
-        }
-        setData(json)
-        loader && loader.stop()
-        onLoadingComplete(json)
-      })
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [shouldLoad, data.length])
-
-  return (
-    <>
-      <ErrorHandler error={error} />
-    </>
-  )
-}
-
-const ErrorHandler = ({
-  error,
-}) => {
-  const history = useHistory()
-  if (error) {
-    console.log(error)
-    history.push('/login')
-  }
-  return <></>
-}
 
 const LOADING_STOP_TIMEOUT = 100 // milliseconds
 
@@ -197,4 +152,4 @@ const withSearch = ({
   return Wrapper
 }
 
-export { ListDataset, Loader, withSearch, withSubscription }
+export { Loader, withSearch, withSubscription }
