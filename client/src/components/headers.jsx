@@ -52,15 +52,25 @@ const LyrixNavbar = ({ title, actions = [] }) => {
       <Navbar.Collapse id="lyrix-navbar-links">
         <Nav className="mr-auto">
         </Nav>
-        <Nav className="mr-auto">
-          <NavDropdown title="Actions" id="nav-actions-dropdown">
+        {/* SMALL VERSION: simple collapsing nav */}
+        <Nav className="d-md-none mr-auto">
             {visibleActions.map((action, index) =>
               <NavbarButton key={index} action={action}
                 onClick={handleActionClick}
               />
             )}
+        </Nav>
+        {/* MD+ VERSION: dropdown menu */}
+        <Nav className="d-none d-md-block mr-auto">
+          <NavDropdown title="Menu" id="nav-actions-dropdown">
+            {visibleActions.map((action, index) =>
+              <NavbarButton forDropdown key={index} action={action}
+                onClick={handleActionClick}
+              />
+            )}
           </NavDropdown>
         </Nav>
+
       </Navbar.Collapse>
     </Navbar>
   )

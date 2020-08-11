@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useHistory } from "react-router-dom"
-import { Button, Nav } from 'react-bootstrap'
+import { Button, Nav, NavDropdown } from 'react-bootstrap'
 import { toTitleCase } from '../util'
 import { Icon } from './icons'
 import { SongItemsModal } from './modals'
@@ -66,18 +66,20 @@ const SongItemsButton = ({ song }) => {
 
 const NavbarButton = ({
   action,
-  onClick
+  onClick,
+  forDropdown
 }) => {
   const handleClick = (event) => {
     event.preventDefault()
     onClick(action)
   }
   const title = toTitleCase(action.title || action.name)
+  const Component = forDropdown ? NavDropdown.Item : Nav.Link
   return (
     <>
-      <Nav.Link onClick={handleClick} data-action={action.name} >
+      <Component onClick={handleClick} data-action={action.name} >
         <Icon entity={action.name} /> {title}
-      </Nav.Link>
+      </Component>
       <div className="horizontal-divider"
         hidden={!action.hasDivider} />
     </>
