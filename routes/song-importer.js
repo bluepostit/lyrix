@@ -85,9 +85,7 @@ router.get('/import', ensureLoggedIn, setImporter, validateSongId,
         const song = await req.importer.import(req.query.sid)
         res.json({
           status: StatusCodes.OK,
-          data: {
-            song: song
-          }
+          song: song
         })
       } catch (e) {
         next(e)

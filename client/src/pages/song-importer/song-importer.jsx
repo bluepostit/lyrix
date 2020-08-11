@@ -7,6 +7,7 @@ import { Page, LoadingPage } from '../'
 import { Searcher } from './searcher'
 import { Song } from '../../components/list-items'
 import { FormError } from '../../components/forms'
+import { Icon } from '../../components/icons'
 import DataSource from '../../data/data-source'
 import { useSongSearch } from '../../data/song-importer'
 import useUser from '../../data/users'
@@ -16,19 +17,27 @@ const getFormData = (form) => {
   return data.toString()
 }
 
-const SongImporter = (props) => {
+const SongImporter = () => {
   const title = 'Import a Song'
   const history = useHistory()
-  const [searching, setSearching] = useState(false)
   const [query, setQuery] = useState('')
+  const [error, setError] = useState('')
   const { user, isLoading: userLoading } = useUser()
   const {
     songs, error: searchError, isLoading: searchLoading
   } = useSongSearch(query)
 
+  const onImportSuccess = (entity, songData) => {
+    history.push(`/songs/${songData.song.id}`)
+  }
+
+  const onError = (error) => setError(error)
+
   useEffect(() => {
-    setSearching(false)
-  }, [songs])
+    DataSource.addListener('error', onError)
+    DataSource.addListener('change', onImportSuccess)
+    return () => DataSource.removeListener('change', onImportSuccess)
+  })
 
   if (!userLoading && !user.authenticated) {
     history.replace('/login')
@@ -37,13 +46,13 @@ const SongImporter = (props) => {
   if (userLoading || searchLoading)
     return <LoadingPage />
 
-  const onImportSuccess = (song) => {
-    history.push(`/songs/${song.id}`)
+  if (searchError) {
+    setError(searchError)
   }
 
   const onSearch = (query) => {
-    setSearching(true)
     setQuery(query)
+    setError('')
   }
 
   const handleSubmit = (event) => {
@@ -53,23 +62,34 @@ const SongImporter = (props) => {
   }
 
   let results
-  if (searchError) {
-    results = <FormError error={searchError} />
+  if (error && !songs) {
+    results = <FormError error={error} />
   } else if (songs) {
     results = (
       <div>
         <Form onSubmit={handleSubmit}
           className="mt-2"
           id="song-importer-import-form">
+          <FormError error={error} />
           <Form.Group controlId="query" hidden={songs.length < 1}>
             <Form.Label>Select a Song to Import</Form.Label>
             <ToggleButtonGroup type="radio" name="sid" vertical
               className="song-importer-results-buttons lyrix-list">
               {
                 songs.map((song, index) =>
-                  <ToggleButton value={song.id} key={index + 1}
+                  <ToggleButton value={song.id} key={index}
                     variant="outline" className="lyrix-list-item">
-                    {Song(song, index, () => { })}
+                    <div className="d-flex w-100 justify-content-between">
+                      <div>
+                        <Icon entity="song" />
+                        <span>{song.title}</span>
+                        <em><small>
+                          &ndash; {song.artist.name || song.artist}
+                        </small></em>
+                      </div>
+                      <div>
+                      </div>
+                    </div>
                   </ToggleButton>
                 )
               }
