@@ -4,7 +4,10 @@ import {
   Route,
 } from "react-router-dom"
 import { Home } from '../pages'
+import * as Artists from '../pages/artists'
 import * as Auth from '../pages/auth'
+import * as Songs from '../pages/songs'
+import * as SongItems from '../pages/song-items'
 import * as Songlists from '../pages/songlists'
 import * as Pages from '../pages/data-pages'
 
@@ -18,14 +21,14 @@ const RouterSwitch = () => {
         <Auth.SignUp />
       </Route>
 
-      <Route path="/artists/:artistId/songs/:songId">
-        <Pages.SongPage />
+      <Route path="/artists/:artistId/songs/:id">
+        <Songs.Show />
       </Route>
-      <Route path="/artists/:artistId">
-        <Pages.ArtistPage />
+      <Route path="/artists/:id">
+        <Artists.Show />
       </Route>
       <Route path="/artists">
-        <Pages.ArtistsPage />
+        <Artists.Index />
       </Route>
 
       <Route path="/songs/new">
@@ -37,34 +40,34 @@ const RouterSwitch = () => {
       <Route path="/songs/:id/edit">
         <Pages.EditSongPage />
       </Route>
-      <Route path="/songs/:songId">
-        <Pages.SongPage />
+      <Route path="/songs/:id">
+        <Songs.Show />
       </Route>
       <Route path="/songs">
-        <Pages.SongsPage />
+        <Songs.Index />
       </Route>
 
-      <Route path="/songlists/:songlistId/songs/:songId">
-        <Pages.SongPage />
+      <Route path="/songlists/:songlistId/songs/:id">
+        <Songs.Show />
       </Route>
       <Route path="/songlists/new">
         <Songlists.New />
       </Route>
       <Route path="/songlists/:id">
-        <Pages.SonglistPage />
+        <Songlists.Show />
       </Route>
       <Route path="/songlists">
-        <Pages.SonglistsPage />
+        <Songlists.Index />
       </Route>
 
       <Route path="/song-items/:id/edit">
         <Pages.EditSongItemPage />
       </Route>
       <Route path="/song-items/:id">
-        <Pages.SongItemPage />
+        <SongItems.Show />
       </Route>
       <Route path="/song-items">
-        <Pages.SongItemsPage />
+        <SongItems.Index />
       </Route>
 
       <Route path="/import">

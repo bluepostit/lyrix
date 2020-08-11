@@ -33,7 +33,10 @@ module.exports = class SongList extends Model {
             modelClass: SongListSong,
             from: 'song_list_songs.song_list_id',
             to: 'song_list_songs.song_id',
-            extra: ['position']
+            extra: {
+              position: 'position',
+              songListSongId: 'id'
+            }
           },
           to: 'songs.id'
         }

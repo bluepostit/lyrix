@@ -1,6 +1,5 @@
-import useSWR from 'swr'
-
-const fetcher = (...args) => fetch(...args).then(res => res.json())
+import useSWR, { mutate } from 'swr'
+import { fetcher } from './common'
 
 const useSonglists = () => {
   const { data, error } = useSWR(`/api/songlists`, fetcher)
@@ -12,4 +11,17 @@ const useSonglists = () => {
   }
 }
 
-export { useSonglists }
+const useSonglist = (id) => {
+  const url = `/api/songlists/${id}`
+  const { data, error, mutate } = useSWR(url, fetcher)
+
+  return {
+    songlist: data ? data.songlist : null,
+    actions: data ? data.actions: [],
+    isLoading: !data && !error,
+    mutate,
+    error
+  }
+}
+
+export { useSonglists, useSonglist }

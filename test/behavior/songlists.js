@@ -18,6 +18,14 @@ describe(BASE_URL, async () => {
     await RecordManager.deleteAll()
   })
 
+  const getFirstSonglist = async () => {
+    const songlist = await SongList
+      .query()
+      .first()
+      .withGraphFetched('songs')
+    return songlist
+  }
+
   describe('GET /', () => {
     it('should return an error when not logged in', async () => {
       const res = await chai.request(app)
@@ -168,21 +176,6 @@ describe(BASE_URL, async () => {
   })
 
   describe('POST /:id/add-song', () => {
-    const setupUserAndSonglists = async () => {
-      const user = await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
-      const agent = await SessionManager.loginAsUser(app, user)
-      return agent
-    }
-
-    const getFirstSonglist = async () => {
-      const songlist = await SongList
-        .query()
-        .first()
-        .withGraphFetched('songs')
-      return songlist
-    }
-
     it('should return an error if the user is not signed in', async () => {
       await RecordManager.insertUser({ id: 1 })
       await RecordManager.loadFixture('songlists.with-user-id-1')
@@ -275,5 +268,62 @@ describe(BASE_URL, async () => {
           .withGraphFetched('songs')
         expect(updatedSonglist.songs.length).to.eql(lengthBefore + 1)
       })
+  })
+
+  describe('DELETE /:id', () => {
+    it('should return an error if the user is not signed in', async () => {
+      await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('songlists.with-user-id-1')
+      const songlist = await getFirstSonglist()
+
+      const res = await chai.request(app)
+        .delete(`${BASE_URL}/${songlist.id}`)
+      const body = res.body
+      expect(body).to.have.status(401)
+      expect(body.error).not.to.be.empty
+    })
+
+    it('should return an error if the songlist doesn\'t exist', async () => {
+      const user = await RecordManager.insertUser()
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .delete(`${BASE_URL}/1`)
+      const body = res.body
+      expect(body).to.have.status(404)
+      expect(body.error).not.to.be.empty
+    })
+
+    it('should return an error if the songlist belongs to another user',
+      async () => {
+        await RecordManager.loadFixture('songlists.only-other-user')
+        const songlist = await getFirstSonglist()
+        const user = await RecordManager.insertUser()
+        const agent = await SessionManager.loginAsUser(app, user)
+
+        const res = await agent
+          .delete(`${BASE_URL}/${songlist.id}`)
+        const body = res.body
+        expect(body).to.have.status(403)
+        expect(body.error).not.to.be.empty
+      })
+
+    it('should delete the songlist successfully', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture('songlists.with-user-id-1')
+      const songlists = await SongList.query()
+      const lengthBefore = songlists.length
+
+      const agent = await SessionManager.loginAsUser(app, user)
+      const res = await agent
+        .delete(`${BASE_URL}/${songlists[0].id}`)
+      const body = res.body
+      expect(body).to.have.status(204)
+
+      const lengthAfter = await SongList
+        .query()
+        .resultSize()
+      expect(lengthAfter).to.eql(lengthBefore - 1)
+    })
   })
 })

@@ -2,14 +2,21 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 import { ItemListPage } from '../item-list-page'
 import { Songlist } from '../../components/list-items'
+import { useSonglists } from '../../data/songlists'
 import useUser from '../../data/users'
+import LoadingPage from '../loading-page'
 
 const Songlists = ({ data }) => {
   const history = useHistory()
   const { user, isLoading: userIsLoading } = useUser()
+  const { songlists, isLoading, actions, error } = useSonglists()
 
   if (!userIsLoading && !user.authenticated) {
     history.replace('/login')
+  }
+
+  if (isLoading || userIsLoading) {
+    return <LoadingPage />
   }
 
   const onSonglistClick = (songlist) => {
@@ -20,7 +27,7 @@ const Songlists = ({ data }) => {
     history.push('/songlists/new')
   }
 
-  const actions = [{
+  const pageActions = [{
     name: 'new',
     value: onNewClick
   }]
@@ -28,8 +35,8 @@ const Songlists = ({ data }) => {
   return (
     <ItemListPage
       title="My Songlists"
-      items={data.songlists}
-      actions={actions}
+      items={songlists}
+      actions={pageActions}
       onItemClick={onSonglistClick}
       renderItem={Songlist}
     />

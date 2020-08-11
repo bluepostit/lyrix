@@ -2,14 +2,17 @@ import React from 'react'
 import { useHistory } from "react-router-dom"
 import { ItemListPage } from '../item-list-page'
 import { Song } from '../../components/list-items'
+import { useSongs } from '../../data/songs'
+import { EmptyPage, LoadingPage } from '../'
 
-const Songs = ({ data }) => {
+const Songs = () => {
   const history = useHistory()
-  let title = "Songs"
+  const { songs, actions, error, isLoading } = useSongs()
 
-  const renderSong = (song) => {
-    return <Song song={song} />
-  }
+  if (isLoading)
+    return <LoadingPage />
+  if (error)
+    return <EmptyPage message={error.toString()} />
 
   const onSongClick = (song) => {
     history.push(`/songs/${song.id}`)
@@ -19,17 +22,18 @@ const Songs = ({ data }) => {
     history.push('/songs/new')
   }
 
+  let title = "Songs"
   const navActions = [{
     name: 'new',
-    value: (data.actions && data.actions.create) ? onNewClick : null
+    value: (actions && actions.create) ? onNewClick : null
   }]
 
   return (
     <ItemListPage title={title}
-      items={data.data}
+      items={songs}
       actions={navActions}
       onItemClick={onSongClick}
-      renderItem={renderSong}
+      renderItem={Song}
     />
   )
 }

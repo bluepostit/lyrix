@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Form, Modal, Alert } from 'react-bootstrap'
 import DataSource from '../../data/data-source'
+import { useArtists } from '../../data/artists'
 
 const getFormData = (form) => {
   const data = new URLSearchParams(new FormData(form))
@@ -16,7 +17,8 @@ const ArtistModal = ({
   confirmText = 'Save',
   dismissText = 'Cancel'
 }) => {
-  const [modalArtist, setModalArtist] = useState({})
+  const { mutate: mutateArtists } = useArtists()
+  const [modalArtist, setModalArtist] = useState({ name: '' })
   const [error, setError] = useState('')
   const [isLoading, setLoading] = useState(false)
 
@@ -32,7 +34,7 @@ const ArtistModal = ({
     onDismiss()
     setError('')
     setModalArtist({ name: '' })
-    DataSource.fetch('artists')
+    mutateArtists()
   }
 
   const handleSubmit = async (event) => {

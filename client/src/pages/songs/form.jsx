@@ -3,7 +3,8 @@ import { useHistory, useParams } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { FormError } from '../../components/forms'
 import DataSource from '../../data/data-source'
-import { EmptyPage } from '../empty-page'
+import { useSong } from '../../data/songs'
+import { EmptyPage, LoadingPage } from '../'
 const debug = require('debug')('lyrix:song-form')
 
 const getFormData = (form) => {
@@ -22,6 +23,9 @@ const SongForm = ({
   const history = useHistory()
   const params = useParams()
   const [song, setSong] = useState({})
+  const {
+    song: origSong, isLoading, error: loadingError,
+  } = useSong({ id: songId })
   const [validated, setValidated] = useState(false)
 
   const getArtist = (id) => {
@@ -39,14 +43,6 @@ const SongForm = ({
     setSong(songCopy)
   }
 
-  const onSongLoad = (entity) => {
-    if (entity === 'song') {
-      debug('song has loaded! hurrah')
-      const songData = DataSource.get('song')
-      setSong(songData.song)
-    }
-  }
-
   useEffect(() => {
     if (lyricsData && lyricsData.lyrics) {
       if ((lyricsData.artist === song.artist.name)
@@ -60,16 +56,15 @@ const SongForm = ({
   }, [lyricsData])
 
   useEffect(() => {
-    if (songId) {
-      debug('going to fetch the song!')
-      DataSource.addListener('change', onSongLoad)
-      DataSource.fetch('song', params)
-
-      return () => {
-        DataSource.removeListener('change', onSongLoad)
-      }
+    if (origSong) {
+      updateSong(origSong)
     }
-  }, [songId])
+  }, [origSong])
+
+  if (isLoading)
+    return <LoadingPage />
+  if (error)
+    return <EmptyPage message={error.toString()} />
 
   const handleChange = (event) => {
     let key = event.target.name

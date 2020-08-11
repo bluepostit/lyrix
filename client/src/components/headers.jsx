@@ -55,11 +55,9 @@ const LyrixNavbar = ({ title, actions = [] }) => {
         <Nav className="mr-auto">
           <NavDropdown title="Actions" id="nav-actions-dropdown">
             {visibleActions.map((action, index) =>
-              <NavDropdown.Item>
-                <NavbarButton action={action}
-                  onClick={handleActionClick}
-                  key={index + 1} />
-              </NavDropdown.Item>
+              <NavbarButton key={index} action={action}
+                onClick={handleActionClick}
+              />
             )}
           </NavDropdown>
         </Nav>

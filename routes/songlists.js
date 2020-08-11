@@ -61,6 +61,17 @@ const setSonglist = async (req, res, next) => {
   next()
 }
 
+const addUserActions = (req, res, next) => {
+  const actions = {
+    readOne: '/song-items/:id',
+    readAll: '/song-items',
+    edit: '/song-items/:id/edit',
+    delete: '/song-items/:id'
+  }
+  req.userActions = actions
+  next()
+}
+
 router.get('/', ensureLoggedIn,
   async (req, res, next) => {
     try {
@@ -95,11 +106,12 @@ router.get('/count', ensureLoggedIn,
   })
 
 router.get('/:id', ensureLoggedIn, validateId, setSonglist,
-  ensureOwnership,
+  ensureOwnership, addUserActions,
     async (req, res, next) => {
       res.json({
         status: StatusCodes.OK,
-        songlist: req.songlist
+        songlist: req.songlist,
+        actions: req.userActions
       })
     })
 
@@ -140,6 +152,21 @@ router.post('/:id/add-song', ensureLoggedIn, validateId,
       songlist: songlist
     })
 
+  })
+
+router.delete('/:id', ensureLoggedIn, validateId,
+  setSonglist, ensureOwnership, async (req, res, next) => {
+    try {
+      await SongList
+        .query()
+        .deleteById(req.songlist.id)
+      res.json({
+        status: StatusCodes.NO_CONTENT
+      })
+    } catch (error) {
+      error.userMessage = "Couldn't delete the songlist"
+      next(error)
+    }
   })
 
 router.use(errorHandler('song list'))

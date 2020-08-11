@@ -31,7 +31,7 @@ describe(BASE_URL, () => {
       const res = await chai.request(app).get(BASE_URL)
       expect(res).to.have.status(200)
       expect(res.body).to.be.an('object')
-      const data = res.body.data
+      const data = res.body.songs
       const data0 = data[0]
       expect(data.length).to.eql(songs.length)
       expect(data0.title).to.eql(songs[0].title)
@@ -49,7 +49,7 @@ describe(BASE_URL, () => {
           }
           expect(res).to.have.status(200)
           expect(res.body).to.be.an('object')
-          expect(res.body.data.length).to.eql(0)
+          expect(res.body.songs.length).to.eql(0)
         })
     })
   })

@@ -4,60 +4,47 @@ import { Page } from '../page'
 import { ToTopButton } from '../../components'
 import { Deleter, SongItemsModal, SelectSonglistModal } from '../../components/modals'
 import { pluralize } from '../../util'
-import { EmptyPage } from '../empty-page'
+import { EmptyPage, LoadingPage } from '../'
 import DataSource from '../../data/data-source'
+import { useSong } from '../../data/songs'
 import useUser from '../../data/users'
 const debug = require('debug')('lyrix:song')
 
-const buildActions = (data, editAction, deleteAction,
+const buildActions = (actions, song, editAction, deleteAction,
     nextAction, songItemsAction, addToSonglistAction) => {
-  let actions = []
-  const song = data.song
-  if (song) {
-    const songItems = song.songItems || []
-    const songItemsTitle =
-      `You have ${pluralize(songItems.length, 'item')}`
-    const hasEdit = data.actions && data.actions.edit
-    const hasDelete = data.actions && data.actions.delete
+  const songItems = song.songItems || []
+  const songItemsTitle =
+    `You have ${pluralize(songItems.length, 'item')}`
 
-    actions = [{
-      name: 'artist',
-      title: song.artist.name,
-      value: `/artists/${song.artist.id}`,
-      hasDivider: !song.nextSongId
-    }, {
-      name: 'next',
-      value: song.nextSongId ? nextAction : null,
-      hasDivider: true
-    }, {
-      name: 'add',
-      title: 'Add to songlist...',
-      value: addToSonglistAction,
-      hasDivider: true
-    }, {
-      name: 'songItem',
-      title: songItemsTitle,
-      value: songItemsAction,
-      hasDivider: hasEdit || hasDelete
-    }, {
-      name: 'edit',
-      value: hasEdit ? editAction : null
-    }, {
-      name: 'delete',
-      value: hasDelete ? deleteAction : null
-    }]
-  }
-  return actions
+  return [{
+    name: 'artist',
+    title: song.artist.name,
+    value: `/artists/${song.artist.id}`,
+    hasDivider: !song.nextSongId
+  }, {
+    name: 'next',
+    value: song.nextSongId ? nextAction : null,
+    hasDivider: true
+  }, {
+    name: 'add',
+    title: 'Add to songlist...',
+    value: addToSonglistAction,
+    hasDivider: true
+  }, {
+    name: 'songItem',
+    title: songItemsTitle,
+    value: songItemsAction,
+    hasDivider: actions.edit || actions.delete
+  }, {
+    name: 'edit',
+    value: actions.edit ? editAction : null
+  }, {
+    name: 'delete',
+    value: actions.delete ? deleteAction : null
+  }]
 }
 
-const fetchNextSong = (params, nextSongId) => {
-  const nextParams = {...params}
-  nextParams.songId = nextSongId
-  DataSource.fetch('song', nextParams)
-}
-
-const Song = ({ data }) => {
-  const song = data.song
+const Song = () => {
   const history = useHistory()
   const location = useLocation()
   const params = useParams()
@@ -65,6 +52,12 @@ const Song = ({ data }) => {
   const [showAddToSonglistModal, setShowAddToSonglistModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const { user } = useUser()
+  const { song, actions, error, isLoading } = useSong(params)
+
+  if (isLoading)
+    return <LoadingPage />
+  if (error)
+    return <EmptyPage message={error.toString()} />
 
   const goToEdit = () => {
     history.push(`/songs/${song.id}/edit`)
@@ -78,7 +71,6 @@ const Song = ({ data }) => {
         `songs/${song.nextSongId}`)
       debug('nextLink: "%s"', nextLink)
       history.push(nextLink)
-      fetchNextSong(params, song.nextSongId)
     }
   }
 
@@ -119,19 +111,17 @@ const Song = ({ data }) => {
     const body = new URLSearchParams({ songId: song.id }).toString()
     DataSource.addListener('operate', () => {
       history.push(`/songlists/${songlist.id}`)
+      // Mutate songlist?
     })
     DataSource.create('addToSonglist', createParams, body)
   }
 
-  const actions = buildActions(data, goToEdit,
+  const pageActions = buildActions(actions, song, goToEdit,
     handleDeleteClick, nextAction, onSongItemsButtonClick,
     addToSonglistAction)
 
-  if (!song) {
-    return <EmptyPage actions={actions} />
-  }
   return (
-    <Page title={song.title} actions={actions}>
+    <Page title={song.title} actions={pageActions}>
       <div className="song-page-contents">
         <div className="song-text">
           {song.text}
@@ -139,7 +129,7 @@ const Song = ({ data }) => {
         <ToTopButton />
       </div>
       <SongItemsModal title="Your Song Items"
-        songItems={song.songItems || []}
+        songItems={song.songItems}
         show={showSongItemsModal}
         handleClose={handleSongItemsModalClose}
       />
