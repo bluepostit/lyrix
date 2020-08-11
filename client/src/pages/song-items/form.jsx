@@ -13,7 +13,7 @@ const SongItemForm = ({
   role
 }) => {
   const params = useParams()
-  const [songItem, setSongItem] = useState({})
+  const [songItem, setSongItem] = useState({ title: '', text: '' })
   const [error, setError] = useState('')
   const [validated, setValidated] = useState(false)
 
