@@ -5,7 +5,6 @@ import {
 } from 'react-bootstrap'
 import { Page, LoadingPage } from '../'
 import { Searcher } from './searcher'
-import { Song } from '../../components/list-items'
 import { FormError } from '../../components/forms'
 import { Icon } from '../../components/icons'
 import DataSource from '../../data/data-source'

@@ -22,7 +22,7 @@ const Songlist = () => {
     history.replace('/login')
   }
 
-  if (isLoading) {
+  if (isLoading || userIsLoading) {
     return <LoadingPage />
   }
 

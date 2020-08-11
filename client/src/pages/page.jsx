@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Navbar } from '../components'
 import { useHistory } from 'react-router-dom'
 import useUser from '../data/users'
@@ -47,7 +47,7 @@ const Page = ({
   const history = useHistory()
 
   const logoutAction = async () => {
-    const res = await fetch('/api/user/logout')
+    await fetch('/api/user/logout')
     history.push('/login')
   }
 

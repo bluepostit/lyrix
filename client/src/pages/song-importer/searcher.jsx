@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Form } from "react-bootstrap"
-import DataSource from '../../data/data-source'
 import { useSongSearch } from '../../data/song-importer'
-const debug = require('debug')('lyrix:song-importer')
+// const debug = require('debug')('lyrix:song-importer')
 
 const Searcher = ({ onSearch }) => {
   const [query, setQuery] = useState('')

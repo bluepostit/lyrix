@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import { FormError } from '../../components/forms'
-import { Navbar } from '../../components/headers'
 import { Page } from '../page'
 
 const SignUp = () => {

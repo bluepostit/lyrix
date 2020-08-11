@@ -6,7 +6,7 @@ import { SongItemPageTitle } from '../../components/headers'
 import { Deleter } from '../../components/modals'
 import { useSongItem } from '../../data/song-items'
 import useUser from '../../data/users'
-const debug = require('debug')('lyrix:song-items')
+// const debug = require('debug')('lyrix:song-items')
 
 const buildActions = (songItem, actions, editAction,
     deleteAction, artistAction, songAction) => {

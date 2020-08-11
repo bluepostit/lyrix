@@ -6,10 +6,10 @@ import { useSonglists } from '../../data/songlists'
 import useUser from '../../data/users'
 import LoadingPage from '../loading-page'
 
-const Songlists = ({ data }) => {
+const Songlists = () => {
   const history = useHistory()
   const { user, isLoading: userIsLoading } = useUser()
-  const { songlists, isLoading, actions, error } = useSonglists()
+  const { songlists, isLoading, error } = useSonglists()
 
   if (!userIsLoading && !user.authenticated) {
     history.replace('/login')
@@ -17,6 +17,10 @@ const Songlists = ({ data }) => {
 
   if (isLoading || userIsLoading) {
     return <LoadingPage />
+  }
+
+  if (error) {
+    console.log(error)
   }
 
   const onSonglistClick = (songlist) => {

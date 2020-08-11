@@ -7,7 +7,7 @@ import DataSource from '../../data/data-source'
 import { useSong } from '../../data/songs'
 import { useSongItem } from '../../data/song-items'
 import { EmptyPage, LoadingPage } from '../'
-const debug = require('debug')('lyrix:song-items')
+// const debug = require('debug')('lyrix:song-items')
 
 const SongItemForm = ({
   songItemId,
@@ -27,7 +27,6 @@ const SongItemForm = ({
     isLoading: songLoading,
     error: songLoadingError
   } = useSong({ id: params.songId })
-  const [validated, setValidated] = useState(false)
 
   useEffect(() => {
     if (origSongItem) {
@@ -45,6 +44,10 @@ const SongItemForm = ({
 
   if (songLoading || songItemLoading)
     return <LoadingPage />
+
+  if (songLoadingError || songItemloadingError) {
+    setError(songLoadingError || songItemloadingError)
+  }
 
   const getItemType = (id) => {
     return songItemTypes.find(item => item.id === id)
@@ -89,7 +92,7 @@ const SongItemForm = ({
   return (
     <div className="container">
       <FormError error={error} />
-      <Form noValidate validated={validated}
+      <Form noValidate
             onSubmit={handleSubmit}
             className="mt-2"
             id="song-item-form">
