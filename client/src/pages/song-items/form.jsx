@@ -78,6 +78,7 @@ const SongItemForm = ({
   }
 
   const song = origSong || songItem.song
+    || (origSongItem ? origSongItem.song : null)
 
   const hasEntityData = (song && song.songItem) || songItem
   const hasSecondaryData = songItemTypes && (songItemTypes.length > 0)

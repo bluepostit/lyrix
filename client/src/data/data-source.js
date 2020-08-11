@@ -140,7 +140,7 @@ const DataSource = (() => {
           triggerEvent('error', json.error)
         } else {
           setData(entity, json)
-          triggerEvent('change', entity)
+          triggerEvent('change', entity, json)
         }
       }).finally(() => {
         triggerEvent('stop')

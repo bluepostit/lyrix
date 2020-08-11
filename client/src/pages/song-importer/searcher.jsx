@@ -1,15 +1,12 @@
 import React, { useState } from 'react'
 import { Button, Form } from "react-bootstrap"
-import { FormError } from '../../components/forms'
+import DataSource from '../../data/data-source'
+import { useSongSearch } from '../../data/song-importer'
 const debug = require('debug')('lyrix:song-importer')
 
-const getFormData = (form) => {
-  const data = new URLSearchParams(new FormData(form))
-  return data.toString()
-}
-
-const Searcher = ({ handleSearch, searchError }) => {
+const Searcher = ({ onSearch }) => {
   const [query, setQuery] = useState('')
+  const { mutate: mutateSearch } = useSongSearch(query, false)
 
   const handleChange = (event) => {
     const value = event.currentTarget.value
@@ -18,16 +15,16 @@ const Searcher = ({ handleSearch, searchError }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    const query = getFormData(event.currentTarget)
-    handleSearch(query)
+    if (!query) {
+      return
+    }
+    mutateSearch()
+    // DataSource.search('importerSearch', null, query)
+    onSearch(query)
   }
 
-  const error = (searchError) ? <FormError className="x" error={searchError} /> : <></>
-  debug(searchError)
-  debug(error)
   return (
     <div className="container">
-      {error}
       <Form onSubmit={handleSubmit}
         className="mt-2"
         id="song-importer-search-form">

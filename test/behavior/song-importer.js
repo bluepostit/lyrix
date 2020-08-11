@@ -111,7 +111,7 @@ describe(BASE_URL, async function () {
 
       const res = await agent.get(`${BASE_URL}/import?sid=${songId}`)
       expect(res.body).to.have.status(200)
-      expect(res.body.data).not.to.be.empty
+      expect(res.body.song).not.to.be.empty
 
       const songs = await Song.query()
       expect(songs.length).to.eql(1)

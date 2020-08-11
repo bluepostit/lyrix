@@ -1,13 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useHistory } from "react-router-dom"
 import {
   Button, Form, ToggleButton, ToggleButtonGroup
 } from 'react-bootstrap'
-import { Page } from '../page'
+import { Page, LoadingPage } from '../'
 import { Searcher } from './searcher'
 import { Song } from '../../components/list-items'
 import { FormError } from '../../components/forms'
+import { Icon } from '../../components/icons'
 import DataSource from '../../data/data-source'
+import { useSongSearch } from '../../data/song-importer'
 import useUser from '../../data/users'
 
 const getFormData = (form) => {
@@ -15,18 +17,42 @@ const getFormData = (form) => {
   return data.toString()
 }
 
-const SongImporter = (props) => {
-  const { data, ...rest } = props
+const SongImporter = () => {
   const title = 'Import a Song'
   const history = useHistory()
-  const { user, isLoading: userIsLoading } = useUser()
+  const [query, setQuery] = useState('')
+  const [error, setError] = useState('')
+  const { user, isLoading: userLoading } = useUser()
+  const {
+    songs, error: searchError, isLoading: searchLoading
+  } = useSongSearch(query)
 
-  if (!userIsLoading && !user.authenticated) {
+  const onImportSuccess = (entity, songData) => {
+    history.push(`/songs/${songData.song.id}`)
+  }
+
+  const onError = (error) => setError(error)
+
+  useEffect(() => {
+    DataSource.addListener('error', onError)
+    DataSource.addListener('change', onImportSuccess)
+    return () => DataSource.removeListener('change', onImportSuccess)
+  })
+
+  if (!userLoading && !user.authenticated) {
     history.replace('/login')
   }
 
-  const onImportSuccess = (song) => {
-    history.push(`/songs/${song.id}`)
+  if (userLoading || searchLoading)
+    return <LoadingPage />
+
+  if (searchError) {
+    setError(searchError)
+  }
+
+  const onSearch = (query) => {
+    setQuery(query)
+    setError('')
   }
 
   const handleSubmit = (event) => {
@@ -35,27 +61,35 @@ const SongImporter = (props) => {
     DataSource.fetch('importerImport', null, query)
   }
 
-  const songs = data.songs || []
-  const error = data.error ? <FormError error={data.error} /> : <></>
-
-  const content =
-    <div className="container pt-2">
-      <Searcher {...rest} />
+  let results
+  if (error && !songs) {
+    results = <FormError error={error} />
+  } else if (songs) {
+    results = (
       <div>
-        {data.error}
-        {error}
         <Form onSubmit={handleSubmit}
           className="mt-2"
           id="song-importer-import-form">
-          <Form.Group controlId="query" hidden={songs.length < 1 }>
+          <FormError error={error} />
+          <Form.Group controlId="query" hidden={songs.length < 1}>
             <Form.Label>Select a Song to Import</Form.Label>
             <ToggleButtonGroup type="radio" name="sid" vertical
               className="song-importer-results-buttons lyrix-list">
               {
                 songs.map((song, index) =>
-                  <ToggleButton value={song.id} key={index + 1}
+                  <ToggleButton value={song.id} key={index}
                     variant="outline" className="lyrix-list-item">
-                    {Song(song, index, () => {})}
+                    <div className="d-flex w-100 justify-content-between">
+                      <div>
+                        <Icon entity="song" />
+                        <span>{song.title}</span>
+                        <em><small>
+                          &ndash; {song.artist.name || song.artist}
+                        </small></em>
+                      </div>
+                      <div>
+                      </div>
+                    </div>
                   </ToggleButton>
                 )
               }
@@ -65,16 +99,20 @@ const SongImporter = (props) => {
             <Button variant="primary" type="submit"
               hidden={songs.length < 1}>
               Import!
-            </Button>
+          </Button>
           </div>
         </Form>
       </div>
-    </div>
+    )
+  }
 
   return (
     <Page title={title}>
       <div className="page-content song-page">
-        {content}
+        <div className="container pt-2">
+          <Searcher onSearch={onSearch} />
+          {results}
+        </div>
       </div>
     </Page>
   )
