@@ -1,54 +1,54 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
+import { Icon } from '../../components/icons'
 import { FormError } from '../../components/forms'
 import DataSource from '../../data/data-source'
-import { EmptyPage } from '../empty-page'
+import { useSong } from '../../data/songs'
+import { useSongItem } from '../../data/song-items'
+import { EmptyPage, LoadingPage } from '../'
 const debug = require('debug')('lyrix:song-items')
 
 const SongItemForm = ({
   songItemId,
-  song,
   songItemTypes,
   role
 }) => {
   const params = useParams()
-  const [songItem, setSongItem] = useState({ title: '', text: '' })
   const [error, setError] = useState('')
+  const [songItem, setSongItem] = useState({ title: '', text: '' })
+  const {
+    songItem: origSongItem,
+    isLoading: songItemLoading,
+    error: songItemloadingError
+  } = useSongItem(songItemId)
+  const {
+    song: origSong,
+    isLoading: songLoading,
+    error: songLoadingError
+  } = useSong({ id: params.songId })
   const [validated, setValidated] = useState(false)
 
-  const getItemType = (id) => {
-    return songItemTypes.find(item => item.id === id)
-  }
-
-  const onSongItemLoad = (entity) => {
-    if (entity === 'songItem') {
-      const songItemData = DataSource.get('songItem')
-      setSongItem(songItemData.songItem)
+  useEffect(() => {
+    if (origSongItem) {
+      setSongItem(origSongItem)
     }
-  }
-
-  const onError = (error) => {
-    setError(error)
-  }
+  }, [origSongItem])
 
   useEffect(() => {
-    if (songItemId) {
-      DataSource.addListener('change', onSongItemLoad)
-      DataSource.fetch('songItem', { id: songItemId })
-
-      return () => {
-        DataSource.removeListener('change', onSongItemLoad)
-      }
-    }
-  }, [songItemId])
-
-  useEffect(() => {
+    const onError = (error) => setError(error)
     DataSource.addListener('error', onError)
     return () => {
       DataSource.removeListener('error', onError)
     }
   })
+
+  if (songLoading || songItemLoading)
+    return <LoadingPage />
+
+  const getItemType = (id) => {
+    return songItemTypes.find(item => item.id === id)
+  }
 
   const handleChange = (event) => {
     const songItemCopy = { ...songItem }
@@ -77,14 +77,12 @@ const SongItemForm = ({
     }
   }
 
+  const song = origSong || songItem.song
+
   const hasEntityData = (song && song.songItem) || songItem
   const hasSecondaryData = songItemTypes && (songItemTypes.length > 0)
   if (!(hasEntityData && hasSecondaryData)) {
     return <EmptyPage message="Not enough data to create a song item." />
-  }
-
-  if (songItem) {
-    song = songItem.song
   }
 
   return (
@@ -96,8 +94,17 @@ const SongItemForm = ({
             id="song-item-form">
         <input type="hidden"
                name="song_id"
-               value={song ? song.id : ''}
+               value={song.id}
                />
+        <Form.Group>
+          <Form.Label><Icon entity="song" /> Song</Form.Label>
+          <Form.Control type="text" readOnly value={song.title} />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label><Icon entity="artist" /> Artist</Form.Label>
+          <Form.Control type="text" readOnly
+            defaultValue={song.artist.name} />
+        </Form.Group>
         <Form.Group controlId="songItemTitle">
           <Form.Label>Title</Form.Label>
           <Form.Control

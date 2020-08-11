@@ -13,12 +13,14 @@ const useSongItems = () => {
 }
 
 const useSongItem = (id) => {
-  const { data, error } = useSWR(`/api/song-items/${id}`, fetcher)
+  const shouldFetch = id
+  const url = `/api/song-items/${id}`
+  const { data, error } = useSWR(shouldFetch ? url : null, fetcher)
 
   return {
     songItem: data ? data.songItem : null,
     actions: data ? data.actions : [],
-    isLoading: !data && !error,
+    isLoading: shouldFetch && !data && !error,
     error
   }
 }
