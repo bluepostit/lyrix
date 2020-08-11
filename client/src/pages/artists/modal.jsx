@@ -18,7 +18,7 @@ const ArtistModal = ({
   dismissText = 'Cancel'
 }) => {
   const { mutate: mutateArtists } = useArtists()
-  const [modalArtist, setModalArtist] = useState({})
+  const [modalArtist, setModalArtist] = useState({ name: '' })
   const [error, setError] = useState('')
   const [isLoading, setLoading] = useState(false)
 
