@@ -2,14 +2,14 @@ import useSWR, { mutate } from 'swr'
 import { fetcher } from './common'
 
 const useArtists = () => {
-  const { data, error } = useSWR(`/api/artists`, fetcher)
+  const { data, error, mutate } = useSWR(`/api/artists`, fetcher)
 
   return {
     artists: data ? data.artists : data,
     actions: data ? data.actions : [],
     isLoading: !data && !error,
     error,
-    mutate: () => mutate('/api/artists')
+    mutate
   }
 }
 

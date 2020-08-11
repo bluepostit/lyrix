@@ -19,7 +19,7 @@ const useSonglist = (id) => {
     songlist: data ? data.songlist : null,
     actions: data ? data.actions: [],
     isLoading: !data && !error,
-    mutate: () => mutate(url),
+    mutate,
     error
   }
 }

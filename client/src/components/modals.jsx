@@ -191,7 +191,6 @@ const SelectSonglistModal = ({ show, setShow, onSelect, onDismiss }) => {
   } else if (error) {
     body = <Alert variant="danger">{error}</Alert>
   } else {
-    console.log(songlists)
     body = (
       <ListGroup>
         {songlists.map((item, index) =>
