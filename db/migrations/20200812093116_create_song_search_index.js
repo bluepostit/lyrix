@@ -6,7 +6,7 @@ exports.up = function(knex) {
       setweight(
         to_tsvector('english', coalesce(title, '')), 'A') ||
       setweight(
-        to_tsvector('english', coalesce(text, '')), 'B')
+        to_tsvector('english', coalesce('text', '')), 'B')
     ) STORED`
   return knex.schema.raw(alterQuery)
     .alterTable('songs', function(t) {

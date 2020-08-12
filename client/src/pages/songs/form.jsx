@@ -5,12 +5,8 @@ import { FormError } from '../../components/forms'
 import DataSource from '../../data/data-source'
 import { useSong } from '../../data/songs'
 import { EmptyPage, LoadingPage } from '../'
+import { getFormData } from '../../util'
 // const debug = require('debug')('lyrix:song-form')
-
-const getFormData = (form) => {
-  const data = new URLSearchParams(new FormData(form))
-  return data.toString()
-}
 
 const SongForm = ({
   songId,

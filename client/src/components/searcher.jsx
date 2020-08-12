@@ -1,11 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Button, Form } from "react-bootstrap"
-import { useSongSearch } from '../../data/song-importer'
-// const debug = require('debug')('lyrix:song-importer')
 
 const Searcher = ({ onSearch }) => {
   const [query, setQuery] = useState('')
-  const { mutate: mutateSearch } = useSongSearch(query, false)
+  const searchInput = useRef(null)
 
   const handleChange = (event) => {
     const value = event.currentTarget.value
@@ -17,16 +15,16 @@ const Searcher = ({ onSearch }) => {
     if (!query) {
       return
     }
-    mutateSearch()
-    // DataSource.search('importerSearch', null, query)
     onSearch(query)
   }
+
+  useEffect(() => searchInput.current.focus(), [])
 
   return (
     <div className="container">
       <Form onSubmit={handleSubmit}
         className="mt-2"
-        id="song-importer-search-form">
+        id="song-search-form">
           <Form.Group controlId="query">
             <Form.Label>Search for a Song</Form.Label>
             <Form.Control
@@ -35,6 +33,7 @@ const Searcher = ({ onSearch }) => {
               name="q"
               value={query}
               onChange={handleChange}
+              ref={searchInput}
             />
           </Form.Group>
         <div className="d-flex justify-content-end">

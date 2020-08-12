@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Form, Modal, Alert } from 'react-bootstrap'
 import { useArtists } from '../../data/artists'
-
-const getFormData = (form) => {
-  const data = new URLSearchParams(new FormData(form))
-  return data.toString()
-}
+import { getFormData } from '../../util'
 
 const ArtistModal = ({
   role,

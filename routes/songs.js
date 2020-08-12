@@ -13,6 +13,7 @@ const {
   validateDataForEntity,
   checkForDuplicatesForEntity
 } = require('./common')
+const debug = require('debug')('lyrix:songs')
 
 const SONG_ATTRIBUTES = [
   'songs.id', 'title', 'text'
@@ -107,10 +108,16 @@ const searchSongs = async (req, res, next) => {
   let songs = []
   try {
     if (req.query && req.query.q) {
-      songs = await Song
+      const searchQuery = Song
         .query()
+        .joinRelated('artist')
         .modify('defaultSelects')
         .modify('fullTextSearch', req.query.q)
+        .orWhere('artist.name', 'ilike', `%${req.query.q}%`)
+        .withGraphFetched('artist')
+        .orderBy(['title', 'artist.name'])
+      // debug(searchQuery.toKnexQuery().toSQL().toNative())
+      songs = await searchQuery
     }
   } catch (err) {
     next(err)

@@ -98,4 +98,9 @@ function useTraceUpdate(props) {
   });
 }
 
-export { getNextSongLink, pluralize, toTitleCase, useTraceUpdate }
+const getFormData = (form) => {
+  const data = new URLSearchParams(new FormData(form))
+  return data.toString()
+}
+
+export { getNextSongLink, pluralize, toTitleCase, useTraceUpdate, getFormData }
