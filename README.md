@@ -14,6 +14,7 @@ Lyrix is a song collection app which helps you keep track of the songs you like 
 - For sessions, it uses [Redis](https://redis.io/) and [connect-redis](https://github.com/tj/connect-redis)
 - For authentication, it uses [Passport](http://www.passportjs.org/).
 - Colorful, namespaced error logging with [debug](https://www.npmjs.com/package/debug)
+- Fetch song and artist information from [Genius.com](https://www.genius.com) using [genius-lyrics](https://github.com/zyrouge/genius-lyrics/)
 
 **Server testing:**
 - Good coverage of both system and unit testing with the [Mocha](https://mochajs.org/) test framework and the [Chai](https://www.chaijs.com/) assertion library
@@ -23,6 +24,15 @@ Lyrix is a song collection app which helps you keep track of the songs you like 
 - The client is a [React](https://reactjs.org/) app, using [React Router](https://reacttraining.com/react-router/) for routing.
 - It uses [Bootstrap](https://getbootstrap.com/) (both stand-alone and through [React Bootstrap](https://react-bootstrap.github.io/)) and [FontAwesome](https://fontawesome.com/) for graphical goodness.
 - Graceful data subscription/fetching with [SWR](https://swr.vercel.app/)
+
+## Features
+- View a list of all artists, or an individual artist together with their songs
+- View a song's lyrics
+- Create your own songlists, to which you can add/remove any song
+- Create your own song item for any song: chords, notes, or even your own lyrics
+- Easily navigate from song to song within your songlists or per artist
+- Import: search for songs to import into the database
+- Full text search by song title, lyrics, or artist name.
 
 ## Build
 1. Install requirements by running `yarn`
@@ -40,6 +50,13 @@ Lyrix is a song collection app which helps you keep track of the songs you like 
     Default as per `react-scripts start`: `3000`
 1. Install **Redis**
     - If you have non-default Redis instance variables, add a **Redis URL** in `.env` as `REDIS_URL=redis://...`
+1. Run **knex migrations**:
+    ````bash
+    $ heroku run knex migrate:latest
+    ````
+1. Run **knex seeds**, if any:
+    ````bash
+    $ heroku run knex seed:run
 1. Run the app: `yarn dev`
 
 ## Test
