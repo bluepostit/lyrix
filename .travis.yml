@@ -3,8 +3,11 @@ node_js:
 - 12
 dist: bionic
 addons:
+  postgresql: "11"
   apt:
     packages:
+    - postgresql-11
+    - postgresql-client-11
     - redis-tools
     - redis-server
 services:
@@ -17,5 +20,6 @@ env:
 
   global:
     secure: PngMt5xhfsDswFVauXrsQv5JFNGgt0R3lnxBWQHIlKsdzdhSFe40ZVse87zj4GvNGPqjbQZdtL4OH53rFkOMXImUtsHa0/xN0FfFM2MD8A2L2T1uihYCm/Ft8mKW3jDO4xT6lD+0beIBGUV6Ofc97kxsf3fE9AMyaBZpjWygcN4U0rrSCfgz6fVnpzEa+0PFF6y5kHRhjguTKbFwG8QDw5C2r2BEtTveqEMWLjYpife5M/3NXqq5LFxKx4Ul4tGxg3kvm9vtqWs0Bz3xPAN8mvipD00OW6TkUaIHbDKE3u3mVFSHtKANvjsgo6N/SPShTw8/euNKgQVqrvEJwDHU78VpVbBNnocEeodyDVqeUHrNElcF3XhFKRo3S/olp83V/QOv9RI+nyxXbk9/3QkmbnV7FvlCnaRcShLp9IiRjdmcm2PIYhw1Ue0Ot6YBpzgZa4iwp+qE7VZw7aCttNvKIQbj5tyR2+Iq6tdxFQ8LwvTchGRn8fY1EbLrt7qRpsHpObWIxM1Oe+ZhUdLNXs+/yKwrXDBdzZvXn92udN3nBO4RmjrlgJliwv7qId51G7RasHYj1lkuoRPIAyXgCNsWPpLTawUTIyyRkN/B5tc6D8fZRdHRPLAefFhBfD6sbWZlzLAsLbUtB6VXGQ+HoIwc4iSZyaVVD1VbiZnPzJJRqzw=
+
 before_script:
 - psql -c 'create database travis_ci_test;' -U postgres

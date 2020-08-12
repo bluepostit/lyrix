@@ -17,14 +17,15 @@ exports.up = function(knex) {
   const rawQuery = `
     ALTER TABLE songs ADD COLUMN fulltext tsvector;
     UPDATE songs SET fulltext =
-      to_tsvector('english',
-        coalesce(title, '')
-        || ' ' ||
-        coalesce(text, ''));
+      setweight(
+        to_tsvector('english', coalesce(title, '')), 'A')
+      || ' ' ||
+      setweight(
+        to_tsvector('english', coalesce(text, '')), 'B');
 
     CREATE FUNCTION songs_trigger() RETURNS trigger AS $$
     begin
-      new.tsv :=
+      new.fulltext :=
         setweight(to_tsvector('pg_catalog.english', coalesce(new.title,'')), 'A') ||
         setweight(to_tsvector('pg_catalog.english', coalesce(new.text,'')), 'B');
       return new;
