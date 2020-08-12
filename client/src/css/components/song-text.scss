@@ -18,6 +18,27 @@ textarea.song-text-box {
 
 textarea.song-item-text-box {
   font-size: 1.2rem;
+  line-height: 1;
   font-family: $font-monospace;
   height: 40vh !important;
+}
+
+@media (min-width: 412px) {
+  .song-text, .song-item-text-display{
+    padding: 0 5%;
+  }
+}
+
+// Small and up
+@media (min-width: 576px) {
+  .song-text, .song-item-text-display{
+    padding: 1.2rem 10%;
+  }
+}
+
+// Medium and up
+@media (min-width: 768px) {
+.song-text, .song-item-text-display{
+    padding: 1.2rem 20%;
+  }
 }
