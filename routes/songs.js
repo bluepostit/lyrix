@@ -103,6 +103,22 @@ const sanitize = async (req, res, next) => {
   next()
 }
 
+const searchSongs = async (req, res, next) => {
+  let songs = []
+  try {
+    if (req.query && req.query.q) {
+      songs = await Song
+        .query()
+        .modify('defaultSelects')
+        .modify('fullTextSearch', req.query.q)
+    }
+  } catch (err) {
+    next(err)
+  }
+  req.searchResults = songs
+  next()
+}
+
 const validateId = validateIdForEntity(Song)
 const validateSongData = validateDataForEntity(Song)
 
@@ -117,6 +133,13 @@ const validateForeignParameters = async (req, res, next) => {
 }
 
 router.use([checkIsAdmin, addUserActions])
+
+router.get('/search', searchSongs, async (req, res, next) => {
+  res.json({
+    status: StatusCodes.OK,
+    songs: req.searchResults
+  })
+})
 
 router.get('/', async (req, res, next) => {
   const songs = await Song

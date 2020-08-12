@@ -510,6 +510,49 @@ describe(BASE_URL, () => {
     })
   })
 
+  describe('GET /search', () => {
+    it('should return an empty list when no input is given', async () => {
+      await RecordManager.loadFixture('songs.matching-search-tea-and-coffee')
+
+      const res = await chai.request(app).get(`${BASE_URL}/search`)
+      expect(res).to.have.status(200)
+      expect(res.body).to.be.an('object')
+      const songs = res.body.songs
+      expect(songs).to.be.empty
+    })
+
+    it('should return an empty list when no songs match the query',
+      async () => {
+        await RecordManager.loadFixture('songs.matching-search-tea-and-coffee')
+
+        const query = 'mechanics'
+        const res = await chai.request(app)
+          .get(`${BASE_URL}/search?q=${query}`)
+        expect(res).to.have.status(200)
+        expect(res.body).to.be.an('object')
+        const songs = res.body.songs
+        expect(songs).to.be.empty
+      })
+
+    it('should return a list of songs matching the query', async () => {
+      await RecordManager.loadFixture('songs.matching-search-tea-and-coffee')
+      const allTeaAndCoffeeCount = await Song
+        .query()
+        .resultSize()
+      await RecordManager.loadFixture('songs.matching-search-water')
+      const allSongCount = await Song.query().resultSize()
+      expect(allSongCount).to.be.greaterThan(allTeaAndCoffeeCount)
+
+      const query = 'tea or coffee'
+      const res = await chai.request(app)
+        .get(`${BASE_URL}/search?q=${query}`)
+      expect(res).to.have.status(200)
+      expect(res.body).to.be.an('object')
+      const songs = res.body.songs
+      expect(songs.length).to.eql(allTeaAndCoffeeCount)
+    })
+  })
+
   describe('User Actions', () => {
     it('should provide a visitor with a link to view a song', async () => {
       const res = await chai.request(app).get(BASE_URL)
