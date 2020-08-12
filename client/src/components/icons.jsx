@@ -12,6 +12,7 @@ const ICON_CLASSES = {
   delete: 'fas fa-trash',
   songItem: 'fas fa-file-alt',
   import: 'fas fa-cloud-upload-alt',
+  search: 'fas fa-search',
   login: 'fas fa-sign-in-alt',
   logout: 'fas fa-sign-out-alt',
   star: 'fas fa-star',

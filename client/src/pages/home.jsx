@@ -9,6 +9,7 @@ const Home = () => {
         <div className="menu-buttons">
           <MenuButton action="/artists" entity="artist" title="Artists" />
           <MenuButton action="/songs" entity="song" title="Songs" />
+          <MenuButton action="/search" entity="search" title="Search" />
           <MenuButton action="/import" entity="import" title="Import" />
           <MenuButton action="/songlists" entity="songlist"
             title="Songlists" />
