@@ -1,11 +1,8 @@
 import React, { useState } from 'react'
 import { Button, Form } from "react-bootstrap"
-import { useSongSearch } from '../../data/song-importer'
-// const debug = require('debug')('lyrix:song-importer')
 
 const Searcher = ({ onSearch }) => {
   const [query, setQuery] = useState('')
-  const { mutate: mutateSearch } = useSongSearch(query, false)
 
   const handleChange = (event) => {
     const value = event.currentTarget.value
@@ -17,8 +14,6 @@ const Searcher = ({ onSearch }) => {
     if (!query) {
       return
     }
-    mutateSearch()
-    // DataSource.search('importerSearch', null, query)
     onSearch(query)
   }
 
