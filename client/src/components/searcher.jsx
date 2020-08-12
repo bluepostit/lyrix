@@ -21,7 +21,7 @@ const Searcher = ({ onSearch }) => {
     <div className="container">
       <Form onSubmit={handleSubmit}
         className="mt-2"
-        id="song-importer-search-form">
+        id="song-search-form">
           <Form.Group controlId="query">
             <Form.Label>Search for a Song</Form.Label>
             <Form.Control
