@@ -10,6 +10,7 @@ import * as Songs from '../pages/songs'
 import * as SongItems from '../pages/song-items'
 import * as Songlists from '../pages/songlists'
 import * as Pages from '../pages/data-pages'
+import { default as Search } from '../pages/song-searcher/search'
 
 const RouterSwitch = () => {
   return (
@@ -19,6 +20,10 @@ const RouterSwitch = () => {
       </Route>
       <Route path="/sign-up">
         <Auth.SignUp />
+      </Route>
+
+      <Route path="/search">
+        <Search />
       </Route>
 
       <Route path="/artists/:artistId/songs/:id">

@@ -7,6 +7,7 @@ import DataSource from '../../data/data-source'
 import { useSong } from '../../data/songs'
 import { useSongItem } from '../../data/song-items'
 import { EmptyPage, LoadingPage } from '../'
+import { getFormData } from '../../util'
 // const debug = require('debug')('lyrix:song-items')
 
 const SongItemForm = ({
@@ -62,11 +63,6 @@ const SongItemForm = ({
       songItemCopy[target.name] = target.value
     }
     setSongItem(songItemCopy)
-  }
-
-  const getFormData = (form) => {
-    const data = new URLSearchParams(new FormData(form))
-    return data.toString()
   }
 
   const handleSubmit = async (event) => {
