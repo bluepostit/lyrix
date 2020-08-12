@@ -4,7 +4,6 @@ import { Page, LoadingPage } from '..'
 import { useSongSearch } from '../../data/song-searcher'
 import { Searcher } from '../../components/searcher'
 import SongResultsForm from '../../components/song-results-form'
-import { getFormData } from '../../util'
 
 const SearchPage = () => {
   const history = useHistory()
