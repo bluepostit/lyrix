@@ -1,0 +1,54 @@
+[
+  {
+    "table": "artists",
+    "data": [
+      {
+        "id": 1,
+        "name": "Artist 1"
+      },
+      {
+        "id": 2,
+        "name": "Artist 2"
+      },
+      {
+        "id": 3,
+        "name": "Artist 3"
+      }
+    ]
+  },
+  {
+    "table": "songs",
+    "data": [
+      {
+        "id": 1,
+        "artist_id": 1,
+        "title": "Tea Tea Tea",
+        "text": "it is tea"
+      },
+      {
+        "id": 2,
+        "artist_id": 2,
+        "title": "Coffee",
+        "text": "Coffee is the word"
+      },
+      {
+        "id": 3,
+        "artist_id": 3,
+        "title": "Cappuccino",
+        "text": "coffee hot and strong"
+      },
+      {
+        "id": 4,
+        "artist_id": 2,
+        "title": "My Chai",
+        "text": "milky and delicious, a great tea"
+      },
+      {
+        "id": 5,
+        "artist_id": 3,
+        "title": "Latte for life",
+        "text": "Coffee is the way to start your day"
+      }
+    ]
+  }
+]

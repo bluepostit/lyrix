@@ -76,6 +76,20 @@ module.exports = class Song extends Model {
 
       orderByTitle(builder) {
         builder.orderBy('title')
+      },
+
+      defaultSelects(builder) {
+        const { ref } = Song
+        builder.select(ref('id'), ref('title'), ref('text'), ref('artist_id'))
+      },
+
+      fullTextSearch(builder, text) {
+        const { ref } = Song
+        const col = ref('fulltext')
+        builder.whereRaw(`:col @@ websearch_to_tsquery(:text)`, {
+          col: col,
+          text: text
+        })
       }
     }
   }

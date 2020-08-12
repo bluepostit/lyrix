@@ -1,0 +1,54 @@
+[
+  {
+    "table": "artists",
+    "data": [
+      {
+        "id": 101,
+        "name": "Artist 1"
+      },
+      {
+        "id": 102,
+        "name": "Artist 2"
+      },
+      {
+        "id": 103,
+        "name": "Artist 3"
+      }
+    ]
+  },
+  {
+    "table": "songs",
+    "data": [
+      {
+        "id": 101,
+        "artist_id": 101,
+        "title": "Water",
+        "text": "it is water"
+      },
+      {
+        "id": 102,
+        "artist_id": 102,
+        "title": "Raining",
+        "text": "rain and it is water"
+      },
+      {
+        "id": 103,
+        "artist_id": 103,
+        "title": "Rivers of water",
+        "text": "flowing and gushing"
+      },
+      {
+        "id": 104,
+        "artist_id": 102,
+        "title": "Oceans",
+        "text": "water, flowing, waves, crashing"
+      },
+      {
+        "id": 105,
+        "artist_id": 103,
+        "title": "Pool",
+        "text": "water it is, lots of water"
+      }
+    ]
+  }
+]
