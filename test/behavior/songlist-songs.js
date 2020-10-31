@@ -29,7 +29,7 @@ describe(BASE_URL, async () => {
   describe('DELETE /:id', () => {
     it('should return an error if the user is not signed in', async () => {
       await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
+      await RecordManager.loadFixture('songlists.for-user-id-1')
       const songlistSong = await getFirstSonglistSong()
 
       const res = await chai.request(app)
@@ -67,7 +67,7 @@ describe(BASE_URL, async () => {
 
     it('should delete the songlist song successfully', async () => {
       const user = await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
+      await RecordManager.loadFixture('songlists.for-user-id-1')
       const songlistSongs = await SongListSong.query()
       const lengthBefore = songlistSongs.length
 

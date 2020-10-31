@@ -67,4 +67,26 @@ module.exports = class SongList extends Model {
       }
     }
   }
+
+  async orderItems(data) {
+    const SongListSong = require('./song-list-song')
+    const myItemIds = this.items.map(item => item.id).sort()
+    const dataItemIds = data.map(item => item.id).sort()
+
+    if (JSON.stringify(myItemIds) != JSON.stringify(dataItemIds)) {
+      throw new Error('Incorrect or missing song item data')
+    }
+
+
+    const trx = await Model.startTransaction()
+    data.forEach(async (item) => {
+      await SongListSong
+        .query()
+        .findById(item.id)
+        .patch({
+          position: item.position
+        })
+    })
+    await trx.commit()
+  }
 }

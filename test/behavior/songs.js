@@ -171,7 +171,7 @@ describe(BASE_URL, () => {
     let songs
     beforeEach(async () => {
       await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
+      await RecordManager.loadFixture('songlists.for-user-id-1')
       // const agent = await SessionManager.loginAsUser(app, user)
       list = await SongList
         .query()
