@@ -151,7 +151,21 @@ router.post('/:id/add-song', ensureLoggedIn, validateId,
       status: StatusCodes.OK,
       songlist: songlist
     })
+  })
 
+router.post('/:id/order', ensureLoggedIn, validateId,
+  setSonglist, ensureOwnership,
+  async (req, res, next) => {
+    const songlist = req.songlist
+    try {
+      await songlist.orderItems(req.body)
+      res.json({
+        status: StatusCodes.OK
+      })
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
   })
 
 router.delete('/:id', ensureLoggedIn, validateId,

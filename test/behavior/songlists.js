@@ -5,6 +5,7 @@ const expect = chai.expect
 const app = require('../../app')
 
 const { SongList } = require('../../models')
+const { getFirstSonglist, buildItemPositions } = require('../common')
 const RecordManager = require('../record-manager.js')
 const SessionManager = require('../session-manager')
 
@@ -18,7 +19,7 @@ describe(BASE_URL, async () => {
     await RecordManager.deleteAll()
   })
 
-  const getFirstSonglist = async () => {
+  const getFirstSonglistWithSongs = async () => {
     const songlist = await SongList
       .query()
       .first()
@@ -179,7 +180,7 @@ describe(BASE_URL, async () => {
     it('should return an error if the user is not signed in', async () => {
       await RecordManager.insertUser({ id: 1 })
       await RecordManager.loadFixture('songlists.for-user-id-1')
-      const songlist = await getFirstSonglist()
+      const songlist = await getFirstSonglistWithSongs()
       const songId = songlist.songs[0].id
 
       const res = await chai.request(app)
@@ -204,7 +205,7 @@ describe(BASE_URL, async () => {
     it('should return an error if the songlist belongs to another user',
       async () => {
         await RecordManager.loadFixture('songlists.only-other-user')
-        const songlist = await getFirstSonglist()
+        const songlist = await getFirstSonglistWithSongs()
         const songId = songlist.songs[0].id
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
@@ -220,7 +221,7 @@ describe(BASE_URL, async () => {
     it('should return an error if no song is given', async () => {
       const user = await RecordManager.insertUser({ id: 1 })
       await RecordManager.loadFixture('songlists.for-user-id-1')
-      const songlist = await getFirstSonglist()
+      const songlist = await getFirstSonglistWithSongs()
       const songId = songlist.songs[0].id
 
       const agent = await SessionManager.loginAsUser(app, user)
@@ -235,7 +236,7 @@ describe(BASE_URL, async () => {
     it('should return an error if the song doesn\'t exist', async () => {
       const user = await RecordManager.insertUser({ id: 1 })
       await RecordManager.loadFixture('songlists.with-user-id-1.no-songs')
-      const songlist = await getFirstSonglist()
+      const songlist = await getFirstSonglistWithSongs()
 
       const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent
@@ -250,7 +251,7 @@ describe(BASE_URL, async () => {
       async () => {
         const user = await RecordManager.insertUser({ id: 1 })
         await RecordManager.loadFixture('songlists.for-user-id-1')
-        const songlist = await getFirstSonglist()
+        const songlist = await getFirstSonglistWithSongs()
         const lengthBefore = songlist.songs.length
         const songId = songlist.songs[0].id
 
@@ -271,21 +272,28 @@ describe(BASE_URL, async () => {
   })
 
   describe('POST /:id/order', () => {
-    it('should return an error if the user is not signed in', async () => {
+    it('should reorder the songlist\'s songs as specified', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture("songlists.for-user-id-1")
+      let songlist = await getFirstSonglist()
 
-    })
-
-    it('should return an error if the songlist doesn\'t exist', async () => {
-
-    })
-
-    it('should return an error if the songlist belongs to another user',
-      async () => {
-
+      // Reverse the positions of the songListSongs in songlist
+      const orderData = buildItemPositions(songlist, (item, songlist) => {
+        return songlist.items.length + 1 - item.position
       })
 
-    it('should reorder the songlist\'s songs as specified', async () => {
+      const agent = await SessionManager.loginAsUser(app, user)
 
+      const res = await agent
+        .post(`${BASE_URL}/${songlist.id}/order`)
+        .send(orderData)
+      const body = res.body
+      expect(body).to.have.status(200) // OK
+      agent.close()
+
+      songlist = await getFirstSonglist()
+      const newOrderData = buildItemPositions(songlist)
+      expect(orderData).to.eql(newOrderData)
     })
   })
 
@@ -293,7 +301,7 @@ describe(BASE_URL, async () => {
     it('should return an error if the user is not signed in', async () => {
       await RecordManager.insertUser({ id: 1 })
       await RecordManager.loadFixture('songlists.for-user-id-1')
-      const songlist = await getFirstSonglist()
+      const songlist = await getFirstSonglistWithSongs()
 
       const res = await chai.request(app)
         .delete(`${BASE_URL}/${songlist.id}`)
@@ -316,7 +324,7 @@ describe(BASE_URL, async () => {
     it('should return an error if the songlist belongs to another user',
       async () => {
         await RecordManager.loadFixture('songlists.only-other-user')
-        const songlist = await getFirstSonglist()
+        const songlist = await getFirstSonglistWithSongs()
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
 

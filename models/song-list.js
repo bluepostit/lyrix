@@ -70,7 +70,16 @@ module.exports = class SongList extends Model {
 
   async orderItems(data) {
     const SongListSong = require('./song-list-song')
-    const myItemIds = this.items.map(item => item.id).sort()
+    let myItems = this.items
+    if (!myItems) {
+      myItems = await SongListSong
+        .query()
+        .where({
+          song_list_id: this.id
+        })
+        .orderBy('position')
+    }
+    const myItemIds = myItems.map(item => item.id).sort()
     const dataItemIds = data.map(item => item.id).sort()
 
     if (JSON.stringify(myItemIds) != JSON.stringify(dataItemIds)) {

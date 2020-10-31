@@ -1,5 +1,6 @@
 const debugModule = require('debug')
 const nodemon = require('nodemon')
+const { SongList } = require('../models')
 
 /**
  * Gets a debugger instance for debug logging.
@@ -23,4 +24,35 @@ const getDebugger = (namespace = 'lyrix:test-suite') => {
   return debug
 }
 
-module.exports = { getDebugger }
+const getFirstSonglist = async () => {
+  const songlist = await SongList.query().first().withGraphFetched("items.song")
+  return songlist
+}
+
+const getLastSonglist = async () => {
+  const songlist = await SongList.query()
+    .orderBy("id", "desc")
+    .first()
+    .withGraphFetched("items.song")
+  return songlist
+}
+
+const buildItemPositions = (songlist, callback) => {
+  return songlist.items.map((item) => {
+    let position = item.position
+    if (callback) {
+      position = callback(item, songlist)
+    }
+    return {
+      id: item.id,
+      position: position,
+    }
+  })
+}
+
+module.exports = {
+  getDebugger,
+  getFirstSonglist,
+  getLastSonglist,
+  buildItemPositions
+}

@@ -3,6 +3,11 @@
 const expect = require('chai').expect
 const { SongList, User } = require('../../models')
 const RecordManager = require('../record-manager')
+const {
+  getFirstSonglist,
+  getLastSonglist,
+  buildItemPositions
+} = require('../common')
 
 const insertOneEmptySongList = () => {
   return SongList
@@ -44,35 +49,6 @@ const insertOneSongListWithThreeSongs = () => {
         ]
       }
     ])
-}
-
-const getFirstSonglist = async () => {
-  const songlist = await SongList
-    .query()
-    .first()
-    .withGraphFetched('items.song')
-  return songlist
-}
-
-const getLastSonglist = async () => {
-  const songlist = await SongList.query()
-    .orderBy('id', 'desc')
-    .first()
-    .withGraphFetched("items.song")
-  return songlist
-}
-
-const buildItemPositions = (songlist, callback) => {
-  return songlist.items.map((item) => {
-    let position = item.position
-    if (callback) {
-      position = callback(item, songlist)
-    }
-    return {
-      id: item.id,
-      position: position
-    }
-  })
 }
 
 describe('SongList', () => {
