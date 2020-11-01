@@ -40,7 +40,7 @@ module.exports = class SongListSong extends Model {
         const { ref } = SongListSong;
         builder.select(
           ref('id'), ref('position'), ref('song_id'), ref('created_at')
-        )
+        ).orderBy('position')
       },
     }
   }
