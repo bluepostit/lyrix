@@ -3,6 +3,11 @@
 const expect = require('chai').expect
 const { SongList, User } = require('../../models')
 const RecordManager = require('../record-manager')
+const {
+  getFirstSonglist,
+  getLastSonglist,
+  buildItemPositions
+} = require('../common')
 
 const insertOneEmptySongList = () => {
   return SongList
@@ -128,11 +133,62 @@ describe('SongList', () => {
     })
   })
 
+  describe('.orderItems', () => {
+    beforeEach(async () => {
+      await cleanUp()
+      await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture("songlists.for-user-id-1")
+    })
+
+    it("should fail when not all songlistSongs are given", async () => {
+      const songlist = await getFirstSonglist()
+      const orderData = buildItemPositions(songlist).slice(1)
+
+      return songlist.orderItems(orderData)
+        .catch(error => expect(error).to.be.an('error')
+        .with.property('message', 'Incorrect or missing song item data'))
+    })
+
+    it('should fail when not all songlistSongs belong to the songlist', async () => {
+      const songlist = await getFirstSonglist()
+      const songlist2 = await getLastSonglist()
+      const orderData = buildItemPositions(songlist)
+      orderData[0].id = songlist2.items[0].id
+
+      return songlist.orderItems(orderData)
+        .catch(error => expect(error).to.be.an('error')
+        .with.property('message', 'Incorrect or missing song item data'))
+
+    })
+
+    it("should reorder the songlist's songs as specified", async () => {
+      // 1. get all songs for the given songlist
+      // 2. ensure all given songlistSong ids match those belonging to
+      //    the songlist in the db
+      // 3. update songlistSongs table with the data
+      const songlist = await getFirstSonglist()
+
+      // Reverse the positions of the songListSongs in songlist
+      const orderData = buildItemPositions(songlist, (item, songlist) => {
+        return songlist.items.length + 1 - item.position
+      })
+
+      // Order the items according to the order data
+      await songlist.orderItems(orderData)
+
+      const newSonglist = await getFirstSonglist()
+      const newData = buildItemPositions(newSonglist)
+      expect(orderData).to.eql(newData)
+    })
+  })
+
   /** CLEANUP **/
 
   const cleanUp = async () => {
     await RecordManager.deleteAll('SongListSong')
     await RecordManager.deleteAll('SongList')
+    await RecordManager.deleteAll('Song')
+    await RecordManager.deleteAll('Artist')
     await RecordManager.deleteAll('User')
   }
 

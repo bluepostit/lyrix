@@ -5,6 +5,7 @@ const expect = chai.expect
 const app = require('../../app')
 
 const { SongList } = require('../../models')
+const { getFirstSonglist, buildItemPositions } = require('../common')
 const RecordManager = require('../record-manager.js')
 const SessionManager = require('../session-manager')
 
@@ -18,7 +19,7 @@ describe(BASE_URL, async () => {
     await RecordManager.deleteAll()
   })
 
-  const getFirstSonglist = async () => {
+  const getFirstSonglistWithSongs = async () => {
     const songlist = await SongList
       .query()
       .first()
@@ -38,7 +39,7 @@ describe(BASE_URL, async () => {
 
     it('should return a list of the current user\'s songlists', async () => {
       const user = await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
+      await RecordManager.loadFixture('songlists.for-user-id-1')
       const songlists = await SongList
         .query()
         .orderBy('title')
@@ -79,7 +80,7 @@ describe(BASE_URL, async () => {
 
     it('should return the songlist with the given ID when found', async () => {
       const user = await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
+      await RecordManager.loadFixture('songlists.for-user-id-1')
       const lists = await SongList
         .query()
         .withGraphFetched('songs.artist')
@@ -92,10 +93,10 @@ describe(BASE_URL, async () => {
           const data = res.body.songlist
 
           expect(data.title).to.eql(lists[0].title)
-          expect(data.songs).to.be.an('array')
-          expect(data.songs.length).to.eql(lists[0].songs.length)
+          expect(data.items).to.be.an('array')
+          expect(data.items.length).to.eql(lists[0].songs.length)
 
-          const song = data.songs[0]
+          const song = data.items[0].song
           expect(song.title).to.eql(lists[0].songs[0].title)
           expect(song.artist).to.be.an('object')
           expect(song.artist.name).to.eql(lists[0].songs[0].artist.name)
@@ -148,7 +149,7 @@ describe(BASE_URL, async () => {
     it('should return an error when a songlist with this name already exists',
       async () => {
         const user = await RecordManager.insertUser({ id: 1 })
-        await RecordManager.loadFixture('songlists.with-user-id-1')
+        await RecordManager.loadFixture('songlists.for-user-id-1')
         const list = await SongList.query().first()
 
         const agent = await SessionManager.loginAsUser(app, user)
@@ -178,8 +179,8 @@ describe(BASE_URL, async () => {
   describe('POST /:id/add-song', () => {
     it('should return an error if the user is not signed in', async () => {
       await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
-      const songlist = await getFirstSonglist()
+      await RecordManager.loadFixture('songlists.for-user-id-1')
+      const songlist = await getFirstSonglistWithSongs()
       const songId = songlist.songs[0].id
 
       const res = await chai.request(app)
@@ -204,7 +205,7 @@ describe(BASE_URL, async () => {
     it('should return an error if the songlist belongs to another user',
       async () => {
         await RecordManager.loadFixture('songlists.only-other-user')
-        const songlist = await getFirstSonglist()
+        const songlist = await getFirstSonglistWithSongs()
         const songId = songlist.songs[0].id
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
@@ -219,8 +220,8 @@ describe(BASE_URL, async () => {
 
     it('should return an error if no song is given', async () => {
       const user = await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
-      const songlist = await getFirstSonglist()
+      await RecordManager.loadFixture('songlists.for-user-id-1')
+      const songlist = await getFirstSonglistWithSongs()
       const songId = songlist.songs[0].id
 
       const agent = await SessionManager.loginAsUser(app, user)
@@ -235,7 +236,7 @@ describe(BASE_URL, async () => {
     it('should return an error if the song doesn\'t exist', async () => {
       const user = await RecordManager.insertUser({ id: 1 })
       await RecordManager.loadFixture('songlists.with-user-id-1.no-songs')
-      const songlist = await getFirstSonglist()
+      const songlist = await getFirstSonglistWithSongs()
 
       const agent = await SessionManager.loginAsUser(app, user)
       const res = await agent
@@ -249,8 +250,8 @@ describe(BASE_URL, async () => {
     it('should add the song to the songlist, returning the songlist',
       async () => {
         const user = await RecordManager.insertUser({ id: 1 })
-        await RecordManager.loadFixture('songlists.with-user-id-1')
-        const songlist = await getFirstSonglist()
+        await RecordManager.loadFixture('songlists.for-user-id-1')
+        const songlist = await getFirstSonglistWithSongs()
         const lengthBefore = songlist.songs.length
         const songId = songlist.songs[0].id
 
@@ -260,7 +261,7 @@ describe(BASE_URL, async () => {
           .send({ songId })
         const body = res.body
         expect(body).to.have.status(200)
-        expect(body.songlist.songs.length).to.eql(lengthBefore + 1)
+        expect(body.songlist.items.length).to.eql(lengthBefore + 1)
 
         const updatedSonglist = await SongList
           .query()
@@ -270,11 +271,37 @@ describe(BASE_URL, async () => {
       })
   })
 
+  describe('POST /:id/order', () => {
+    it('should reorder the songlist\'s songs as specified', async () => {
+      const user = await RecordManager.insertUser({ id: 1 })
+      await RecordManager.loadFixture("songlists.for-user-id-1")
+      let songlist = await getFirstSonglist()
+
+      // Reverse the positions of the songListSongs in songlist
+      const orderData = buildItemPositions(songlist, (item, songlist) => {
+        return songlist.items.length + 1 - item.position
+      })
+
+      const agent = await SessionManager.loginAsUser(app, user)
+
+      const res = await agent
+        .post(`${BASE_URL}/${songlist.id}/order`)
+        .send(orderData)
+      const body = res.body
+      expect(body).to.have.status(200) // OK
+      agent.close()
+
+      songlist = await getFirstSonglist()
+      const newOrderData = buildItemPositions(songlist)
+      expect(orderData).to.eql(newOrderData)
+    })
+  })
+
   describe('DELETE /:id', () => {
     it('should return an error if the user is not signed in', async () => {
       await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
-      const songlist = await getFirstSonglist()
+      await RecordManager.loadFixture('songlists.for-user-id-1')
+      const songlist = await getFirstSonglistWithSongs()
 
       const res = await chai.request(app)
         .delete(`${BASE_URL}/${songlist.id}`)
@@ -297,7 +324,7 @@ describe(BASE_URL, async () => {
     it('should return an error if the songlist belongs to another user',
       async () => {
         await RecordManager.loadFixture('songlists.only-other-user')
-        const songlist = await getFirstSonglist()
+        const songlist = await getFirstSonglistWithSongs()
         const user = await RecordManager.insertUser()
         const agent = await SessionManager.loginAsUser(app, user)
 
@@ -310,7 +337,7 @@ describe(BASE_URL, async () => {
 
     it('should delete the songlist successfully', async () => {
       const user = await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
+      await RecordManager.loadFixture('songlists.for-user-id-1')
       const songlists = await SongList.query()
       const lengthBefore = songlists.length
 

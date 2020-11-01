@@ -50,8 +50,10 @@ const getSonglist = async (id) => {
   const songlist = await SongList
     .query()
     .findById(id)
-    .allowGraph('[songs.artist]')
-    .withGraphFetched('[songs.artist]')
+    .modify('defaultSelects')
+    .allowGraph('[items.song.artist]')
+    .withGraphFetched(
+      '[items(forSongList).song(defaultSelects).artist]')
   return songlist
 }
 
@@ -136,22 +138,45 @@ router.post('/', ensureLoggedIn, validateSongListData, checkForDuplicates,
 router.post('/:id/add-song', ensureLoggedIn, validateId,
   setSonglist, ensureOwnership, validateBodySongId,
   async (req, res, next) => {
-    const query = req.songlist
-      .$relatedQuery('songs')
-      .relate({
-        id: req.song.id,
-        position: 0
+    try {
+      const positionObj = await req.songlist
+        .$relatedQuery('items')
+        .max('position')
+      const position = (positionObj[0].max || 0)
+      const query = req.songlist
+        .$relatedQuery('songs')
+        .relate({
+          id: req.song.id,
+          position: (position || 0) + 1
+        })
+      debug(query.toKnexQuery().toSQL().toNative())
+      await query
+
+      const songlist = await getSonglist(req.songlist.id)
+
+      res.json({
+        status: StatusCodes.OK,
+        songlist: songlist
       })
-    debug(query.toKnexQuery().toSQL().toNative())
-    await query
+    } catch (error) {
+      error.userMessage = "Couldn't add song to songlist"
+      next(error)
+    }
+  })
 
-    const songlist = await getSonglist(req.songlist.id)
-
-    res.json({
-      status: StatusCodes.OK,
-      songlist: songlist
-    })
-
+router.post('/:id/order', ensureLoggedIn, validateId,
+  setSonglist, ensureOwnership,
+  async (req, res, next) => {
+    const songlist = req.songlist
+    try {
+      await songlist.orderItems(req.body)
+      res.json({
+        status: StatusCodes.OK
+      })
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
   })
 
 router.delete('/:id', ensureLoggedIn, validateId,

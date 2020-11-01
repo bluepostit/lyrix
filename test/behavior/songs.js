@@ -171,7 +171,7 @@ describe(BASE_URL, () => {
     let songs
     beforeEach(async () => {
       await RecordManager.insertUser({ id: 1 })
-      await RecordManager.loadFixture('songlists.with-user-id-1')
+      await RecordManager.loadFixture('songlists.for-user-id-1')
       // const agent = await SessionManager.loginAsUser(app, user)
       list = await SongList
         .query()
@@ -192,11 +192,12 @@ describe(BASE_URL, () => {
     })
 
     it("should return the song with no link to a next song if this is the last song in the songlist", async () => {
+      const songId = songs[songs.length - 1].id
       const response = await chai.request(app)
-        .get(`${BASE_URL}/${songs[1].id}?context=songlist&contextId=${list.id}`)
+        .get(`${BASE_URL}/${songId}?context=songlist&contextId=${list.id}`)
       const data = response.body.song
       expect(data).to.be.an('object')
-      expect(data.id).to.eql(songs[1].id)
+      expect(data.id).to.eql(songId)
       expect(data).not.to.haveOwnProperty('nextSongId')
     })
   })
