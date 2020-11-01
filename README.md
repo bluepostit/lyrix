@@ -24,6 +24,7 @@ Lyrix is a song collection app which helps you keep track of the songs you like 
 - The client is a [React](https://reactjs.org/) app, using [React Router](https://reacttraining.com/react-router/) for routing.
 - It uses [Bootstrap](https://getbootstrap.com/) (both stand-alone and through [React Bootstrap](https://react-bootstrap.github.io/)) and [FontAwesome](https://fontawesome.com/) for graphical goodness.
 - Graceful data subscription/fetching with [SWR](https://swr.vercel.app/)
+- Drag & drop to re-order song-list items with [react-beautiful-dnd](https://github.com/atlassian/react-beautiful-dnd)
 
 ## Features
 - View a list of all artists, or an individual artist together with their songs
