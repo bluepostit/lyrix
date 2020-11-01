@@ -94,22 +94,22 @@ const Songlist = (songlist, index, onClick) => {
   )
 }
 
-const SonglistSong = (song, index, onClick, onDeleteClick) => {
+const SonglistSong = (songItem, index, onClick, onDeleteClick) => {
   return (
     <div key={index}
         className="list-group-item lyrix-list-item multi-line d-flex w-100 align-items-center">
       <button
         className="list-group-item item-button"
-        onClick={(e) => onClick(song)}>
+        onClick={(e) => onClick(songItem)}>
 
         <div className="numbered-disc-bullet">{index + 1}</div>
         <div className="content-multi-lines">
-          <div>{song.title}</div>
-          <div className="content-secondary">{song.artist.name}</div>
+          <div>{songItem.song.title}</div>
+          <div className="content-secondary">{songItem.song.artist.name}</div>
         </div>
       </button>
       <div className="action-button ml-auto p-2"
-          onClick={ e => onDeleteClick(song) }>
+          onClick={ e => onDeleteClick(songItem) }>
         <Icon entity="delete" />
       </div>
     </div>
