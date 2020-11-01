@@ -50,8 +50,10 @@ const getSonglist = async (id) => {
   const songlist = await SongList
     .query()
     .findById(id)
-    .allowGraph('[songs.artist]')
-    .withGraphFetched('[songs.artist]')
+    .modify('defaultSelects')
+    .allowGraph('[items.song.artist]')
+    .withGraphFetched(
+      '[items(forSongList).song(defaultSelects).artist]')
   return songlist
 }
 

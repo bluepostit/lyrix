@@ -33,4 +33,15 @@ module.exports = class SongListSong extends Model {
       }
     }
   }
+
+  static get modifiers() {
+    return {
+      forSongList(builder) {
+        const { ref } = SongListSong;
+        builder.select(
+          ref('id'), ref('position'), ref('song_id'), ref('created_at')
+        )
+      },
+    }
+  }
 }
