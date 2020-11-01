@@ -93,10 +93,10 @@ describe(BASE_URL, async () => {
           const data = res.body.songlist
 
           expect(data.title).to.eql(lists[0].title)
-          expect(data.songs).to.be.an('array')
-          expect(data.songs.length).to.eql(lists[0].songs.length)
+          expect(data.items).to.be.an('array')
+          expect(data.items.length).to.eql(lists[0].songs.length)
 
-          const song = data.songs[0]
+          const song = data.items[0].song
           expect(song.title).to.eql(lists[0].songs[0].title)
           expect(song.artist).to.be.an('object')
           expect(song.artist.name).to.eql(lists[0].songs[0].artist.name)
@@ -261,7 +261,7 @@ describe(BASE_URL, async () => {
           .send({ songId })
         const body = res.body
         expect(body).to.have.status(200)
-        expect(body.songlist.songs.length).to.eql(lengthBefore + 1)
+        expect(body.songlist.items.length).to.eql(lengthBefore + 1)
 
         const updatedSonglist = await SongList
           .query()
