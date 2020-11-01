@@ -11,11 +11,10 @@ const DraggableListItem = (props) => {
       {(provided, snapshot) => (
         <div ref={provided.innerRef}
           {...provided.draggableProps}
-          {...provided.dragHandleProps}
         >
           {
             props.renderItem(item, props.index, props.onItemClick,
-              props.onItemDeleteClick)
+              props.onItemDeleteClick, provided.dragHandleProps)
           }
         </div>
       )}
