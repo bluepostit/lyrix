@@ -138,21 +138,30 @@ router.post('/', ensureLoggedIn, validateSongListData, checkForDuplicates,
 router.post('/:id/add-song', ensureLoggedIn, validateId,
   setSonglist, ensureOwnership, validateBodySongId,
   async (req, res, next) => {
-    const query = req.songlist
-      .$relatedQuery('songs')
-      .relate({
-        id: req.song.id,
-        position: 0
+    try {
+      const positionObj = await req.songlist
+        .$relatedQuery('items')
+        .max('position')
+      const position = (positionObj[0].max || 0)
+      const query = req.songlist
+        .$relatedQuery('songs')
+        .relate({
+          id: req.song.id,
+          position: (position || 0) + 1
+        })
+      debug(query.toKnexQuery().toSQL().toNative())
+      await query
+
+      const songlist = await getSonglist(req.songlist.id)
+
+      res.json({
+        status: StatusCodes.OK,
+        songlist: songlist
       })
-    debug(query.toKnexQuery().toSQL().toNative())
-    await query
-
-    const songlist = await getSonglist(req.songlist.id)
-
-    res.json({
-      status: StatusCodes.OK,
-      songlist: songlist
-    })
+    } catch (error) {
+      error.userMessage = "Couldn't add song to songlist"
+      next(error)
+    }
   })
 
 router.post('/:id/order', ensureLoggedIn, validateId,
