@@ -13,7 +13,7 @@ const Artist = (artist, index, onClick) => {
           <span>{artist.name}</span>
         </div>
         <div>
-          <span className="badge badge-pill badge-info">
+          <span className="badge rounded-pill bg-info">
             {artist.songCount}
           </span>
         </div>
@@ -65,7 +65,7 @@ const SongItem = ({songItem, index, onClick}) => {
           </div>
         </div>
         <div className="badges">
-          <span className="badge badge-pill badge-info">
+          <span className="badge rounded-pill bg-info">
             {songItem.songItemType.name}
           </span>
         </div>
@@ -85,7 +85,7 @@ const Songlist = (songlist, index, onClick) => {
           <span>{songlist.title}</span>
         </div>
         <div>
-          <span className="badge badge-pill badge-info">
+          <span className="badge rounded-pill bg-info">
             {songlist.songs.length}
           </span>
         </div>
