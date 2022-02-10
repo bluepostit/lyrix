@@ -20,7 +20,7 @@
     "glob": "^7.1.6",
     "knex": "^0.21.2",
     "morgan": "^1.10.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "objection": "^2.2.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
